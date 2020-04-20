@@ -1,10 +1,44 @@
-library(dplyr)
-library(ggplot2)
-
-
-
-safety_histogram <- function(data, settings, description){
-
+#' Safety Histogram Chart
+#'
+#' Create a static Safety Histogram
+#'
+#' This function generates safety histograms by parameter using user-defined settings,
+#' or calling settings from safetyGraphics to generate a static version of the
+#' histogram generated in the interactive histogram from safetyGraphics.
+#'
+#' @param data  a data frame containing the lab data
+#' @param settings The settings list used to generate a histogram like \code{safetyhistogram()}
+#' \itemize{
+#'  \item{id_col}{Participant ID variable name. Default is \code{"USUBJID"}.}
+#'  \item{value_col}{Value of measure variable name. Default is \code{"STRESN"} for SDTM and \code{"AVAL"} for ADaM.}
+#'  \item{measure_col}{Name of measure variable name. Default is \code{"TEST"} for SDTM and \code{"PARAM} for ADaM.}
+#'  \item{normal_col_low}{Variable name for column containing lower limit of normal values. Default is \code{"STNRLO"} for SDTM and \code{"ANRLO"} for ADaM.}
+#'  \item{normal_col_high}{Variable name for column containing upper limit of normal values. Default is \code{"STNRHI"} for SDTM and \code{"ANRHI"} for ADaM.}
+#'  \item{unit_col}{Unit of measure variable name. Default is \code{"STRESU"} for SDTM and \code{"AVALU" for ADaM.}}
+#'  \item{start_value}{ TO UPDATE} 
+#' }
+#'
+#' @import dplyr
+#' @import ggplot2
+#' @import safetyGraphics
+#'
+#' @return
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Create a histogram on lab parameter with SDTM data
+#' data <- read.csv('https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv', stringsAsFactors = FALSE, na.strings = c("NA",""))
+#' settings <- safetyGraphics::generateSettings(standard="sdtm", charts="safetyhistogram")
+#' settings[["unit_col"]] <- "STRESU"
+#' settings[["description"]] <- "Test page"
+#' safety_histogram(data=data, settings=settings)
+#' }
+#'
+#' @seealso \link[safetyGraphics]{}
+#' @source Safety Histogram: \url{}.
+safety_histogram <- function(data, settings){
 
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
@@ -15,7 +49,7 @@ safety_histogram <- function(data, settings, description){
   unit_col <- settings[["unit_col"]]
   #start_value <- settings[["start_value"]]
   #details <- settings[["details"]]
-  missingValues <- settings[["missingValues"]] # "" "NA" "N/A"
+  #missingValues <- settings[["missingValues"]] # "" "NA" "N/A"
 
   measure_selected <- ifelse(!is.null(settings[["start_value"]]),
                              settings[["start_value"]],
@@ -52,7 +86,7 @@ safety_histogram <- function(data, settings, description){
   # get labels for fig
   ylab <- "# of\nObservations"
   xlab <- paste0(measure_selected, " (", dd$unit_col[1],")")
-  plot_title <- description
+  plot_title <- settings[["description"]]
   plot_subtitle <- paste0("Measure: ", xlab)
 
 

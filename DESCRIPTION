@@ -8,7 +8,21 @@ Authors@R:
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: safetyCharts contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.  
-Version: 0.1.0
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+Imports:
+    dplyr,
+    ggplot2,
+    safetyGraphics,
+    forcats,
+    stringr,
+    RColorBrewer,
+    grid,
+    gridExtra
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0.9000

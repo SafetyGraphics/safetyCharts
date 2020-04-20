@@ -1,14 +1,29 @@
-#########################################
-#   Load libraries
-#########################################
-library(dplyr)
-library(forcats)
-library(stringr)
-library(ggplot2)
-library(gridExtra)
-library(RColorBrewer)
-library(grid)
-
+#' Safety Outlier Chart
+#'
+#' Create a spaghetti chart by patient to show outliers
+#'
+#' This function creates a Safety Outlier Explorer Charts to show outliders by individual patient over time
+#'
+#' @param data  a data frame containing the lab data
+#' @param settings
+#' @param description
+#'
+#' @import dplyr
+#' @import forcats
+#' @import stringr
+#' @import ggplot2
+#' @import gridExtra
+#' @import RColorBrewer
+#' @import grid
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#'
+#'
+# TODO
 source("R/ggtickmarks2.R")
 
 safety_outlier_explorer <- function(data, settings, description){
