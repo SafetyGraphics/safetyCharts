@@ -1,3 +1,13 @@
+####################################################
+# program name : nep_exp_function
+# programmer : Pavan Vemuri
+# creation date: 4/20/2020
+# purpose : Generate baseline,chg and pchg values
+# input files : LB,DM
+# output  files : 
+######################################################
+
+
 library(shiny)
 library(dplyr)
 library(DT)
