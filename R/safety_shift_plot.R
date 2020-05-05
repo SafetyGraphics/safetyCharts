@@ -8,8 +8,6 @@ library(ggplot2)
 library(ggExtra) # for boxplots on sides of scatterplot
 library(scales) # for better ticks spacing on axis
 
-
-
 config <- list()
 config[["description"]] <- "Test page"
 config[["data"]] <- "https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv"
