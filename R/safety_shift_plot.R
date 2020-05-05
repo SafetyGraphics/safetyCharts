@@ -5,6 +5,8 @@ library(dplyr)
 library(forcats)
 library(stringr)
 library(ggplot2)
+library(ggExtra) # for boxplots on sides of scatterplot
+library(scales) # for better ticks spacing on axis
 
 
 
@@ -90,72 +92,21 @@ plot_subtitle <- paste0("Measure: ", measure_selected, " (", dd$unit_col[1],")")
 col <- RColorBrewer::brewer.pal(3, "Set2")[1]
 
 # lims
-lims <- range(dd$value_col)
+# lims <- range(dd$value_col)        
 
+# scatterplot
 p1 <- ggplot(data=dd_all, aes(x=mean_base, y=mean_comp)) +
-  geom_point(alpha=0.6, shape=21, color=col) +
+  geom_point(alpha=0.6, shape=21, color=col, fill=col) +
   geom_abline(slope=1, intercept=0) +
   theme_bw() +
-  labs(x=xlab,
-       y=ylab,
-       title=plot_title,
+  labs(title=plot_title,
        subtitle=plot_subtitle)+
-  theme(#axis.title.y = element_text(angle=0),
-        panel.border = element_blank(),
+  theme(panel.border = element_blank(),
         axis.line = element_line(color = 'black'))+
-  ylim(lims) +
-  xlim(lims)
+  scale_y_continuous(ylab, breaks=pretty_breaks(n=6)) +
+  scale_x_continuous(xlab, breaks=pretty_breaks(n=6))
 
-p2 <- ggplot(data=dd_all, aes(x=1, y=mean_comp)) +
-  geom_boxplot(fill="gray80", width=0.25) +
-  theme_bw() +
-  stat_summary(fun.y=mean,
-               geom="point",
-               show.legend = FALSE)+
-  ylim(lims)#+
- # theme_void()
-
-p3 <- ggplot(data=dd_all, aes(x=1, y=mean_base)) +
-  geom_boxplot(fill="gray80", width=0.25) +
-  theme_bw() +
-  stat_summary(fun.y=mean,
-               geom="point",
-               show.legend = FALSE)+
-  ylim(lims)+
-  #theme_void() +
-  coord_flip()
-
-p4 <- ggplot() + theme_void() #placehodler
-library(gridExtra)
-grid.arrange(p3,p1, ncol = 1, heights = c(0.5, 1))
-grid.newpage()
-grid.arrange(ggplotGrob(p1),
-             ggplotGrob(p2),
-             ggplotGrob(p3),
-             ggplotGrob(p4),
-             widths = c(1, 1, 0.1, 0.1),
-             # heights = c(1, 0.1,1, 0.1),
-             layout_matrix = matrix(c(3, 3, 4,
-                                         1, 1, 2,
-                                         1, 1, 2), ncol=3, byrow=TRUE))
+# boxplots on sides of scatterplot
+ ggMarginal(p1, type="boxplot", size=30, xparams = list(fill="grey90", outlier.shape=NA), yparams = list(fill="grey90", outlier.shape=NA))
 
 
-g1 <- ggplotGrob(p1)
-g2 <- ggplotGrob(p2)
-g3 <- ggplotGrob(p3)
-g4 <- ggplotGrob(p4)
-maxWidth = grid::unit.pmax(g1$widths[2:5], g3$widths[2:5])
-gA$widths[2:5] <- as.list(maxWidth)
-gB$widths[2:5] <- as.list(maxWidth)
-grid.arrange(g1,
-             g2,
-             g3,
-             g4,
-             #widths = c(1, 1, 0.1, 0.1),
-             # heights = c(1, 0.1,1, 0.1),
-             layout_matrix = matrix(c(3, 3, 4,
-                                      1, 1, 2,
-                                      1, 1, 2), ncol=3, byrow=TRUE))
-
-
-grid.draw(cbind(rbind(g3, g1), rbind(g4, g2)))
