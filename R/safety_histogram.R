@@ -54,7 +54,7 @@ safety_histogram <- function(data, settings, description){
       filter(value_col<=up_limit)
   } 
   
-  dd = dd %>% mutate(measure_col = factor(measure_selected, levels=measure_selected))
+  dd = dd %>% mutate(measure_col = factor(measure_col, levels=measure_selected))
   
   # from JS code:
   # The x-domain can be in three states:
