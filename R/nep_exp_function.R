@@ -54,7 +54,11 @@ lb3= lb3 %>% mutate(ABLFL = ifelse(BASEDT==LBDT & BASE == AVAL , "Y", NA ))
 
 lb4 = lb3 %>% 
   mutate(CHG = ifelse(!is.na(TRTSDT) & !is.na(ADT) & ADT >= TRTSDT & is.na(ABLFL) & !is.na(AVAL) & !is.na(BASE), AVAL-BASE, NA), 
-         PCHG = ifelse( !is.na(CHG) & !is.na(BASE), (CHG/BASE)*100, NA), ADY = ifelse(!is.na(TRTSDT) & !is.na(ADT), ADT-TRTSDT +1, NA))
+         PCHG = ifelse( !is.na(CHG) &CHG != 0 & !is.na(BASE) &BASE !=0, (CHG/BASE)*100, ifelse( !is.na(CHG) &CHG == 0 & !is.na(BASE), 0, NA)),
+         ADY = ifelse(!is.na(TRTSDT) & !is.na(ADT) &ADT>=TRTSDT , ADT-TRTSDT +1, ifelse(!is.na(TRTSDT) & !is.na(ADT) &ADT<TRTSDT , TRTSDT-ADT,NA) ),
+         FCHG = ifelse(!is.na(CHG) & AVAL>=BASE & BASE != 0, (AVAL/BASE), ifelse(!is.na(CHG) & AVAL<BASE & AVAL!=0 ,-1*(BASE/AVAL), NA))) %>%
+
+   arrange(USUBJID,PARCAT,PARAM,VISITNUM) %>% select(-c(BASE,LBDTC_,LBDTC1,LBDTC2,LBDTC3, BASEDT,TRTSDTC))
 
 
 
