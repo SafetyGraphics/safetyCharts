@@ -18,6 +18,7 @@ library(zoo)
 library(stringr)
 library(haven)
 library(lubridate)
+library(runner)
 
 lb1= nep_explorer_data %>% filter(TEST %in% c("Creatinine", "Cystatin C", "eGFR", "eGFRcys")) %>% 
   mutate(PARCAT=CAT, PARAM=TEST, AVAL = STRESN, AVALU= STRESU,ADT=DT, LBDT=DT, LBDTC = as.character(DT))
@@ -87,27 +88,21 @@ lb6 = lb5_1234 %>% select(USUBJID,VISITNUM,PARCAT,ADT,AGE,SEX,RACE,ARM,ABLFL, st
 ###create maximal change parameter within a specified window
 #####below code is ongoing Please do not review
 ###################################################################
-lb7 = lb4 %>% filter(PARAMCD %in% c('creat', 'cystac', 'eGFR_creat' ,'eGFR_cystac')) 
+lb7 = lb4 %>% filter(PARAMCD %in% c('creat', 'cystac', 'eGFR_creat' ,'eGFR_cystac')) %>% arrange(USUBJID,PARCAT,PARAM,VISITNUM,ADY)
 
 
-#q3 = "select USUBJID,PARAMCD, count( *) as nrows from lb7 as a group by USUBJID,PARAMCD "
+q3 = "select USUBJID,PARAMCD, count( *) as nrows from lb7 as a group by USUBJID,PARAMCD "
 
-#lb8_ = sqldf(q3)
+lb8_ = sqldf(q3)
 
-#q3 = "select a.* , nrows from lb7 as a left join lb8_ as b on a.USUBJID=b.USUBJID and a.PARAMCD=b.PARAMCD" 
+q3 = "select a.* , nrows from lb7 as a left join lb8_ as b on a.USUBJID=b.USUBJID and a.PARAMCD=b.PARAMCD" 
 
-#lb8_a = sqldf(q3)  
+lb8_a = sqldf(q3)  
 
 #lb8_b = lb8_a %>% mutate(seq = seq(1,nrows,by=5))
-library(runner)
-
-lb8 = lb7 %>% group_by(USUBJID, PARAMCD)%>%  mutate(MINAVAL= rollapplyr(AVAL, 5, min, na.rm = TRUE, fill = NA, align = 'right', partial = TRUE)) %>%
-            mutate(MAXAVAL= rollapplyr(AVAL, 5, max, na.rm = TRUE, fill = NA, align = 'right', partial = TRUE))  %>% mutate(MAXCHG_ = MAXAVAL-MINAVAL)
-
+#lb8_b = lb8_a %>% group_by(USUBJID, PARAMCD) %>%mutate(diffl1=ADY-lag(ADY,1)+1) %>%mutate(diffl2= ADY-lag(ADY,2)+1 ) %>%mutate(diffr1= lead(ADY,1)-ADY +1 ) 
+lb8_c = lb8_a %>% group_by(USUBJID, PARAMCD)%>%   mutate(seq = seq(1,n(),by=1))
+ 
 
 
-lb9  = lb8 %>%group_by(USUBJID, PARAMCD)%>% slice(which(row_number() %% 5 == 1))
-lb9 = lb8 %>% group_by(USUBJID, PARAMCD) %>% sample_n(5,replace=T)
-
-slice(by_cyl, 1:2)
 
