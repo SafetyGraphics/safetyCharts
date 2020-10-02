@@ -2,13 +2,11 @@ Package: safetyCharts
 Title: Charts for monitoring clinical trial safety designed for use with {safetyGraphics}
 Version: 0.1.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Jeremy",
+           family = "Wildfire",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           email = "jwildfire@gilead.com")
 Description: safetyCharts contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.  
-Version: 0.1.0
 License: MIT
 Encoding: UTF-8
 LazyData: true
