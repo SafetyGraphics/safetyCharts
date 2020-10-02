@@ -1,32 +1,26 @@
 HTMLWidgets.widget({
+  name: "hepexplorer",
+  type: "output",
 
-    name: 'hepExplorer',
+  factory: function(el, width, height) {
 
-    type: 'output',
+    return {
+      renderValue: function(rSettings) {
+        console.log("widget started ...")
+        console.log(el)
+        console.log(rSettings)
+        //console.log(rSettings)
+        //el.innerHTML = "<div class='.hepexplorer-wrap'></div>";
+        el.innerHTML=""
+        let settings = rSettings.settings;
+        let data = HTMLWidgets.dataframeToD3(rSettings.data);
+        var chart = hepexplorer("#"+rSettings.ns, settings)
+        chart.init(data);
+      },
+      resize: function(width, height) {
+        // TODO: code to re-render the widget with a new size
+      }
 
-    factory: function (el, width, height) {
-
-
-        return {
-
-            renderValue: function (x) {
-
-                el.innerHTML = "";
-
-                x.data = HTMLWidgets.dataframeToD3(x.data);
-
-                console.log(x.settings);
-
-                hepexplorer(el, x.settings).init(x.data);
-
-            },
-
-            resize: function (width, height) {
-
-                // TODO: code to re-render the widget with a new size
-
-            }
-
-        };
-    }
+    };
+  }
 });

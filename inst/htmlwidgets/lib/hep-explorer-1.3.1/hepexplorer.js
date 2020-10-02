@@ -1112,6 +1112,7 @@
         // Remove invalid rows
         /////////////////////////
         var numerics = ['value_col', 'studyday_col', 'normal_col_high'];
+        console.log(chart.initial_data)
         chart.imputed_data = chart.initial_data.filter(function(f) {
             return true;
         });
