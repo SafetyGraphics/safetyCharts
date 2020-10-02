@@ -17,7 +17,7 @@ HTMLWidgets.widget({
 
                 console.log(x.settings);
 
-                hepExplorer(el, x.settings).init(x.data);
+                hepexplorer(el, x.settings).init(x.data);
 
             },
 
