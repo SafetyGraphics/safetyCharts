@@ -1,10 +1,17 @@
-library(dplyr)
-library(ggplot2)
+#' Safety Histogram
+#'
+#' @param data labs data set
+#' @param settings list of settings including the following parameters:
+#' @param description Description of the chart to be printed as a subtitle
+#'
+#' @return
+#' 
+#' @import dplyr
+#' @import ggplot2
+#' 
+#' @export
 
-
-
-safety_histogram <- function(data, settings, description){
-
+safety_histogram <- function(data, settings, description=""){
 
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
@@ -76,5 +83,4 @@ safety_histogram <- function(data, settings, description){
     scale_y_continuous(expand = c(0,0))
 
   return(p)
-
 }
