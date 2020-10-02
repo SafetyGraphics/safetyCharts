@@ -8,8 +8,8 @@ dependencies:
    src: htmlwidgets/lib/webcharts-1.9.1
    script: webcharts.js
    stylesheet: webcharts.css
- - name: nepExplorer
+ - name: hepExplorer
    version: 1.3.1
-   src: htmlwidgets/lib/hep-explorer-0.9.0
+   src: htmlwidgets/lib/hep-explorer-1.3.1
    script: hepExplorer.js 
 
