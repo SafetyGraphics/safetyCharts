@@ -1,0 +1,27 @@
+dependencies:
+  - name: d3
+    version: 3.5.17
+    src: htmlwidgets/lib/d3-3.5.17
+    script: d3.min.js
+  - name: jquery
+    version: 3.3.1
+    src: htmlwidgets/lib/jquery-3.3.1
+    script: jquery.js
+  - name: jquery-ui
+    version: 1.12.1
+    src: htmlwidgets/lib/jquery-ui-1.12.1
+    script: jquery-ui.js
+    stylesheet: jquery-ui.css
+  - name: jquery-dataTables
+    version: 1.10.20
+    src: htmlwidgets/lib/jquery-dataTables-1.10.20
+    script: jquery.dataTables.min.js
+    stylesheet: jquery.dataTables.min.css
+  - name: forestPlot
+    version: 0.1.0
+    src: htmlwidgets/lib/forestPlot-0.1.0
+    script: forestplot.js
+    stylesheet: forestplot.css
+
+
+
