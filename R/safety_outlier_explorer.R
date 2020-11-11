@@ -1,17 +1,25 @@
-#########################################
-#   Load libraries
-#########################################
-library(dplyr)
-library(forcats)
-library(stringr)
-library(ggplot2)
-library(gridExtra)
-library(RColorBrewer)
-library(grid)
+#' Safety Outlier Explorer
+#'
+#' @param data labs data
+#' @param settings named list of settings with the following parameters
+#' @param description description to be included as a subtitle
+#'
+#' @return returns a chart object
+#' 
+#' @import dplyr
+#' @import forcats
+#' @import stringr
+#' @import ggplot2
+#' @import gridExtra
+#' @import RColorBrewer
+#' @import grid
+#' 
+#' @export
+#'
+#' @examples
+#' 
 
-source("R/ggtickmarks2.R")
-
-safety_outlier_explorer <- function(data, settings, description){
+safety_outlier_explorer <- function(data, settings, description=""){
 
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
@@ -126,14 +134,9 @@ safety_outlier_explorer <- function(data, settings, description){
     p <- p +
       scale_y_log10() +
       annotation_logticks(sides="l")
-      # annotation_logticks2(sides = "l",
-      #                      short=unit(-0.1, "cm"),
-      #                      mid=unit(-0.2, "cm"),
-      #                      long=unit(-0.3,"cm")) +
-      # coord_cartesian(clip="off")
   }
 
-  p
+  return(p)
 
 }
 

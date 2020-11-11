@@ -97,6 +97,7 @@ safety_histogram <- function(data, settings, description){
 # config[["description"]] <- "Test page"
 # config[["data"]] <- "https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv"
 # config[["settings"]] <- safetyGraphics::generateSettings("sdtm", charts="safetyshiftplot") 
+
 # 
 # 
 # data <- read.csv(config[["data"]], stringsAsFactors = FALSE, na.strings = c("NA",""))
@@ -112,3 +113,4 @@ safety_histogram <- function(data, settings, description){
 # description <- config$description
 
 #  safety_histogram(data=data, settings=settings, description=description)
+

@@ -1,3 +1,4 @@
+
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -10,11 +11,13 @@ summarize <- dplyr::summarize; arrange <- dplyr::arrange; slice <- dplyr::slice;
 
 safety_histogram <- function(data, settings, description){
 
+
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
   measure_col <- settings[["measure_col"]]
   normal_col_low <- settings[["normal_col_low"]]
   normal_col_high <- settings[["normal_col_high"]]
+
   unit_col <- settings[["unit_col"]]
   low_lim <- settings[["low_lim"]]
   up_lim <- settings[["up_lim"]]
@@ -27,11 +30,13 @@ safety_histogram <- function(data, settings, description){
   }
   
 
+
   # prep data
   dd <- data %>%
     select(one_of(c(id_col, value_col, unit_col, measure_col, normal_col_low, normal_col_high))) %>%
     setNames(., c("id_col","value_col","unit_col","measure_col","normal_col_low","normal_col_high")) %>%
     filter(!is.na(value_col)) %>%
+
     filter(measure_col%in%measure_selected) %>%
     mutate(measure_label =  paste0(measure_col, " (", unit_col,")")) %>%
     group_by(measure_col) %>%
@@ -56,6 +61,7 @@ safety_histogram <- function(data, settings, description){
   
   dd = dd %>% mutate(measure_col = factor(measure_col, levels=measure_selected))
   
+
   # from JS code:
   # The x-domain can be in three states:
   # - the extent of all results
@@ -77,6 +83,7 @@ safety_histogram <- function(data, settings, description){
   #########################################
 
   # get labels for fig
+
   ylab <- "# of Observations"
   #plot_title <- description
   plot_title <- paste0(nrow(dd)," of ", n_obs, " participant(s) shown (", round(100*nrow(dd)/n_obs,1),"%)")
@@ -124,3 +131,4 @@ safety_histogram <- function(data, settings, description){
 # settings[["low_lim"]] = c(20,90)
 # settings[["up_lim"]] = c(35,120)
 # description <- config$description
+

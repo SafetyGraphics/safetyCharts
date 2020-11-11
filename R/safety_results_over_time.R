@@ -1,25 +1,30 @@
-#########################################
-#   Load libraries
-#########################################
-library(dplyr)
-library(forcats)
-library(stringr)
-library(ggplot2)
-library(RColorBrewer)
-library(grid)
+#' Safety Results Over Time plot
+#'
+#' @param data 
+#' @param settings 
+#' @param description 
+#'
+#' @return plot object
+#' 
+#' @import dplyr
+#' @import forcats
+#' @import stringr
+#' @import ggplot2
+#' @import RColorBrewer
+#' @import grid
+#' 
+#' @export
 
-# custom legend
-draw_key_cust <- function(data, params, size) {
-  data$fill <- data$colour
-  size <- 0.5
-  draw_key_rect(data, params, size)
-}
 
-# source alt code for log ticks
-source("R/ggtickmarks2.R")
 
 safety_results_over_time <- function(data, settings, description){
-
+  
+  draw_key_cust <- function(data, params, size) {
+    data$fill <- data$colour
+    size <- 0.5
+    draw_key_rect(data, params, size)
+  }
+  
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
   measure_col <- settings[["measure_col"]]
@@ -155,10 +160,11 @@ safety_results_over_time <- function(data, settings, description){
   if(settings[["axis"]]=="log") {
     p <- p +
       scale_y_log10()+
-    annotation_logticks2(sides = "l",
-                         short=unit(-0.1, "cm"),
-                         mid=unit(-0.2, "cm"),
-                         long=unit(-0.3,"cm")) +
+    # annotation_logticks2(sides = "l",
+    #                      short=unit(-0.1, "cm"),
+    #                      mid=unit(-0.2, "cm"),
+    #                      long=unit(-0.3,"cm")) +
+    annotation_logticks(sides="l") +
     coord_cartesian(clip="off")+
     stat_summary(fun.y= function(x){log10(mean(10**x))}, # force arithmetic mean
                      geom="point",
@@ -173,7 +179,7 @@ safety_results_over_time <- function(data, settings, description){
 
   }
 
-  p
+  return(p)
 
 
 }
