@@ -1,0 +1,6 @@
+label: Outlier Explorer (Static)
+type: plot
+domain: labs
+package: safetyCharts
+workflow:
+  main: safety_outlier_explorer
