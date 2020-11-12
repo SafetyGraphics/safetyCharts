@@ -1,46 +1,52 @@
-config <- list()
-config[["description"]] <- "Test page"
-config[["data"]] <- "https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv"
-config[["settings"]] <- safetyGraphics::generateSettings("sdtm", charts="safetyoutlierexplorer")
+library(ggplot2)
+devtools::document()
+devtools::install()
+library(safetyCharts)
 
-
-data <- read.csv('https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv',
-                 stringsAsFactors = FALSE, na.strings = c("NA",""))
-
-settings <- config[["settings"]]
-settings[["study_name"]] <- "Test page"
-settings[["group_cols"]] <- c("Site" = "SITEID","Treatment Arm" = "ARM",
-                              "Sex" = "SEX","Race" = "RACE")
-settings[["unit_col"]] <- "STRESU"
-
-# manipulate SG settings
-settings[["time_cols"]] <- list(list(),list());
-settings[["time_cols"]][[1]]<-list(
-  type= "ordinal",
-  value_col= settings[["visit_col"]],
-  label= "Visit",
-  order_col= settings[["visitn_col"]],
-  order= NULL,
-  rotate_tick_labels= TRUE,
-  vertical_space= 100
-)
-settings[["time_cols"]][[2]]<-list(
-  type= "linear",
-  value_col= settings[["studyday_col"]],
-  label= "Study Day",
-  order_col= settings[["studyday_col"]],
-  order= NULL,
-  rotate_tick_labels= FALSE,
-  vertical_space= 0
+data <- read.csv(
+  'https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv',
+  stringsAsFactors = FALSE, 
+  na.strings = c("NA","")
 )
 
-## settings not in SG but needed
-set.seed(124)
-settings[["id_selected"]] <- sample(data[[settings[["id_col"]]]],1)
-# settings[["id_selected"]] <- NULL
-settings[["axis"]] <- "log"
-settings[["normal_range_method"]] <- "LLN-ULN" # other options: None, # of SDs, quantiles (specify)
+settings <- list(
+  id_col="USUBJID",
+  value_col="STRESN",
+  measure_col="TEST",
+  visit_col="VISIT",
+  studyday_col="DY",
+  normal_col_low="STNRLO",
+  normal_col_high="STNRHI",
+  visitn_col="VISITN",
+  unit_col="STRESU"
+)
 
-source("R/safety_outlier_explorer.R")
-p <- safety_outlier_explorer(data=data, settings=settings, description=config$description)
-ggsave("examples/test_safety_outlier_explorer.png", plot=p, height=4, width=6.5, dpi=300)
+## Example 1 - Summary with all measures
+
+p1 <- safetyCharts::safety_outlier_explorer(
+  data=data, 
+  settings=settings
+)
+ggsave("examples/test_safety_outlier_explorer_all.png", plot=p1, dpi=300)
+
+## Example 2 - Summary with 3 measures
+
+settings$measure_values <- c("Albumin","Bicarbonate","Calcium")
+p2 <- safetyCharts::safety_outlier_explorer(
+  data=data, 
+  settings=settings
+)
+
+ggsave("examples/test_safety_outlier_explorer_subset.png", plot=p2, dpi=300)
+
+
+## Example 3 - Summary with 1 measure
+
+settings$measure_values <- c("eGFR")
+
+p3 <- safetyCharts::safety_outlier_explorer(
+  data=data, 
+  settings=settings
+)
+
+ggsave("examples/test_safety_outlier_explorer_solo.png", plot=p3, dpi=300)

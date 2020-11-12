@@ -4,12 +4,12 @@
 \alias{safety_outlier_explorer}
 \title{Safety Outlier Explorer}
 \usage{
-safety_outlier_explorer(data, settings, description = "")
+safety_outlier_explorer(data, settings, title, subtitle)
 }
 \arguments{
-\item{data}{labs data}
+\item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
 
-\item{settings}{named list of settings with the following parameters}
+\item{settings}{named list of settings with the parameters specified below.}
 
 \item{description}{description to be included as a subtitle}
 }
@@ -18,6 +18,18 @@ returns a chart object
 }
 \description{
 Safety Outlier Explorer
+}
+\details{
+The settings object provides details the columns in the data set.
+
+\itemize{
+\item{"id_col"}{ID column}
+\item{"value_col"}{Value column}
+\item{"measure_col"}{Measure column}
+\item{"visit_col"}{Visit Column (character)}
+\item{"visitn_col"}{Visit Column (numeric)}
+\item{"unit_cols"}{Unit Columns}
+}
 }
 \examples{
 
