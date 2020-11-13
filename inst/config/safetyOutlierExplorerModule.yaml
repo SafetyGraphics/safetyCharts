@@ -1,0 +1,7 @@
+label: Safety Outlier Explorer - Shiny module
+type: module
+domain: labs
+package: safetyCharts
+workflow:
+  ui: safetyOutlierExplorer_ui
+  server: safetyOutlierExplorer_server
