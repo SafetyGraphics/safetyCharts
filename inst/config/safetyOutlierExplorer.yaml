@@ -1,4 +1,4 @@
-label: Outlier Explorer
+label: Outlier Explorer (widget)
 type: htmlwidget
 domain: labs
 package: safetyCharts

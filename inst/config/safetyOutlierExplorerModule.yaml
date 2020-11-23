@@ -1,4 +1,4 @@
-label: Safety Outlier Explorer - Shiny module
+label: Outlier Explorer (module)
 type: module
 domain: labs
 package: safetyCharts
