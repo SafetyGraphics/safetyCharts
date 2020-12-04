@@ -1,6 +1,6 @@
 label: Demographics Table {Tplyr} + {DT}
 type: table
 domain: dm
-package: Tplyr
+package: safetyCharts
 workflow:
   main: tplyr_demog_chart
