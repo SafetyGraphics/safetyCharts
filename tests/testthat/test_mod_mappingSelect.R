@@ -1,9 +1,9 @@
 context("Tests for the outlierExplorer R module")
 library(safetyCharts)
 library(shiny)
+library(dplyr)
 library(shinytest)
 library(testthat)
-library(dplyr)
 
 app <- ShinyDriver$new("./module_examples/outlierExplorer",loadTimeout = 1e+05)
 initial<-app$getAllValues()
