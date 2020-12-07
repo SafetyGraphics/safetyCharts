@@ -4,7 +4,7 @@
 \alias{safety_outlier_explorer}
 \title{Safety Outlier Explorer}
 \usage{
-safety_outlier_explorer(data, settings, title, subtitle)
+safety_outlier_explorer(data, settings)
 }
 \arguments{
 \item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
@@ -32,5 +32,15 @@ The settings object provides details the columns in the data set.
 }
 }
 \examples{
+
+lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
+settings<-list(
+    id_col="USUBJID",
+    measure_col="LBTEST", 
+    measure_values=c("Albumin","Bilirubin","Chloride"),
+    studyday_col="VISITDY", 
+    value_col="LBORRES" 
+)
+safety_outlier_explorer(lb, settings)
 
 }
