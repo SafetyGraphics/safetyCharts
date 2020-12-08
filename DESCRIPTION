@@ -19,7 +19,9 @@ Imports:
     Tplyr, 
     ggplot2, 
     rlang, 
-    shiny
+    shiny, 
+    RColorBrewer, 
+    forcats
 Suggests:
     testthat, 
     shinytest, 

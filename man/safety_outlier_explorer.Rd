@@ -10,8 +10,6 @@ safety_outlier_explorer(data, settings)
 \item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
 
 \item{settings}{named list of settings with the parameters specified below.}
-
-\item{description}{description to be included as a subtitle}
 }
 \value{
 returns a chart object
@@ -26,9 +24,8 @@ The settings object provides details the columns in the data set.
 \item{"id_col"}{ID column}
 \item{"value_col"}{Value column}
 \item{"measure_col"}{Measure column}
-\item{"visit_col"}{Visit Column (character)}
-\item{"visitn_col"}{Visit Column (numeric)}
-\item{"unit_cols"}{Unit Columns}
+\item{"measure_values"}{Measure values}
+\item{"studyday_col"}{Study Day (numeric)}
 }
 }
 \examples{

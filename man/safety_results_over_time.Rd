@@ -4,18 +4,61 @@
 \alias{safety_results_over_time}
 \title{Safety Results Over Time plot}
 \usage{
-safety_results_over_time(data, settings, description)
+safety_results_over_time(data, settings)
 }
 \arguments{
-\item{data}{}
+\item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
 
-\item{settings}{}
-
-\item{description}{}
+\item{settings}{named list of settings with the parameters specified below.}
 }
 \value{
-plot object
+returns a chart object
 }
 \description{
 Safety Results Over Time plot
+}
+\details{
+The settings object provides details the columns in the data set.
+
+\itemize{
+\item{"value_col"}{Value column}
+\item{"measure_col"}{Measure column}
+\item{"measure_values"}{Measure values}
+\item{"visit_col"}{Study Visit}
+\item{"visitn_col"}{Study Number}
+\item{"group_col"}{Grouping column}
+\item{"violins"}{Show Violin plots?}
+\item{"boxplots"}{Show Box Plots?}
+\item{"axis"}{set to "log" to use a log transformed axis, linear otherwise}
+\item{"drop_visit_string"}{Drop visits that contain this string. e.g. "unscheduled"}
+}
+}
+\examples{
+
+lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
+sub_ids <- unique(lb$USUBJID)[1:100]
+lb <- lb \%>\% filter(USUBJID \%in\% sub_ids)
+settings<-list(
+    value_col="LBORRES", 
+    measure_col="LBTEST", 
+    measure_values=c("Chloride"),
+    visit_col="VISIT",
+    visitn_col="VISITNUM",
+    axis="log"
+)
+safety_results_over_time(lb, settings)
+
+#remove unscheduled visits, add violin plot and 2nd panel
+settings$drop_visit_string<-"unscheduled"
+settings$violins <- TRUE
+settings$measure_values=c("Albumin")
+safety_results_over_time(lb, settings)
+
+#add grouping by treatment
+dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
+dm_sub <- dm \%>\% select(USUBJID, ARM)
+dm_lb <- dm_sub \%>\% left_join(lb)
+settings$group_col <-"ARM"
+safety_results_over_time(dm_lb, settings)
+
 }
