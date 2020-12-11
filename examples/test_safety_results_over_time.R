@@ -32,6 +32,6 @@ settings[["axis"]] <- "log"
 
 source("R/safety_results_over_time.R")
 
-p <- safety_results_over_time(data=data, settings = settings)
-# p <- safety_results_over_time(data=data, settings=settings, description=config$description)
-# ggsave("examples/test_safety_results_over_time.png", plot=p, height=4, width=6.5, dpi=300)
+p <- safety_results_over_time(data=data, settings=settings, description=config$description)
+
+ggsave("examples/test_safety_results_over_time.png", plot=p, height=4, width=6.5, dpi=300)

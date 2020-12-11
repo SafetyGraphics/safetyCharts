@@ -21,20 +21,14 @@ settings <- list(
   unit_col="STRESU"
 )
 
-
-# Example 1 ---------------------------------------------------------------
-
 ## Example 1 - Summary with all measures
 
 p1 <- safetyCharts::safety_outlier_explorer(
   data=data, 
   settings=settings
 )
-# ggsave("examples/test_safety_outlier_explorer_all.png", plot=p1, dpi=300)
+ggsave("examples/test_safety_outlier_explorer_all.png", plot=p1, dpi=300)
 
-p1
-
-# Example 2 ---------------------------------------------------------------
 ## Example 2 - Summary with 3 measures
 
 settings$measure_values <- c("Albumin","Bicarbonate","Calcium")
@@ -43,11 +37,8 @@ p2 <- safetyCharts::safety_outlier_explorer(
   settings=settings
 )
 
-p2
-# ggsave("examples/test_safety_outlier_explorer_subset.png", plot=p2, dpi=300)
+ggsave("examples/test_safety_outlier_explorer_subset.png", plot=p2, dpi=300)
 
-
-# Example 3 ---------------------------------------------------------------
 
 ## Example 3 - Summary with 1 measure
 
@@ -58,5 +49,4 @@ p3 <- safetyCharts::safety_outlier_explorer(
   settings=settings
 )
 
-p3
-# ggsave("examples/test_safety_outlier_explorer_solo.png", plot=p3, dpi=300)
+ggsave("examples/test_safety_outlier_explorer_solo.png", plot=p3, dpi=300)
