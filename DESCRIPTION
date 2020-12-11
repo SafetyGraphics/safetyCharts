@@ -21,7 +21,8 @@ Imports:
     rlang, 
     shiny, 
     RColorBrewer, 
-    forcats
+    forcats,
+    Tendril
 Suggests:
     testthat, 
     shinytest, 
