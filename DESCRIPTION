@@ -22,7 +22,8 @@ Imports:
     shiny, 
     RColorBrewer, 
     forcats,
-    vdiffr (>= 0.3.3)
+    vdiffr (>= 0.3.3),
+    Tendril
 Suggests:
     testthat, 
     shinytest, 
