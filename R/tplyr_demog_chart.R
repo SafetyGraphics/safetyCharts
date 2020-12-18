@@ -20,13 +20,17 @@
 tplyr_demog_chart <- function(data, settings){
 
     tab<-tplyr_table(data, !!sym(settings$treatment_col), cols=!!sym(settings$sex_col)) %>% 
+        add_total_group() %>%
         add_layer(
-            group_count(!!sym(settings$race_col), by = "Race")
+            group_count(!!sym(settings$race_col), by = "Race") %>%
+                add_total_row(f_str("xxx", n))
         ) %>% 
         add_layer(
             group_desc(!!sym(settings$age_col), by = "Age (Years)")
         ) %>% 
-        build()
+        build() %>% 
+        select(-starts_with("ord")) %>%
+        apply_row_masks()
     
     return(tab)
 }
