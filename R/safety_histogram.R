@@ -1,26 +1,25 @@
-
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-library(scales)
-
-# so dplyr functions never overwritten
-select <- dplyr::select; rename <- dplyr::rename; mutate <- dplyr::mutate; 
-summarize <- dplyr::summarize; arrange <- dplyr::arrange; slice <- dplyr::slice; filter <- dplyr::filter; recode<-dplyr::recode
-
-
+#' @title Histogram visualzation
+#' @description FUNCTION_DESCRIPTION
+#' @param data PARAM_DESCRIPTION
+#' @param settings PARAM_DESCRIPTION
+#' @param description PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @export 
+#' @importFrom RColorBrewer brewer.pal
 safety_histogram <- function(data, settings, description){
 
-
-  id_col <- settings[["id_col"]]
-  value_col <- settings[["value_col"]]
-  measure_col <- settings[["measure_col"]]
-  normal_col_low <- settings[["normal_col_low"]]
-  normal_col_high <- settings[["normal_col_high"]]
-
-  unit_col <- settings[["unit_col"]]
-  low_lim <- settings[["low_lim"]]
-  up_lim <- settings[["up_lim"]]
+  settings <- list(
+      id_col = "id_col",
+      value_col = "value_col",
+      measure_col = "measure_col",
+      normal_col_low = "normal_col_low",
+      normal_col_high = "normal_col_high",
+      unit_col = "unit_col",
+      low_lim = "low_lim",
+      up_lim = "up_lim"
+  )
+  
+  
   #page_layout <- settings[["page_layout"]] # option doesn't work yet
 
   if (!is.null(settings[["measure_values"]])){
@@ -33,15 +32,14 @@ safety_histogram <- function(data, settings, description){
 
   # prep data
   dd <- data %>%
-    select(one_of(c(id_col, value_col, unit_col, measure_col, normal_col_low, normal_col_high))) %>%
+    dplyr::select(one_of(c(id_col, value_col, unit_col, measure_col, normal_col_low, normal_col_high))) %>%
     setNames(., c("id_col","value_col","unit_col","measure_col","normal_col_low","normal_col_high")) %>%
-    filter(!is.na(value_col)) %>%
-
-    filter(measure_col%in%measure_selected) %>%
-    mutate(measure_label =  paste0(measure_col, " (", unit_col,")")) %>%
-    group_by(measure_col) %>%
-    mutate(bw = 3.5 * sd(value_col)/(n()^(1/3))) %>% # for binwidth. does nothing for now.
-    group_by()
+    dplyr::filter(!is.na(value_col)) %>%
+    dplyr::filter(measure_col%in%measure_selected) %>%
+    dplyr::mutate(measure_label =  paste0(measure_col, " (", unit_col,")")) %>%
+    dplyr::group_by(measure_col) %>%
+    dplyr::mutate(bw = 3.5 * sd(value_col)/(n()^(1/3))) %>% # for binwidth. does nothing for now.
+    dplyr::group_by()
   
   n_obs = nrow(dd)
   
@@ -49,17 +47,18 @@ safety_histogram <- function(data, settings, description){
   if (!is.null(low_lim)){
     low_lim_df = data.frame(measure_col = measure_selected, low_limit=low_lim)
     dd = dd %>%
-      left_join(low_lim_df, by="measure_col") %>%
-      filter(value_col>=low_limit)
+      dplyr::left_join(low_lim_df, by="measure_col") %>%
+      dplyr::filter(value_col>=low_limit)
   } 
   if (!is.null(up_lim)){
     up_lim_df = data.frame(measure_col = measure_selected, up_limit=up_lim)
     dd = dd %>%
-      left_join(up_lim_df, by="measure_col") %>%
-      filter(value_col<=up_limit)
+      dplyr::left_join(up_lim_df, by="measure_col") %>%
+      dplyr::filter(value_col<=up_limit)
   } 
   
-  dd = dd %>% mutate(measure_col = factor(measure_col, levels=measure_selected))
+  dd <-  dd %>% 
+    dplyr::mutate(measure_col = factor(measure_col, levels=measure_selected))
   
 
   # from JS code:
@@ -113,22 +112,4 @@ safety_histogram <- function(data, settings, description){
   return(p)
 }
 
-
-
-
-# testing
-#highlight, cmd + shift + c to uncomment chunk below
-# config <- list()
-# config[["description"]] <- "Test page"
-# config[["data"]] <- "https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/renderer-specific/adbds.csv"
-# config[["settings"]] <- safetyGraphics::generateSettings("sdtm", charts=NULL)
-# 
-# data <- read.csv(config[["data"]], stringsAsFactors = FALSE, na.strings = c("NA",""))
-# settings <- config[["settings"]]
-# settings[["unit_col"]] <- "STRESU"
-# # selections within the graphic
-# settings[["measure_values"]] = c("Bicarbonate","Chloride")  # if no  parameter selected, defaults to first (albumin)
-# settings[["low_lim"]] = c(20,90)
-# settings[["up_lim"]] = c(35,120)
-# description <- config$description
 
