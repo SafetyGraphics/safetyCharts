@@ -1,7 +1,7 @@
-label: Safety Explorer
+label: Adverse Event Explorer
 type: htmlwidget
 domain: multiple
 package: safetyCharts  
 workflow:
-  init: aeExplorer_init
+  init: init_aeExplorer
   widget: aeExplorer

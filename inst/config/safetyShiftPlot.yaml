@@ -3,4 +3,5 @@ type: htmlwidget
 domain: labs
 package: safetyCharts
 workflow:
+  init: init_safetyShiftPlot
   widget: safetyShiftPlot
