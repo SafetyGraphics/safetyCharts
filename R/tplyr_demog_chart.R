@@ -27,10 +27,16 @@ tplyr_demog_chart <- function(data, settings){
         ) %>% 
         add_layer(
             group_desc(!!sym(settings$age_col), by = "Age (Years)")
-        ) %>% 
+        )
+    tab_b <- tab %>%
         build() %>% 
         select(-starts_with("ord")) %>%
-        apply_row_masks()
+        apply_row_masks() %>%
+        add_column_headers(
+            paste0(" | | Placebo { Female | Male } | Screen Failure { Female | Male } |",
+                   " Total { Female | Male } | Xan High Dose { Female | Male } | Xan Low Dose { Female | Male }"),
+            header_n(tab)
+        )
     
-    return(tab)
+    return(tab_b)
 }
