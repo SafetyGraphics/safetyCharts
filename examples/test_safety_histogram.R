@@ -45,12 +45,12 @@ histogram_settings <- list(
   measure_col="LBTEST", # DONE
   visit_col="VISIT", # DONE
   studyday_col="LBDY", # DONE
-  normal_col_low="LBSTNRLO", # DONE
-  normal_col_high="LBSTNRHI", # DONE
+  normal_col_low="LBORNRLO", # DONE
+  normal_col_high="LBORNRHI", # DONE
   visitn_col="VISITNUM", # DONE
   unit_col="LBORRESU", # DONE,
-  # measure_values = "Microcytes",
-  measure_values = "Albumin" 
+  measure_values = "Phosphate"
+  # measure_values = "Albumin" 
 )
 
 safety_histogram(data = safetyData::sdtm_lb, settings = histogram_settings)
