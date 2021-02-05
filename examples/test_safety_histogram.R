@@ -1,7 +1,6 @@
 # test create safety histogram  ---------------------------------------------------------------
 
-
-test_that("Histogram is created properly", {
+test_that("Safety histogram is created properly", {
   
   
   histogram_settings <- list(
