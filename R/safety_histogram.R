@@ -7,6 +7,7 @@
 #' @export
 #' @importFrom RColorBrewer brewer.pal
 safety_histogram <- function(data, settings, description) {
+  
   id_col <- settings[["id_col"]]
   value_col <- settings[["value_col"]]
   measure_col <- settings[["measure_col"]]
@@ -28,7 +29,7 @@ safety_histogram <- function(data, settings, description) {
   # prep data
   dd <- data %>%
     dplyr::select(one_of(c(id_col, value_col, unit_col, measure_col, normal_col_low, normal_col_high))) %>%
-    setNames(., c("id_col", "value_col", "unit_col", "measure_col", "normal_col_low", "normal_col_high")) %>%
+    stats::setNames(., c("id_col", "value_col", "unit_col", "measure_col", "normal_col_low", "normal_col_high")) %>%
     dplyr::filter(!is.na(value_col)) %>%
     dplyr::filter(measure_col %in% measure_selected) %>%
     dplyr::mutate(measure_label = paste0(measure_col, " (", unit_col, ")")) %>%
@@ -42,18 +43,18 @@ safety_histogram <- function(data, settings, description) {
   if (!is.null(low_lim)) {
     low_lim_df <- data.frame(measure_col = measure_selected, low_limit = low_lim)
     dd <- dd %>%
-      left_join(low_lim_df, by = "measure_col") %>%
-      filter(value_col >= low_limit)
+      dplyr::left_join(low_lim_df, by = "measure_col") %>%
+      dplyr::filter(value_col >= low_limit)
   }
 
   if (!is.null(up_lim)) {
     up_lim_df <- data.frame(measure_col = measure_selected, up_limit = up_lim)
     dd <- dd %>%
-      left_join(up_lim_df, by = "measure_col") %>%
-      filter(value_col <= up_limit)
+      dplyr::left_join(up_lim_df, by = "measure_col") %>%
+      dplyr::filter(value_col <= up_limit)
   }
 
-  dd <- dd %>% mutate(measure_col = factor(measure_col, levels = measure_selected))
+  dd <- dd %>% dplyr::mutate(measure_col = factor(measure_col, levels = measure_selected))
 
 
   # from JS code:
