@@ -24,7 +24,7 @@ Demographics chart created with tplyr
 }
 \examples{
 dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
-settings<-list(treatment_col="ARM", sex_col="SEX", race_col="RACE", age_col="AGE")
+settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
 tplyr_demog_chart(data, settings)
 
 }

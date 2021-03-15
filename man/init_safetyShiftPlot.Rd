@@ -19,6 +19,5 @@ Initialize Settings for Safety Shift Plot widget
 }
 \examples{
 
-a<-init_safetyShiftPlot(safetyData::lb, safetyGraphics::meta)
-
+a <- init_safetyShiftPlot(safetyData::lb, safetyGraphics::meta)
 }

@@ -19,6 +19,5 @@ Initialize Settings for Paneled Outlier Explorer widget
 }
 \examples{
 
-a<-init_paneledOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols 
-
+a <- init_paneledOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
 }
