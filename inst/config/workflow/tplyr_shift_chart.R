@@ -1,3 +1,19 @@
+#' Demographics chart created with tplyr
+#'
+#' @param data demographics data frame with columns specified in settings object
+#' @param settings list with parameters specifying the column names for:
+#' - ANRIND
+#' - BNRIND
+#' - TRTA
+#' - PARAMCD
+#' - VISIT
+#'
+#' @import Tplyr
+#' @import kableExtra
+#'
+#' @export
+
+# TODO: use variable names captured in settings
 tplyr_shift_chart <- function(data, settings) {
     adlb <- data$labs
     adlb$ANRIND <- factor(adlb$ANRIND, levels = c("L", "N", "H"))
