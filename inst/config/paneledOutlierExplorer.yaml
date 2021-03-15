@@ -1,0 +1,7 @@
+label: Paneled Outlier Explorer (widget)
+type: htmlwidget
+domain: labs
+package: safetyCharts
+workflow:
+  init: init_paneledOutlierExplorer
+  widget: paneledOutlierExplorer

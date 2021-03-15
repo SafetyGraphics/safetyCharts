@@ -1,1528 +1,2653 @@
-(function(global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined'
-        ? (module.exports = factory(require('webcharts'), require('d3')))
-        : typeof define === 'function' && define.amd
-          ? define(['webcharts', 'd3'], factory)
-          : (global.safetyOutlierExplorer = factory(global.webCharts, global.d3));
-})(this, function(webcharts, d3) {
-    'use strict';
-
-    if (typeof Object.assign != 'function') {
-        (function() {
-            Object.assign = function(target) {
-                'use strict';
-
-                if (target === undefined || target === null) {
-                    throw new TypeError('Cannot convert undefined or null to object');
-                }
-
-                var output = Object(target);
-                for (var index = 1; index < arguments.length; index++) {
-                    var source = arguments[index];
-                    if (source !== undefined && source !== null) {
-                        for (var nextKey in source) {
-                            if (source.hasOwnProperty(nextKey)) {
-                                output[nextKey] = source[nextKey];
-                            }
-                        }
-                    }
-                }
-                return output;
-            };
-        })();
-    }
-
-    if (!Array.prototype.find) {
-        Object.defineProperty(Array.prototype, 'find', {
-            value: function value(predicate) {
-                // 1. Let O be ? ToObject(this value).
-                if (this == null) {
-                    throw new TypeError('"this" is null or not defined');
-                }
-
-                var o = Object(this);
-
-                // 2. Let len be ? ToLength(? Get(O, "length")).
-                var len = o.length >>> 0;
-
-                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
-                if (typeof predicate !== 'function') {
-                    throw new TypeError('predicate must be a function');
-                }
-
-                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
-                var thisArg = arguments[1];
-
-                // 5. Let k be 0.
-                var k = 0;
-
-                // 6. Repeat, while k < len
-                while (k < len) {
-                    // a. Let Pk be ! ToString(k).
-                    // b. Let kValue be ? Get(O, Pk).
-                    // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
-                    // d. If testResult is true, return kValue.
-                    var kValue = o[k];
-                    if (predicate.call(thisArg, kValue, k, o)) {
-                        return kValue;
-                    }
-                    // e. Increase k by 1.
-                    k++;
-                }
-
-                // 7. Return undefined.
-                return undefined;
-            }
-        });
-    }
-
-    var rendererSpecificSettings = {
-        id_col: 'USUBJID',
-        time_cols: [
-            {
-                type: 'ordinal',
-                value_col: 'VISIT',
-                label: 'Visit',
-                order_col: 'VISITNUM',
-                order: null,
-                rotate_tick_labels: true,
-                vertical_space: 100
-            },
-            {
-                type: 'linear',
-                value_col: 'DY',
-                label: 'Study Day',
-                rotate_tick_labels: false,
-                vertical_space: 0
-            }
-        ],
-        measure_col: 'TEST',
-        unit_col: 'STRESU',
-        value_col: 'STRESN',
-        normal_col_low: 'STNRLO',
-        normal_col_high: 'STNRHI',
-        start_value: null,
-        filters: null,
-        custom_marks: null,
-        details: [
-            { value_col: 'AGE', label: 'Age' },
-            { value_col: 'SEX', label: 'Sex' },
-            { value_col: 'RACE', label: 'Race' }
-        ],
-        multiples_sizing: {
-            width: 300,
-            height: 100
-        },
-        visits_without_data: false,
-        unscheduled_visits: false,
-        unscheduled_visit_pattern: '/unscheduled|early termination/i',
-        unscheduled_visit_values: null // takes precedence over unscheduled_visit_pattern
-    };
-
-    var webchartsSettings = {
-        x: {
-            column: null, //set in syncSettings()
-            type: null, //set in syncSettings()
-            behavior: 'raw'
-        },
-        y: {
-            column: null, //set in syncSettings()
-            stat: 'mean',
-            type: 'linear',
-            label: 'Value',
-            behavior: 'raw',
-            format: '0.2f'
-        },
-        marks: [
-            {
-                per: null, //set in syncSettings()
-                type: 'line',
-                attributes: {
-                    'stroke-width': 0.5,
-                    'stroke-opacity': 0.5,
-                    stroke: '#999',
-                    'clip-path': 'url(#1)'
-                },
-                tooltip: null //set in syncSettings()
-            },
-            {
-                per: null, //set in syncSettings()
-                type: 'circle',
-                radius: 2,
-                attributes: {
-                    'stroke-width': 0.5,
-                    'stroke-opacity': 0.5,
-                    'fill-opacity': 1,
-                    'clip-path': 'url(#1)'
-                },
-                tooltip: null //set in syncSettings()
-            }
-        ],
-        resizable: true,
-        margin: { right: 20 }, //create space for box plot
-        aspect: 3
-    };
-
-    var defaultSettings = Object.assign({}, rendererSpecificSettings, webchartsSettings);
-
-    // Replicate settings in multiple places in the settings object
-    function syncSettings(settings) {
-        var time_col = settings.time_cols[0];
-
-        settings.x.column = time_col.value_col;
-        settings.x.type = time_col.type;
-        settings.x.label = time_col.label;
-        settings.x.order = time_col.order;
-
-        settings.y.column = settings.value_col;
-
-        settings.marks[0].per = [settings.id_col, settings.measure_col];
-        settings.marks[0].tooltip = '[' + settings.id_col + ']';
-
-        settings.marks[1].per = [
-            settings.id_col,
-            settings.measure_col,
-            time_col.value_col,
-            settings.value_col
-        ];
-        settings.marks[1].tooltip =
-            '[' +
-            settings.id_col +
-            ']:  [' +
-            settings.value_col +
-            '] [' +
-            settings.unit_col +
-            '] at ' +
-            settings.x.column +
-            ' = [' +
-            settings.x.column +
-            ']';
-
-        //Add custom marks to settings.marks.
-        if (settings.custom_marks)
-            settings.custom_marks.forEach(function(mark) {
-                return settings.marks.push(mark);
-            });
-
-        //Define margins for box plot and rotated x-axis tick labels.
-        if (settings.margin) settings.margin.bottom = time_col.vertical_space;
-        else
-            settings.margin = {
-                right: 20,
-                bottom: time_col.vertical_space
-            };
-
-        settings.rotate_x_tick_labels = time_col.rotate_tick_labels;
-
-        //Convert unscheduled_visit_pattern from string to regular expression.
-        if (
-            typeof settings.unscheduled_visit_pattern === 'string' &&
-            settings.unscheduled_visit_pattern !== ''
-        ) {
-            var flags = settings.unscheduled_visit_pattern.replace(/.*?\/([gimy]*)$/, '$1'),
-                pattern = settings.unscheduled_visit_pattern.replace(
-                    new RegExp('^/(.*?)/' + flags + '$'),
-                    '$1'
-                );
-            settings.unscheduled_visit_regex = new RegExp(pattern, flags);
-        }
-
-        return settings;
-    }
-
-    // Default Control objects
-    var controlInputs = [
-        { label: 'Measure', type: 'subsetter', start: null },
-        { type: 'dropdown', label: 'X-axis', option: 'x.column', require: true },
-        { type: 'number', label: 'Lower Limit', option: 'y.domain[0]', require: true },
-        { type: 'number', label: 'Upper Limit', option: 'y.domain[1]', require: true },
-        {
-            type: 'checkbox',
-            inline: true,
-            option: 'visits_without_data',
-            label: 'Visits without data'
-        },
-        {
-            type: 'checkbox',
-            inline: true,
-            option: 'unscheduled_visits',
-            label: 'Unscheduled visits'
-        }
-    ];
-
-    // Map values from settings to control inputs
-    function syncControlInputs(controlInputs, settings) {
-        var labTestControl = controlInputs.find(function(d) {
-            return d.label === 'Measure';
-        });
-        labTestControl.value_col = settings.measure_col;
-
-        var xAxisControl = controlInputs.find(function(d) {
-            return d.label === 'X-axis';
-        });
-        xAxisControl.values = settings.time_cols.map(function(d) {
-            return d.value_col;
-        });
-
-        if (settings.filters) {
-            settings.filters.forEach(function(d, i) {
-                var thisFilter = {
-                    type: 'subsetter',
-                    value_col: d.value_col ? d.value_col : d,
-                    label: d.label ? d.label : d.value_col ? d.value_col : d
-                };
-                //add the filter to the control inputs (as long as it isn't already there)
-                var current_value_cols = controlInputs
-                    .filter(function(f) {
-                        return f.type == 'subsetter';
-                    })
-                    .map(function(m) {
-                        return m.value_col;
-                    });
-                if (current_value_cols.indexOf(thisFilter.value_col) == -1)
-                    controlInputs.splice(4 + i, 0, thisFilter);
-            });
-        }
-
-        //Remove unscheduled visit control if unscheduled visit pattern is unscpecified.
-        if (!settings.unscheduled_visit_regex)
-            controlInputs.splice(
-                controlInputs
-                    .map(function(controlInput) {
-                        return controlInput.label;
-                    })
-                    .indexOf('Unscheduled visits'),
-                1
-            );
-
-        return controlInputs;
-    }
-
-    function countParticipants() {
-        var _this = this;
-
-        this.populationCount = d3
-            .set(
-                this.raw_data.map(function(d) {
-                    return d[_this.config.id_col];
-                })
-            )
-            .values().length;
-    }
-
-    function cleanData() {
-        var _this = this;
-
-        //Remove missing and non-numeric data.
-        var preclean = this.raw_data,
-            clean = this.raw_data.filter(function(d) {
-                return /^-?[0-9.]+$/.test(d[_this.config.value_col]);
-            }),
-            nPreclean = preclean.length,
-            nClean = clean.length,
-            nRemoved = nPreclean - nClean;
-
-        //Warn user of removed records.
-        if (nRemoved > 0)
-            console.warn(
-                nRemoved +
-                    ' missing or non-numeric result' +
-                    (nRemoved > 1 ? 's have' : ' has') +
-                    ' been removed.'
-            );
-        this.initial_data = clean;
-        this.raw_data = clean;
-
-        //Attach array of continuous measures to chart object.
-        this.measures = d3
-            .set(
-                this.raw_data.map(function(d) {
-                    return d[_this.config.measure_col];
-                })
-            )
-            .values()
-            .sort();
-    }
-
-    function addVariables() {
-        var _this = this;
-
-        var ordinalTimeSettings = this.config.time_cols.find(function(time_col) {
-            return time_col.type === 'ordinal';
-        });
-
-        this.raw_data.forEach(function(d) {
-            //Identify unscheduled visits.
-            d.unscheduled = false;
-            if (ordinalTimeSettings) {
-                if (_this.config.unscheduled_visit_values)
-                    d.unscheduled =
-                        _this.config.unscheduled_visit_values.indexOf(
-                            d[ordinalTimeSettings.value_col]
-                        ) > -1;
-                else if (_this.config.unscheduled_visit_regex)
-                    d.unscheduled = _this.config.unscheduled_visit_regex.test(
-                        d[ordinalTimeSettings.value_col]
-                    );
-            }
-        });
-    }
-
-    function defineVisitOrder() {
-        var _this = this;
-
-        //ordinal
-        this.config.time_cols
-            .filter(function(time_col) {
-                return time_col.type === 'ordinal';
-            })
-            .forEach(function(time_settings) {
-                var visits = void 0,
-                    visitOrder = void 0;
-
-                //Given an ordering variable sort a unique set of visits by the ordering variable.
-                if (
-                    time_settings.order_col &&
-                    _this.raw_data[0].hasOwnProperty(time_settings.order_col)
-                ) {
-                    //Define a unique set of visits with visit order concatenated.
-                    visits = d3
-                        .set(
-                            _this.raw_data.map(function(d) {
-                                return (
-                                    d[time_settings.order_col] + '|' + d[time_settings.value_col]
-                                );
-                            })
-                        )
-                        .values();
-
-                    //Sort visits.
-                    visitOrder = visits
-                        .sort(function(a, b) {
-                            var aOrder = a.split('|')[0],
-                                bOrder = b.split('|')[0],
-                                diff = +aOrder - +bOrder;
-                            return diff ? diff : d3.ascending(a, b);
-                        })
-                        .map(function(visit) {
-                            return visit.split('|')[1];
-                        });
-                } else {
-                    //Otherwise sort a unique set of visits alphanumerically.
-                    //Define a unique set of visits.
-                    visits = d3
-                        .set(
-                            _this.raw_data.map(function(d) {
-                                return d[time_settings.value_col];
-                            })
-                        )
-                        .values();
-
-                    //Sort visits;
-                    visitOrder = visits.sort();
-                }
-
-                //Set x-axis domain.
-                if (time_settings.order) {
-                    //If a visit order is specified, use it and concatenate any unspecified visits at the end.
-                    time_settings.order = time_settings.order.concat(
-                        visitOrder.filter(function(visit) {
-                            return time_settings.order.indexOf(visit) < 0;
-                        })
-                    );
-                } else
-                    //Otherwise use data-driven visit order.
-                    time_settings.order = visitOrder;
-
-                //Define domain.
-                time_settings.domain = time_settings.order;
-            });
-    }
-
-    function checkFilters() {
-        var _this = this;
-
-        this.controls.config.inputs = this.controls.config.inputs.filter(function(input) {
-            if (input.type != 'subsetter') {
-                return true;
-            } else if (!_this.raw_data[0].hasOwnProperty(input.value_col)) {
-                console.warn(
-                    'The [ ' +
-                        input.label +
-                        ' ] filter has been removed because the variable does not exist.'
-                );
-            } else {
-                var levels = d3
-                    .set(
-                        _this.raw_data.map(function(d) {
-                            return d[input.value_col];
-                        })
-                    )
-                    .values();
-
-                if (levels.length === 1)
-                    console.warn(
-                        'The [ ' +
-                            input.label +
-                            ' ] filter has been removed because the variable has only one level.'
-                    );
-
-                return levels.length > 1;
-            }
-        });
-    }
-
-    function setInitialMeasure() {
-        this.controls.config.inputs.find(function(input) {
-            return input.label === 'Measure';
-        }).start =
-            this.config.start_value || this.measures[0];
-    }
-
-    function onInit() {
-        // 1. Count total participants prior to data cleaning.
-        countParticipants.call(this);
-
-        // 2. Drop missing values and remove measures with any non-numeric results.
-        cleanData.call(this);
-
-        // 3a Define additional variables.
-        addVariables.call(this);
-
-        // 3b Define ordered x-axis domain with visit order variable.
-        defineVisitOrder.call(this);
-
-        // 3c Remove filters for nonexistent or single-level variables.
-        checkFilters.call(this);
-
-        // 3d Choose the start value for the Test filter
-        setInitialMeasure.call(this);
-    }
-
-    function identifyControls() {
-        this.controls.wrap.selectAll('.control-group').attr('id', function(d) {
-            return d.label.toLowerCase().replace(' ', '-');
-        });
-    }
-
-    function labelXaxisOptions() {
-        var _this = this;
-
-        this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(d) {
-                return d.option === 'x.column';
-            })
-            .selectAll('option')
-            .property('label', function(d) {
-                return _this.config.time_cols.find(function(time_col) {
-                    return time_col.value_col === d;
-                }).label;
-            });
-    }
-
-    function addYdomainResetButton() {
-        var context = this,
-            resetContainer = this.controls.wrap
-                .insert('div', '#lower-limit')
-                .classed('control-group y-axis', true)
-                .datum({
-                    type: 'button',
-                    option: 'y.domain',
-                    label: 'Y-axis:'
-                }),
-            resetLabel = resetContainer
-                .append('span')
-                .attr('class', 'control-label')
-                .style('text-align', 'right')
-                .text('Y-axis:'),
-            resetButton = resetContainer
-                .append('button')
-                .text('Reset Limits')
-                .on('click', function() {
-                    var measure_data = context.raw_data.filter(function(d) {
-                        return d[context.config.measure_col] === context.currentMeasure;
-                    });
-                    context.config.y.domain = d3.extent(measure_data, function(d) {
-                        return +d[context.config.value_col];
-                    }); //reset axis to full range
-
-                    context.controls.wrap
-                        .selectAll('.control-group')
-                        .filter(function(f) {
-                            return f.option === 'y.domain[0]';
-                        })
-                        .select('input')
-                        .property('value', context.config.y.domain[0]);
-
-                    context.controls.wrap
-                        .selectAll('.control-group')
-                        .filter(function(f) {
-                            return f.option === 'y.domain[1]';
-                        })
-                        .select('input')
-                        .property('value', context.config.y.domain[1]);
-
-                    context.draw();
-                });
-    }
-
-    function classYdomainControls() {
-        this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(d) {
-                return ['Lower Limit', 'Upper Limit'].indexOf(d.label) > -1;
-            })
-            .classed('y-axis', true);
-    }
-
-    function addParticipantCountContainer() {
-        this.controls.wrap
-            .append('div')
-            .attr('id', 'participant-count')
-            .style('font-style', 'italic');
-    }
-
-    function addSmallMultiplesContainer() {
-        this.wrap.append('div').attr('class', 'multiples');
-    }
-
-    function onLayout() {
-        // Distinguish controls to insert y-axis reset button in the correct position.
-        identifyControls.call(this);
-
-        //Label x-axis options.
-        labelXaxisOptions.call(this);
-
-        //Add a button to reset the y-domain
-        addYdomainResetButton.call(this);
-
-        //Add .y-axis class to y-domain controls.
-        classYdomainControls.call(this);
-
-        //Add participant count container.
-        addParticipantCountContainer.call(this);
-
-        //Add container for small multiples.
-        addSmallMultiplesContainer.call(this);
-    }
-
-    function getCurrentMeasure() {
-        var _this = this;
-
-        this.previousMeasure = this.currentMeasure;
-        this.currentMeasure = this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(d) {
-                return d.value_col && d.value_col === _this.config.measure_col;
-            })
-            .select('option:checked')
-            .text();
-    }
-
-    function defineMeasureData() {
-        var _this = this;
-
-        this.measure_data = this.initial_data.filter(function(d) {
-            return d[_this.config.measure_col] === _this.currentMeasure;
-        });
-        this.raw_data = this.measure_data.filter(function(d) {
-            return _this.config.unscheduled_visits || !d.unscheduled;
-        });
-    }
-
-    function removeVisitsWithoutData() {
-        var _this = this;
-
-        if (!this.config.visits_without_data)
-            this.config.x.domain = this.config.x.domain.filter(function(visit) {
-                return (
-                    d3
-                        .set(
-                            _this.raw_data.map(function(d) {
-                                return d[_this.config.time_settings.value_col];
-                            })
-                        )
-                        .values()
-                        .indexOf(visit) > -1
-                );
-            });
-    }
-
-    function removeUnscheduledVisits() {
-        var _this = this;
-
-        if (!this.config.unscheduled_visits) {
-            if (this.config.unscheduled_visit_values)
-                this.config.x.domain = this.config.x.domain.filter(function(visit) {
-                    return _this.config.unscheduled_visit_values.indexOf(visit) < 0;
-                });
-            else if (this.config.unscheduled_visit_regex)
-                this.config.x.domain = this.config.x.domain.filter(function(visit) {
-                    return !_this.config.unscheduled_visit_regex.test(visit);
-                });
-        }
-    }
-
-    function setXdomain() {
-        var _this = this;
-
-        this.config.time_settings = this.config.time_cols.find(function(time_col) {
-            return time_col.value_col === _this.config.x.column;
-        });
-        Object.assign(this.config.x, this.config.time_settings);
-        if (this.config.x.type === 'linear') delete this.config.x.domain;
-
-        //Remove unscheduled visits from x-domain if x-type is ordinal.
-        if (this.config.x.type === 'ordinal') {
-            removeVisitsWithoutData.call(this);
-            removeUnscheduledVisits.call(this);
-        }
-    }
-
-    function setYdomain() {
-        var _this = this;
-
-        //Define y-domain.
-        if (this.currentMeasure !== this.previousMeasure)
-            this.config.y.domain = d3.extent(
-                this.measure_data.map(function(d) {
-                    return +d[_this.config.y.column];
-                })
-            );
-        else if (this.config.y.domain[0] > this.config.y.domain[1])
-            // new measure
-            this.config.y.domain.reverse();
-        else if (this.config.y.domain[0] === this.config.y.domain[1])
-            // invalid domain
-            this.config.y.domain = this.config.y.domain.map(function(d, i) {
-                return i === 0 ? d - d * 0.01 : d + d * 0.01;
-            }); // domain with zero range
-    }
-
-    function updateYaxisLimitControls() {
-        //Update y-axis limit controls.
-        this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(f) {
-                return f.option === 'y.domain[0]';
-            })
-            .select('input')
-            .property('value', this.config.y.domain[0]);
-        this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(f) {
-                return f.option === 'y.domain[1]';
-            })
-            .select('input')
-            .property('value', this.config.y.domain[1]);
-    }
-
-    function setYaxisLabel() {
-        this.config.y.label =
-            this.currentMeasure +
-            (this.config.unit_col && this.measure_data[0][this.config.unit_col]
-                ? ' (' + this.measure_data[0][this.config.unit_col] + ')'
-                : '');
-    }
-
-    function updateYaxisResetButton() {
-        //Update tooltip of y-axis domain reset button.
-        if (this.currentMeasure !== this.previousMeasure)
-            this.controls.wrap
-                .selectAll('.y-axis')
-                .property(
-                    'title',
-                    'Initial Limits: [' +
-                        this.config.y.domain[0] +
-                        ' - ' +
-                        this.config.y.domain[1] +
-                        ']'
-                );
-    }
-
-    function onPreprocess() {
-        // 1. Capture currently selected measure.
-        getCurrentMeasure.call(this);
-
-        // 2. Filter data on currently selected measure.
-        defineMeasureData.call(this);
-
-        // 3a Set x-domain given current visit settings.
-        setXdomain.call(this);
-
-        // 3b Set y-domain given currently selected measure.
-        setYdomain.call(this);
-
-        // 3c Set y-axis label to current measure.
-        setYaxisLabel.call(this);
-
-        // 4a Update y-axis reset button when measure changes.
-        updateYaxisResetButton.call(this);
-
-        // 4b Update y-axis limit controls to match y-axis domain.
-        updateYaxisLimitControls.call(this);
-    }
-
-    function onDatatransform() {}
-
-    // Takes a webcharts object creates a text annotation giving the
-    // number and percentage of observations shown in the current view
-    //
-    // inputs:
-    // - chart - a webcharts chart object
-    // - selector - css selector for the annotation
-    // - id_unit - a text string to label the units in the annotation (default = "participants")
-    function updateParticipantCount(chart, selector, id_unit) {
-        //count the number of unique ids in the current chart and calculate the percentage
-        var currentObs = d3
-            .set(
-                chart.filtered_data.map(function(d) {
-                    return d[chart.config.id_col];
-                })
-            )
-            .values().length;
-        var percentage = d3.format('0.1%')(currentObs / chart.populationCount);
-
-        //clear the annotation
-        var annotation = d3.select(selector);
-        d3
-            .select(selector)
-            .selectAll('*')
-            .remove();
-
-        //update the annotation
-        var units = id_unit ? ' ' + id_unit : ' participant(s)';
-        annotation.text(
-            '\n' +
-                currentObs +
-                ' of ' +
-                chart.populationCount +
-                units +
-                ' shown (' +
-                percentage +
-                ')'
-        );
-    }
-
-    function clearSmallMultiples() {
-        this.wrap
-            .select('.multiples')
-            .select('.wc-small-multiples')
-            .remove();
-    }
-
-    function onDraw() {
-        //Annotate participant count.
-        updateParticipantCount(this, '#participant-count');
-
-        //Clear current multiples.
-        clearSmallMultiples.call(this);
-    }
-
-    function addBoxPlot(
-        svg$$1,
-        results,
-        height,
-        width,
-        domain,
-        boxPlotWidth,
-        boxColor,
-        boxInsideColor,
-        fmt,
-        horizontal
-    ) {
-        //set default orientation to "horizontal"
-        var horizontal = horizontal == undefined ? true : horizontal;
-
-        //make the results numeric and sort
-        var results = results
-            .map(function(d) {
-                return +d;
-            })
-            .sort(d3.ascending);
-
-        //set up scales
-        var y = d3.scale.linear().range([height, 0]);
-
-        var x = d3.scale.linear().range([0, width]);
-
-        if (horizontal) {
-            y.domain(domain);
-        } else {
-            x.domain(domain);
-        }
-
-        var probs = [0.05, 0.25, 0.5, 0.75, 0.95];
-        for (var i = 0; i < probs.length; i++) {
-            probs[i] = d3.quantile(results, probs[i]);
-        }
-
-        var boxplot = svg$$1
-            .append('g')
-            .attr('class', 'boxplot')
-            .datum({ values: results, probs: probs });
-
-        //set bar width variable
-        var box_x = horizontal ? x(0.5 - boxPlotWidth / 2) : x(probs[1]);
-        var box_width = horizontal
-            ? x(0.5 + boxPlotWidth / 2) - x(0.5 - boxPlotWidth / 2)
-            : x(probs[3]) - x(probs[1]);
-        var box_y = horizontal ? y(probs[3]) : y(0.5 + boxPlotWidth / 2);
-        var box_height = horizontal
-            ? -y(probs[3]) + y(probs[1])
-            : y(0.5 - boxPlotWidth / 2) - y(0.5 + boxPlotWidth / 2);
-
-        boxplot
-            .append('rect')
-            .attr('class', 'boxplot fill')
-            .attr('x', box_x)
-            .attr('width', box_width)
-            .attr('y', box_y)
-            .attr('height', box_height)
-            .style('fill', boxColor);
-
-        //draw dividing lines at median, 95% and 5%
-        var iS = [0, 2, 4];
-        var iSclass = ['', 'median', ''];
-        var iSColor = [boxColor, boxInsideColor, boxColor];
-        for (var i = 0; i < iS.length; i++) {
-            boxplot
-                .append('line')
-                .attr('class', 'boxplot ' + iSclass[i])
-                .attr('x1', horizontal ? x(0.5 - boxPlotWidth / 2) : x(probs[iS[i]]))
-                .attr('x2', horizontal ? x(0.5 + boxPlotWidth / 2) : x(probs[iS[i]]))
-                .attr('y1', horizontal ? y(probs[iS[i]]) : y(0.5 - boxPlotWidth / 2))
-                .attr('y2', horizontal ? y(probs[iS[i]]) : y(0.5 + boxPlotWidth / 2))
-                .style('fill', iSColor[i])
-                .style('stroke', iSColor[i]);
-        }
-
-        //draw lines from 5% to 25% and from 75% to 95%
-        var iS = [[0, 1], [3, 4]];
-        for (var i = 0; i < iS.length; i++) {
-            boxplot
-                .append('line')
-                .attr('class', 'boxplot')
-                .attr('x1', horizontal ? x(0.5) : x(probs[iS[i][0]]))
-                .attr('x2', horizontal ? x(0.5) : x(probs[iS[i][1]]))
-                .attr('y1', horizontal ? y(probs[iS[i][0]]) : y(0.5))
-                .attr('y2', horizontal ? y(probs[iS[i][1]]) : y(0.5))
-                .style('stroke', boxColor);
-        }
-
-        boxplot
-            .append('circle')
-            .attr('class', 'boxplot mean')
-            .attr('cx', horizontal ? x(0.5) : x(d3.mean(results)))
-            .attr('cy', horizontal ? y(d3.mean(results)) : y(0.5))
-            .attr('r', horizontal ? x(boxPlotWidth / 3) : y(1 - boxPlotWidth / 3))
-            .style('fill', boxInsideColor)
-            .style('stroke', boxColor);
-
-        boxplot
-            .append('circle')
-            .attr('class', 'boxplot mean')
-            .attr('cx', horizontal ? x(0.5) : x(d3.mean(results)))
-            .attr('cy', horizontal ? y(d3.mean(results)) : y(0.5))
-            .attr('r', horizontal ? x(boxPlotWidth / 6) : y(1 - boxPlotWidth / 6))
-            .style('fill', boxColor)
-            .style('stroke', 'None');
-
-        var formatx = fmt ? d3.format(fmt) : d3.format('.2f');
-
-        boxplot
-            .selectAll('.boxplot')
-            .append('title')
-            .text(function(d) {
-                return (
-                    'N = ' +
-                    d.values.length +
-                    '\n' +
-                    'Min = ' +
-                    d3.min(d.values) +
-                    '\n' +
-                    '5th % = ' +
-                    formatx(d3.quantile(d.values, 0.05)) +
-                    '\n' +
-                    'Q1 = ' +
-                    formatx(d3.quantile(d.values, 0.25)) +
-                    '\n' +
-                    'Median = ' +
-                    formatx(d3.median(d.values)) +
-                    '\n' +
-                    'Q3 = ' +
-                    formatx(d3.quantile(d.values, 0.75)) +
-                    '\n' +
-                    '95th % = ' +
-                    formatx(d3.quantile(d.values, 0.95)) +
-                    '\n' +
-                    'Max = ' +
-                    d3.max(d.values) +
-                    '\n' +
-                    'Mean = ' +
-                    formatx(d3.mean(d.values)) +
-                    '\n' +
-                    'StDev = ' +
-                    formatx(d3.deviation(d.values))
-                );
-            });
-    }
-
-    var _typeof =
-        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-            ? function(obj) {
-                  return typeof obj;
-              }
-            : function(obj) {
-                  return obj &&
-                      typeof Symbol === 'function' &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? 'symbol'
-                      : typeof obj;
-              };
-
-    var asyncGenerator = (function() {
-        function AwaitValue(value) {
-            this.value = value;
-        }
-
-        function AsyncGenerator(gen) {
-            var front, back;
-
-            function send(key, arg) {
-                return new Promise(function(resolve, reject) {
-                    var request = {
-                        key: key,
-                        arg: arg,
-                        resolve: resolve,
-                        reject: reject,
-                        next: null
-                    };
-
-                    if (back) {
-                        back = back.next = request;
-                    } else {
-                        front = back = request;
-                        resume(key, arg);
-                    }
-                });
-            }
-
-            function resume(key, arg) {
-                try {
-                    var result = gen[key](arg);
-                    var value = result.value;
-
-                    if (value instanceof AwaitValue) {
-                        Promise.resolve(value.value).then(
-                            function(arg) {
-                                resume('next', arg);
-                            },
-                            function(arg) {
-                                resume('throw', arg);
-                            }
-                        );
-                    } else {
-                        settle(result.done ? 'return' : 'normal', result.value);
-                    }
-                } catch (err) {
-                    settle('throw', err);
-                }
-            }
-
-            function settle(type, value) {
-                switch (type) {
-                    case 'return':
-                        front.resolve({
-                            value: value,
-                            done: true
-                        });
-                        break;
-
-                    case 'throw':
-                        front.reject(value);
-                        break;
-
-                    default:
-                        front.resolve({
-                            value: value,
-                            done: false
-                        });
-                        break;
-                }
-
-                front = front.next;
-
-                if (front) {
-                    resume(front.key, front.arg);
-                } else {
-                    back = null;
-                }
-            }
-
-            this._invoke = send;
-
-            if (typeof gen.return !== 'function') {
-                this.return = undefined;
-            }
-        }
-
-        if (typeof Symbol === 'function' && Symbol.asyncIterator) {
-            AsyncGenerator.prototype[Symbol.asyncIterator] = function() {
-                return this;
-            };
-        }
-
-        AsyncGenerator.prototype.next = function(arg) {
-            return this._invoke('next', arg);
-        };
-
-        AsyncGenerator.prototype.throw = function(arg) {
-            return this._invoke('throw', arg);
-        };
-
-        AsyncGenerator.prototype.return = function(arg) {
-            return this._invoke('return', arg);
-        };
-
-        return {
-            wrap: function(fn) {
-                return function() {
-                    return new AsyncGenerator(fn.apply(this, arguments));
-                };
-            },
-            await: function(value) {
-                return new AwaitValue(value);
-            }
-        };
-    })();
-
-    /*------------------------------------------------------------------------------------------------\
-  Clone a variable (http://stackoverflow.com/a/728694).
-\------------------------------------------------------------------------------------------------*/
-
-    function clone(obj) {
-        var copy;
-
-        //Handle the 3 simple types, and null or undefined
-        if (null == obj || 'object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)))
-            return obj;
-
-        //Handle Date
-        if (obj instanceof Date) {
-            copy = new Date();
-            copy.setTime(obj.getTime());
-            return copy;
-        }
-
-        //Handle Array
-        if (obj instanceof Array) {
-            copy = [];
-            for (var i = 0, len = obj.length; i < len; i++) {
-                copy[i] = clone(obj[i]);
-            }
-            return copy;
-        }
-
-        //Handle Object
-        if (obj instanceof Object) {
-            copy = {};
-            for (var attr in obj) {
-                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-            }
-            return copy;
-        }
-
-        throw new Error("Unable to copy obj! Its type isn't supported.");
-    }
-
-    function rangePolygon(chart) {
-        var area = d3.svg
-            .area()
-            .x(function(d) {
-                return (
-                    chart.x(d['TIME']) +
-                    (chart.config.x.type === 'ordinal' ? chart.x.rangeBand() / 2 : 0)
-                );
-            })
-            .y0(function(d) {
-                var lbornlo = d['STNRLO'];
-                return lbornlo !== 'NA' ? chart.y(+lbornlo) : 0;
-            })
-            .y1(function(d) {
-                var lbornrhi = d['STNRHI'];
-                return lbornrhi !== 'NA' ? chart.y(+lbornrhi) : 0;
-            });
-
-        var dRow = chart.filtered_data[0];
-
-        var myRows = chart.x_dom.slice().map(function(m) {
-            return {
-                STNRLO: dRow[chart.config.normal_col_low],
-                STNRHI: dRow[chart.config.normal_col_high],
-                TIME: m
-            };
-        });
-        //remove what is there now
-        chart.svg.select('.norms').remove();
-        //add new
-        chart.svg
-            .append('path')
-            .datum(myRows)
-            .attr('class', 'norms')
-            .attr('fill', 'blue')
-            .attr('fill-opacity', 0.1)
-            .attr('d', area);
-    }
-
-    function adjustTicks(axis, dx, dy, rotation, anchor) {
-        if (!axis) return;
-        this.svg
-            .selectAll('.' + axis + '.axis .tick text')
-            .attr({
-                transform: 'rotate(' + rotation + ')',
-                dx: dx,
-                dy: dy
-            })
-            .style('text-anchor', anchor || 'start');
-    }
-
-    function smallMultiples(id, chart) {
-        //Clear current multiples.
-        chart.wrap
-            .select('.multiples')
-            .select('.wc-small-multiples')
-            .remove();
-
-        //Define small multiples settings.
-        var multiples_settings = Object.assign(
-            {},
-            clone(chart.config),
-            clone(Object.getPrototypeOf(chart.config))
-        );
-        multiples_settings.x.domain = null;
-        multiples_settings.y.domain = null;
-        multiples_settings.resizable = false;
-        multiples_settings.scale_text = false;
-
-        if (multiples_settings.multiples_sizing.width)
-            multiples_settings.width = multiples_settings.multiples_sizing.width;
-        if (multiples_settings.multiples_sizing.height)
-            multiples_settings.height =
-                multiples_settings.multiples_sizing.height +
-                (multiples_settings.margin.bottom ? multiples_settings.margin.bottom : 0);
-
-        multiples_settings.margin = { bottom: multiples_settings.margin.bottom || 20 };
-
-        var multiples = webcharts.createChart(
-            chart.wrap.select('.multiples').node(),
-            multiples_settings,
-            null
-        );
-
-        //Insert header.
-        multiples.wrap
-            .insert('strong', '.legend')
-            .text('All Measures for ' + id[chart.config.id_col]);
-        var detail_table = multiples.wrap
-            .insert('table', '.legend')
-            .append('tbody')
-            .classed('detail-listing', true);
-        detail_table
-            .append('thead')
-            .selectAll('th')
-            .data(['', ''])
-            .enter()
-            .append('th');
-        detail_table.append('tbody');
-
-        //Insert a line for each item in [ settings.detail_cols ].
-        if (chart.config.details && chart.config.details.length) {
-            chart.config.details.forEach(function(detail) {
-                var value_col = detail.value_col ? detail.value_col : detail;
-
-                var label = detail.label
-                    ? detail.label
-                    : detail.value_col ? detail.value_col : detail;
-
-                if (id[value_col] !== undefined)
-                    detail_table
-                        .select('tbody')
-                        .append('tr')
-                        .selectAll('td')
-                        .data([label, id[value_col]])
-                        .enter()
-                        .append('td')
-                        .style('text-align', function(d, i) {
-                            return i === 0 ? 'right' : 'left';
-                        })
-                        .text(function(d, i) {
-                            return i === 0 ? d + ':' : d;
-                        });
-            });
-        }
-
-        //Add styling to small multiples.
-        multiples.on('layout', function() {
-            var _this = this;
-
-            //Define multiple styling.
-            this.wrap.style('display', 'block');
-            this.wrap
-                .selectAll('.wc-chart-title')
-                .style('display', 'block')
-                .style('border-top', '1px solid #eee');
-            this.wrap.selectAll('.wc-chart').style('padding-bottom', '2px');
-
-            //Set y-label to measure unit.
-            this.config.y.label = this.raw_data.find(function(d) {
-                return d[_this.config.measure_col] === _this.wrap.select('.wc-chart-title').text();
-            })[this.config.unit_col];
-        });
-
-        multiples.on('preprocess', function() {
-            var _this2 = this;
-
-            //Define y-domain as minimum of lower limit of normal and minimum result and maximum of
-            //upper limit of normal and maximum result.
-            var filtered_data = this.raw_data.filter(function(f) {
-                return f[_this2.filters[0].col] === _this2.filters[0].val;
-            });
-
-            //Calculate range of normal range.
-            var normlo = Math.min.apply(
-                null,
-                filtered_data
-                    .map(function(m) {
-                        return +m[chart.config.normal_col_low];
-                    })
-                    .filter(function(f) {
-                        return +f || +f === 0;
-                    })
-            );
-            var normhi = Math.max.apply(
-                null,
-                filtered_data
-                    .map(function(m) {
-                        return +m[chart.config.normal_col_high];
-                    })
-                    .filter(function(f) {
-                        return +f || +f === 0;
-                    })
-            );
-
-            //Calculate range of data.
-            var ylo = d3.min(
-                filtered_data
-                    .map(function(m) {
-                        return +m[chart.config.y.column];
-                    })
-                    .filter(function(f) {
-                        return +f || +f === 0;
-                    })
-            );
-            var yhi = d3.max(
-                filtered_data
-                    .map(function(m) {
-                        return +m[chart.config.y.column];
-                    })
-                    .filter(function(f) {
-                        return +f || +f === 0;
-                    })
-            );
-
-            //Set y-domain.
-            this.config.y_dom = [Math.min(normlo, ylo), Math.max(normhi, yhi)];
-        });
-
-        multiples.on('resize', function() {
-            //Resize text manually.
-            this.wrap.select('.wc-chart-title').style('font-size', '12px');
-            this.svg.selectAll('.axis .tick text').style('font-size', '10px');
-
-            //Draw normal range.
-            if (this.filtered_data.length) rangePolygon(this);
-
-            //Axis tweaks
-            //this.svg.select('.y.axis').select('.axis-title').text(this.filtered_data[0][chart.config.unit_col]);
-            this.svg
-                .select('.x.axis')
-                .select('.axis-title')
-                .remove();
-
-            //Delete legend.
-            this.legend.remove();
-
-            //Rotate ticks.
-            if (chart.config.rotate_x_tick_labels) {
-                adjustTicks.call(this, 'x', -10, 10, -45, 'end');
-            }
-        });
-
-        var ptData = chart.initial_data.filter(function(f) {
-            return f[chart.config.id_col] === id[chart.config.id_col];
-        });
-
-        webcharts.multiply(multiples, ptData, chart.config.measure_col);
-    }
-
-    function onResize() {
-        var chart = this;
-        var config = this.config;
-
-        //Highlight lines and point corresponding to an ID.
-        function highlight(id) {
-            var myLine = chart.svg.selectAll('.line').filter(function(d) {
-                return d.values[0].values.raw[0][config.id_col] === id[config.id_col];
-            });
-            myLine.select('path').attr('stroke-width', 4);
-
-            var myPoints = chart.svg.selectAll('.point').filter(function(d) {
-                return d.values.raw[0][config.id_col] === id[config.id_col];
-            });
-            myPoints.select('circle').attr('r', 4);
-        }
-
-        //Remove highlighting.
-        function clearHighlight() {
-            chart.svg
-                .selectAll('.line:not(.selected)')
-                .select('path')
-                .attr('stroke-width', 0.5);
-            chart.svg
-                .selectAll('.point:not(.selected)')
-                .select('circle')
-                .attr('r', 2);
-        }
-
-        //Set up event listeners on lines and points
-        this.svg
-            .selectAll('.line')
-            .on('mouseover', function(d) {
-                var id = chart.raw_data.find(function(di) {
-                    return di[config.id_col] === d.values[0].values.raw[0][config.id_col];
-                });
-                highlight(id);
-            })
-            .on('mouseout', clearHighlight)
-            .on('click', function(d) {
-                var id = chart.raw_data.find(function(di) {
-                    return di[config.id_col] === d.values[0].values.raw[0][config.id_col];
-                });
-
-                //Un-select all lines and points.
-                chart.svg.selectAll('.line').classed('selected', false);
-                chart.svg.selectAll('.point').classed('selected', false);
-
-                //Select line and all points corresponding to selected ID.
-                d3.select(this).classed('selected', true);
-                chart.svg
-                    .selectAll('.point')
-                    .filter(function(d) {
-                        return d.values.raw[0][config.id_col] === id[config.id_col];
-                    })
-                    .classed('selected', true);
-
-                //Generate small multiples and highlight marks.
-                smallMultiples(id, chart);
-                highlight(id);
-            });
-
-        this.svg
-            .selectAll('.point')
-            .on('mouseover', function(d) {
-                var id = chart.raw_data.find(function(di) {
-                    return di[config.id_col] === d.values.raw[0][config.id_col];
-                });
-                highlight(id);
-            })
-            .on('mouseout', clearHighlight)
-            .on('click', function(d) {
-                var id = chart.raw_data.find(function(di) {
-                    return di[config.id_col] === d.values.raw[0][config.id_col];
-                });
-
-                //Un-select all lines and points.
-                chart.svg.selectAll('.line').classed('selected', false);
-                chart.svg.selectAll('.point').classed('selected', false);
-
-                //Select line and all points corresponding to selected ID.
-                chart.svg
-                    .selectAll('.line')
-                    .filter(function(d) {
-                        return d.values[0].values.raw[0][config.id_col] === id[config.id_col];
-                    })
-                    .classed('selected', true);
-                chart.svg
-                    .selectAll('.point')
-                    .filter(function(d) {
-                        return d.values.raw[0][config.id_col] === id[config.id_col];
-                    })
-                    .classed('selected', true);
-
-                //Generate small multiples and highlight marks.
-                smallMultiples(id, chart);
-                highlight(id);
-            });
-
-        //draw reference boxplot
-        this.svg.select('g.boxplot').remove();
-        var myValues = this.current_data.map(function(d) {
-            return d.values.y;
-        });
-
-        addBoxPlot(this.svg, myValues, this.plot_height, 1, this.y_dom, 10, '#bbb', 'white');
-        this.svg
-            .select('g.boxplot')
-            .attr(
-                'transform',
-                'translate(' + (this.plot_width + this.config.margin.right / 2) + ',0)'
-            );
-
-        this.svg.select('.overlay').on('click', function() {
-            //clear current multiples
-            chart.wrap
-                .select('.multiples')
-                .select('.wc-small-multiples')
-                .remove();
-            chart.svg.selectAll('.line').classed('selected', false);
-            chart.svg.selectAll('.point').classed('selected', false);
-            clearHighlight();
-        });
-
-        // rotate ticks
-        if (config.rotate_x_tick_labels) {
-            adjustTicks.call(this, 'x', -10, 10, -45, 'end');
-        }
-    }
-
-    function safetyOutlierExplorer(element, settings) {
-        //Merge user settings with default settings.
-        var mergedSettings = Object.assign({}, defaultSettings, settings);
-
-        //Sync options within settings object, e.g. data mappings.
-        mergedSettings = syncSettings(mergedSettings);
-
-        //Sync control inputs with with settings object.
-        var syncedControlInputs = syncControlInputs(controlInputs, mergedSettings);
-        var controls = webcharts.createControls(element, {
-            location: 'top',
-            inputs: syncedControlInputs
-        });
-
-        //Create chart.
-        var chart = webcharts.createChart(element, mergedSettings, controls);
-        chart.on('init', onInit);
-        chart.on('layout', onLayout);
-        chart.on('preprocess', onPreprocess);
-        chart.on('datatransform', onDatatransform);
-        chart.on('draw', onDraw);
-        chart.on('resize', onResize);
-
-        return chart;
-    }
-
-    return safetyOutlierExplorer;
-});
+(function(global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined'
+        ? (module.exports = factory(require('d3'), require('webcharts')))
+        : typeof define === 'function' && define.amd
+        ? define(['d3', 'webcharts'], factory)
+        : ((global = global || self),
+          (global.safetyOutlierExplorer = factory(global.d3, global.webCharts)));
+})(this, function(d3, webcharts) {
+    'use strict';
+
+    if (typeof Object.assign != 'function') {
+        Object.defineProperty(Object, 'assign', {
+            value: function assign(target, varArgs) {
+                if (target == null) {
+                    // TypeError if undefined or null
+                    throw new TypeError('Cannot convert undefined or null to object');
+                }
+
+                var to = Object(target);
+
+                for (var index = 1; index < arguments.length; index++) {
+                    var nextSource = arguments[index];
+
+                    if (nextSource != null) {
+                        // Skip over if undefined or null
+                        for (var nextKey in nextSource) {
+                            // Avoid bugs when hasOwnProperty is shadowed
+                            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                to[nextKey] = nextSource[nextKey];
+                            }
+                        }
+                    }
+                }
+
+                return to;
+            },
+            writable: true,
+            configurable: true
+        });
+    }
+
+    if (!Array.prototype.find) {
+        Object.defineProperty(Array.prototype, 'find', {
+            value: function value(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                }
+
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, 'length')).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
+                    // d. If testResult is true, return kValue.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return kValue;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return undefined.
+                return undefined;
+            }
+        });
+    }
+
+    if (!Array.prototype.findIndex) {
+        Object.defineProperty(Array.prototype, 'findIndex', {
+            value: function value(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                }
+
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, "length")).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
+                    // d. If testResult is true, return k.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return k;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return -1.
+                return -1;
+            }
+        });
+    }
+
+    Math.log10 =
+        Math.log10 ||
+        function(x) {
+            return Math.log(x) * Math.LOG10E;
+        };
+
+    (function() {
+        if (typeof window.CustomEvent === 'function') return false;
+
+        function CustomEvent(event, params) {
+            params = params || { bubbles: false, cancelable: false, detail: null };
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+            return evt;
+        }
+
+        window.CustomEvent = CustomEvent;
+    })();
+
+    // https://github.com/wbkd/d3-extended
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function() {
+            this.parentNode.appendChild(this);
+        });
+    };
+
+    d3.selection.prototype.moveToBack = function() {
+        return this.each(function() {
+            var firstChild = this.parentNode.firstChild;
+            if (firstChild) {
+                this.parentNode.insertBefore(this, firstChild);
+            }
+        });
+    };
+
+    function rendererSettings() {
+        return {
+            //participant
+            id_col: 'USUBJID',
+            details: [
+                { value_col: 'AGE', label: 'Age' },
+                { value_col: 'SEX', label: 'Sex' },
+                { value_col: 'RACE', label: 'Race' }
+            ],
+
+            //timing
+            time_cols: [
+                {
+                    type: 'ordinal',
+                    value_col: 'VISIT',
+                    label: 'Visit',
+                    order_col: 'VISITNUM',
+                    order: null,
+                    rotate_tick_labels: true,
+                    vertical_space: 100
+                },
+                {
+                    type: 'linear',
+                    value_col: 'DY',
+                    label: 'Study Day',
+                    order_col: 'DY',
+                    order: null,
+                    rotate_tick_labels: false,
+                    vertical_space: 0
+                }
+            ],
+            visits_without_data: false,
+            unscheduled_visits: false,
+            unscheduled_visit_pattern: '/unscheduled|early termination/i',
+            unscheduled_visit_values: null, // takes precedence over unscheduled_visit_pattern
+
+            //measure
+            measure_col: 'TEST',
+            start_value: null,
+            unit_col: 'STRESU',
+
+            //result
+            value_col: 'STRESN',
+
+            //normal range
+            normal_col_low: 'STNRLO',
+            normal_col_high: 'STNRHI',
+            normal_range_method: 'LLN-ULN',
+            normal_range_sd: 1.96,
+            normal_range_quantile_low: 0.05,
+            normal_range_quantile_high: 0.95,
+
+            //filters
+            filters: null,
+
+            //marks
+            line_attributes: {
+                stroke: 'black',
+                'stroke-width': 0.5,
+                'stroke-opacity': 0.75
+            },
+            point_attributes: {
+                stroke: '#1f78b4',
+                'stroke-width': 0.5,
+                'stroke-opacity': 1,
+                radius: 3,
+                fill: '#1f78b4',
+                'fill-opacity': 0.2
+            },
+            tooltip_cols: null,
+            custom_marks: null,
+
+            //multiples
+            multiples_sizing: {
+                width: 300,
+                height: 100
+            }
+        };
+    }
+
+    function webchartsSettings() {
+        return {
+            x: {
+                column: null, // set in ./syncSettings
+                type: null, // set in ./syncSettings
+                behavior: 'raw'
+            },
+            y: {
+                column: null, // set in ./syncSettings
+                stat: 'mean',
+                type: 'linear',
+                label: 'Value',
+                behavior: 'raw'
+            },
+            marks: [
+                {
+                    per: null, // set in ./syncSettings
+                    type: 'line',
+                    attributes: {
+                        'clip-path': null // set in ./syncSettings
+                    },
+                    tooltip: null, // set in ./syncSettings
+                    default: true
+                },
+                {
+                    per: null, // set in ./syncSettings
+                    type: 'circle',
+                    attributes: {
+                        'clip-path': null // set in ./syncSettings
+                    },
+                    tooltip: null, // set in ./syncSettings
+                    default: true
+                }
+            ],
+            legend: {
+                mark: 'line'
+            },
+            resizable: true,
+            margin: {
+                right: 30, // create space for box plot
+                left: 60
+            },
+            gridlines: 'y',
+            aspect: 3
+        };
+    }
+
+    function syncSettings(settings) {
+        var time_col = settings.time_cols[0];
+
+        //handle a string arguments to array settings
+        var array_settings = ['filters', 'details', 'tooltip_cols'];
+        array_settings.forEach(function(s) {
+            if (!(settings[s] instanceof Array))
+                settings[s] = typeof settings[s] === 'string' ? [settings[s]] : [];
+        });
+
+        //x-axis
+        settings.x.column = time_col.value_col;
+        settings.x.type = time_col.type;
+        settings.x.label = time_col.label;
+        settings.x.order = time_col.order;
+
+        //y-axis
+        settings.y.column = settings.value_col;
+
+        //lines
+        var lines = settings.marks.find(function(mark) {
+            return mark.type === 'line';
+        });
+        lines.per = [settings.id_col, settings.measure_col];
+        lines.tooltip = '[' + settings.id_col + ']';
+        Object.assign(lines.attributes, settings.line_attributes);
+        lines.attributes['stroke-width'] = settings.line_attributes['stroke-width'] || 0.5;
+
+        //points
+        var points = settings.marks.find(function(mark) {
+            return mark.type === 'circle';
+        });
+        points.per = [
+            settings.id_col,
+            settings.measure_col,
+            time_col.value_col,
+            settings.value_col
+        ];
+        points.tooltip =
+            'Participant = [' +
+            settings.id_col +
+            ']\n[' +
+            settings.measure_col +
+            '] = [' +
+            settings.value_col +
+            '] [' +
+            settings.unit_col +
+            ']\n' +
+            settings.x.label +
+            ' = [' +
+            settings.x.column +
+            ']';
+
+        //add custom tooltip values
+        if (settings.tooltip_cols) {
+            settings.tooltip_cols.forEach(function(tooltip) {
+                var obj =
+                    typeof tooltip == 'string' ? { label: tooltip, value_col: tooltip } : tooltip;
+                points.tooltip = points.tooltip + ('\n' + obj.label + ' = [' + obj.value_col + ']');
+            });
+        }
+
+        Object.assign(points.attributes, settings.point_attributes);
+        points.radius = settings.point_attributes.radius || 3;
+
+        //Add custom marks to settings.marks.
+        if (Array.isArray(settings.custom_marks) && settings.custom_marks.length)
+            settings.custom_marks.forEach(function(mark) {
+                if (mark instanceof Object) {
+                    mark.default = false; // distinguish custom marks from default marks
+                    if (mark.type === 'line')
+                        mark.attributes = Object.assign({}, lines.attributes, mark.attributes);
+                    else if (mark.type === 'circle') {
+                        mark.attributes = Object.assign({}, points.attributes, mark.attributes);
+                        mark.radius = mark.radius || points.radius;
+                    }
+                    settings.marks.push(mark);
+                }
+            });
+
+        //Define margins for box plot and rotated x-axis tick labels.
+        if (settings.margin) settings.margin.bottom = time_col.vertical_space;
+        else
+            settings.margin = {
+                right: 20,
+                bottom: time_col.vertical_space
+            };
+
+        settings.rotate_x_tick_labels = time_col.rotate_tick_labels;
+
+        //Convert unscheduled_visit_pattern from string to regular expression.
+        if (
+            typeof settings.unscheduled_visit_pattern === 'string' &&
+            settings.unscheduled_visit_pattern !== ''
+        ) {
+            var flags = settings.unscheduled_visit_pattern.replace(/.*?\/([gimy]*)$/, '$1'),
+                pattern = settings.unscheduled_visit_pattern.replace(
+                    new RegExp('^/(.*?)/' + flags + '$'),
+                    '$1'
+                );
+            settings.unscheduled_visit_regex = new RegExp(pattern, flags);
+        }
+
+        //stratification
+        var defaultGroup = { value_col: 'soe_none', label: 'None' };
+        if (!(settings.groups instanceof Array && settings.groups.length))
+            settings.groups = [defaultGroup];
+        else
+            settings.groups = [defaultGroup].concat(
+                settings.groups.map(function(group) {
+                    return {
+                        value_col: group.value_col || group,
+                        label: group.label || group.value_col || group
+                    };
+                })
+            );
+
+        //Remove duplicate values.
+        settings.groups = d3
+            .set(
+                settings.groups.map(function(group) {
+                    return group.value_col;
+                })
+            )
+            .values()
+            .map(function(value) {
+                return {
+                    value_col: value,
+                    label: settings.groups.find(function(group) {
+                        return group.value_col === value;
+                    }).label
+                };
+            });
+
+        //Set initial group-by variable.
+        settings.color_by = settings.color_by
+            ? settings.color_by
+            : settings.groups.length > 1
+            ? settings.groups[1].value_col
+            : defaultGroup.value_col;
+
+        if (settings.color_by !== 'soe_none') {
+            delete settings.marks.find(function(mark) {
+                return mark.type === 'line';
+            }).attributes.stroke;
+            delete settings.marks.find(function(mark) {
+                return mark.type === 'circle';
+            }).attributes.fill;
+            delete settings.marks.find(function(mark) {
+                return mark.type === 'circle';
+            }).attributes.stroke;
+        } else {
+            Object.assign(
+                settings.marks.find(function(mark) {
+                    return mark.type === 'line';
+                }).attributes,
+                settings.line_attributes
+            );
+            Object.assign(
+                settings.marks.find(function(mark) {
+                    return mark.type === 'circle';
+                }).attributes,
+                settings.point_attributes
+            );
+        }
+
+        //Set initial group-by label.
+        settings.legend.label = settings.groups.find(function(group) {
+            return group.value_col === settings.color_by;
+        }).label;
+
+        return settings;
+    }
+
+    function controlInputs() {
+        return [
+            {
+                type: 'subsetter',
+                value_col: 'soe_measure', // set in syncControlInputs()
+                label: 'Measure',
+                start: null
+            },
+            {
+                type: 'dropdown',
+                options: ['x.column', 'marks.1.per.2'],
+                label: 'X-axis',
+                require: true
+            },
+            {
+                type: 'number',
+                option: 'y.domain[0]',
+                label: 'Lower',
+                require: true
+            },
+            {
+                type: 'number',
+                option: 'y.domain[1]',
+                label: 'Upper',
+                require: true
+            },
+            {
+                type: 'dropdown',
+                option: 'normal_range_method',
+                label: 'Method',
+                values: ['None', 'LLN-ULN', 'Standard Deviation', 'Quantiles'],
+                require: true
+            },
+            {
+                type: 'number',
+                option: 'normal_range_sd',
+                label: '# Std. Dev.'
+            },
+            {
+                type: 'number',
+                label: 'Lower',
+                option: 'normal_range_quantile_low'
+            },
+            {
+                type: 'number',
+                label: 'Upper',
+                option: 'normal_range_quantile_high'
+            },
+            {
+                type: 'checkbox',
+                inline: true,
+                option: 'visits_without_data',
+                label: 'Without Data'
+            },
+            {
+                type: 'checkbox',
+                inline: true,
+                option: 'unscheduled_visits',
+                label: 'Unscheduled'
+            },
+            {
+                type: 'dropdown',
+                label: 'Group by',
+                options: ['color_by'],
+                start: null, // set in ./syncControlInputs.js
+                values: null, // set in ./syncControlInputs.js
+                require: true
+            }
+        ];
+    }
+
+    function syncControlInputs(controlInputs, settings) {
+        var xAxisControl = controlInputs.find(function(d) {
+            return d.label === 'X-axis';
+        });
+        xAxisControl.values = settings.time_cols.map(function(d) {
+            return d.value_col;
+        });
+
+        if (settings.filters) {
+            settings.filters.forEach(function(d, i) {
+                var thisFilter = {
+                    type: 'subsetter',
+                    value_col: d.value_col ? d.value_col : d,
+                    label: d.label ? d.label : d.value_col ? d.value_col : d
+                };
+                //add the filter to the control inputs (as long as it isn't already there)
+                var current_value_cols = controlInputs
+                    .filter(function(f) {
+                        return f.type == 'subsetter';
+                    })
+                    .map(function(m) {
+                        return m.value_col;
+                    });
+                if (current_value_cols.indexOf(thisFilter.value_col) == -1)
+                    controlInputs.splice(4 + i, 0, thisFilter);
+            });
+        }
+
+        //Sync group control.
+        var groupControl = controlInputs.find(function(controlInput) {
+            return controlInput.label === 'Group by';
+        });
+        groupControl.start = settings.groups.find(function(group) {
+            return group.value_col === settings.color_by;
+        }).label;
+        groupControl.values = settings.groups.map(function(group) {
+            return group.label;
+        });
+
+        //Remove unscheduled visit control if unscheduled visit pattern is unscpecified.
+        if (
+            !settings.unscheduled_visit_regex &&
+            !(
+                Array.isArray(settings.unscheduled_visit_values) &&
+                settings.unscheduled_visit_values.length
+            )
+        )
+            controlInputs.splice(
+                controlInputs
+                    .map(function(controlInput) {
+                        return controlInput.label;
+                    })
+                    .indexOf('Unscheduled Visits'),
+                1
+            );
+
+        return controlInputs;
+    }
+
+    var configuration = {
+        rendererSettings: rendererSettings,
+        webchartsSettings: webchartsSettings,
+        settings: Object.assign({}, rendererSettings(), webchartsSettings()),
+        syncSettings: syncSettings,
+        controlInputs: controlInputs,
+        syncControlInputs: syncControlInputs
+    };
+
+    function countParticipants() {
+        var _this = this;
+
+        this.participantCount = {
+            N: d3
+                .set(
+                    this.raw_data.map(function(d) {
+                        return d[_this.config.id_col];
+                    })
+                )
+                .values()
+                .filter(function(value) {
+                    return !/^\s*$/.test(value);
+                }).length,
+            container: null, // set in ../onLayout/addParticipantCountContainer
+            n: null, // set in ../onDraw/updateParticipantCount
+            percentage: null // set in ../onDraw/updateParticipantCount
+        };
+    }
+
+    function removeMissingResults() {
+        var _this = this;
+
+        //Split data into records with missing and nonmissing results.
+        var missingResults = [];
+        var nonMissingResults = [];
+        this.raw_data.forEach(function(d) {
+            if (/^\s*$/.test(d[_this.config.value_col])) missingResults.push(d);
+            else nonMissingResults.push(d);
+        });
+
+        //Nest missing and nonmissing results by participant.
+        var participantsWithMissingResults = d3
+            .nest()
+            .key(function(d) {
+                return d[_this.config.id_col];
+            })
+            .rollup(function(d) {
+                return d.length;
+            })
+            .entries(missingResults);
+        var participantsWithNonMissingResults = d3
+            .nest()
+            .key(function(d) {
+                return d[_this.config.id_col];
+            })
+            .rollup(function(d) {
+                return d.length;
+            })
+            .entries(nonMissingResults);
+
+        //Identify placeholder records, i.e. participants with a single missing result.
+        this.removedRecords.placeholderRecords = participantsWithMissingResults
+            .filter(function(d) {
+                return (
+                    participantsWithNonMissingResults
+                        .map(function(d) {
+                            return d.key;
+                        })
+                        .indexOf(d.key) < 0 && d.values === 1
+                );
+            })
+            .map(function(d) {
+                return d.key;
+            });
+        if (this.removedRecords.placeholderRecords.length)
+            console.log(
+                this.removedRecords.placeholderRecords.length +
+                    ' participants without results have been detected.'
+            );
+
+        //Count the number of records with missing results.
+        this.removedRecords.missing = d3.sum(
+            participantsWithMissingResults.filter(function(d) {
+                return _this.removedRecords.placeholderRecords.indexOf(d.key) < 0;
+            }),
+            function(d) {
+                return d.values;
+            }
+        );
+        if (this.removedRecords.missing > 0)
+            console.warn(
+                this.removedRecords.missing +
+                    ' record' +
+                    (this.removedRecords.missing > 1
+                        ? 's with a missing result have'
+                        : ' with a missing result has') +
+                    ' been removed.'
+            );
+
+        //Update data.
+        this.raw_data = nonMissingResults;
+    }
+
+    function removeNonNumericResults() {
+        var _this = this;
+
+        //Filter out non-numeric results.
+        var numericResults = this.raw_data.filter(function(d) {
+            return /^-?[0-9.]+$/.test(d[_this.config.value_col]);
+        });
+        this.removedRecords.nonNumeric = this.raw_data.length - numericResults.length;
+        if (this.removedRecords.nonNumeric > 0)
+            console.warn(
+                this.removedRecords.nonNumeric +
+                    ' record' +
+                    (this.removedRecords.nonNumeric > 1
+                        ? 's with a non-numeric result have'
+                        : ' with a non-numeric result has') +
+                    ' been removed.'
+            );
+
+        //Update data.
+        this.raw_data = numericResults;
+    }
+
+    function cleanData() {
+        this.removedRecords = {
+            placeholderParticipants: null, // defined in './cleanData/removeMissingResults
+            missing: null, // defined in './cleanData/removeMissingResults
+            nonNumeric: null, // defined in './cleanData/removeNonNumericResults
+            container: null // defined in ../onLayout/addRemovedRecordsContainer
+        };
+        removeMissingResults.call(this);
+        removeNonNumericResults.call(this);
+        this.initial_data = this.raw_data;
+    }
+
+    function addVariables() {
+        var _this = this;
+
+        var ordinalTimeSettings = this.config.time_cols.find(function(time_col) {
+            return time_col.type === 'ordinal';
+        });
+
+        this.raw_data.forEach(function(d) {
+            //Concatenate unit to measure if provided.
+            d.soe_measure = d.hasOwnProperty(_this.config.unit_col)
+                ? d[_this.config.measure_col] + ' (' + d[_this.config.unit_col] + ')'
+                : d[_this.config.measure_col];
+
+            //Identify unscheduled visits.
+            d.unscheduled = false;
+            if (ordinalTimeSettings) {
+                if (_this.config.unscheduled_visit_values)
+                    d.unscheduled =
+                        _this.config.unscheduled_visit_values.indexOf(
+                            d[ordinalTimeSettings.value_col]
+                        ) > -1;
+                else if (_this.config.unscheduled_visit_regex)
+                    d.unscheduled = _this.config.unscheduled_visit_regex.test(
+                        d[ordinalTimeSettings.value_col]
+                    );
+            }
+
+            //Add placeholder variable for non-grouped comparisons.
+            d.soe_none = 'All Participants';
+        });
+    }
+
+    function participant() {
+        var _this = this;
+
+        this.IDOrder = d3
+            .set(
+                this.raw_data.map(function(d) {
+                    return d[_this.config.id_col];
+                })
+            )
+            .values()
+            .sort()
+            .map(function(ID, i) {
+                return {
+                    ID: ID,
+                    order: i
+                };
+            });
+    }
+
+    function visit() {
+        var _this = this;
+
+        //ordinal
+        this.config.time_cols
+            .filter(function(time_col) {
+                return time_col.type === 'ordinal';
+            })
+            .forEach(function(time_settings) {
+                var visits = void 0,
+                    visitOrder = void 0;
+
+                //Given an ordering variable sort a unique set of visits by the ordering variable.
+                if (
+                    time_settings.order_col &&
+                    _this.raw_data[0].hasOwnProperty(time_settings.order_col)
+                ) {
+                    //Define a unique set of visits with visit order concatenated.
+                    visits = d3
+                        .set(
+                            _this.raw_data.map(function(d) {
+                                return (
+                                    d[time_settings.order_col] + '|' + d[time_settings.value_col]
+                                );
+                            })
+                        )
+                        .values();
+
+                    //Sort visits.
+                    visitOrder = visits
+                        .sort(function(a, b) {
+                            var aOrder = a.split('|')[0],
+                                bOrder = b.split('|')[0],
+                                diff = +aOrder - +bOrder;
+                            return diff ? diff : d3.ascending(a, b);
+                        })
+                        .map(function(visit) {
+                            return visit.split('|')[1];
+                        });
+                } else {
+                    //Otherwise sort a unique set of visits alphanumerically.
+                    //Define a unique set of visits.
+                    visits = d3
+                        .set(
+                            _this.raw_data.map(function(d) {
+                                return d[time_settings.value_col];
+                            })
+                        )
+                        .values();
+
+                    //Sort visits;
+                    visitOrder = visits.sort();
+                }
+
+                //Set x-axis domain.
+                if (time_settings.order) {
+                    //If a visit order is specified, use it and concatenate any unspecified visits at the end.
+                    time_settings.order = time_settings.order.concat(
+                        visitOrder.filter(function(visit) {
+                            return time_settings.order.indexOf(visit) < 0;
+                        })
+                    );
+                }
+                //Otherwise use data-driven visit order.
+                else time_settings.order = visitOrder;
+
+                //Define domain.
+                time_settings.domain = time_settings.order;
+            });
+    }
+
+    function measure() {
+        var _this = this;
+
+        this.measures = d3
+            .set(
+                this.initial_data.map(function(d) {
+                    return d[_this.config.measure_col];
+                })
+            )
+            .values()
+            .sort();
+        this.soe_measures = d3
+            .set(
+                this.initial_data.map(function(d) {
+                    return d.soe_measure;
+                })
+            )
+            .values()
+            .sort();
+    }
+
+    function defineSets() {
+        participant.call(this);
+        visit.call(this);
+        measure.call(this);
+    }
+
+    function updateMeasureFilter() {
+        this.measure = {};
+        var measureInput = this.controls.config.inputs.find(function(input) {
+            return input.label === 'Measure';
+        });
+        if (
+            this.config.start_value &&
+            this.soe_measures.indexOf(this.config.start_value) < 0 &&
+            this.measures.indexOf(this.config.start_value) < 0
+        ) {
+            measureInput.start = this.soe_measures[0];
+            console.warn(
+                this.config.start_value +
+                    ' is an invalid measure. Defaulting to ' +
+                    measureInput.start +
+                    '.'
+            );
+        } else if (
+            this.config.start_value &&
+            this.soe_measures.indexOf(this.config.start_value) < 0
+        ) {
+            measureInput.start = this.soe_measures[this.measures.indexOf(this.config.start_value)];
+            console.warn(
+                this.config.start_value +
+                    ' is missing the units value. Defaulting to ' +
+                    measureInput.start +
+                    '.'
+            );
+        } else measureInput.start = this.config.start_value || this.soe_measures[0];
+    }
+
+    function removeFilters() {
+        var _this = this;
+
+        this.controls.config.inputs = this.controls.config.inputs.filter(function(input) {
+            if (input.type !== 'subsetter' || input.value_col === 'soe_measure') {
+                return true;
+            } else if (!_this.raw_data[0].hasOwnProperty(input.value_col)) {
+                console.warn(
+                    'The [ ' +
+                        input.label +
+                        ' ] filter has been removed because the variable does not exist.'
+                );
+            } else {
+                var levels = d3
+                    .set(
+                        _this.raw_data.map(function(d) {
+                            return d[input.value_col];
+                        })
+                    )
+                    .values();
+
+                if (levels.length === 1)
+                    console.warn(
+                        'The [ ' +
+                            input.label +
+                            ' ] filter has been removed because the variable has only one level.'
+                    );
+
+                return levels.length > 1;
+            }
+        });
+    }
+
+    function updateNormalRangeControl() {
+        //If data do not have normal range variables update normal range method setting and options.
+        if (
+            Object.keys(this.raw_data[0]).indexOf(this.config.normal_col_low) < 0 ||
+            Object.keys(this.raw_data[0]).indexOf(this.config.normal_col_high) < 0
+        ) {
+            if (this.config.normal_range_method === 'LLN-ULN')
+                this.config.normal_range_method = 'Standard Deviation';
+            this.controls.config.inputs
+                .find(function(input) {
+                    return input.option === 'normal_range_method';
+                })
+                .values.splice(1, 1);
+        }
+    }
+
+    function checkControls() {
+        updateMeasureFilter.call(this);
+        removeFilters.call(this);
+        updateNormalRangeControl.call(this);
+    }
+
+    function initCustomEvents() {
+        var chart = this;
+        chart.participantsSelected = [];
+        chart.events.participantsSelected = new CustomEvent('participantsSelected');
+    }
+
+    function onInit() {
+        // 1. Count number of unique participant IDs in data prior to data cleaning.
+        countParticipants.call(this);
+
+        // 2. Remove missing and non-numeric results.
+        cleanData.call(this);
+
+        // 3. Define additional variables.
+        addVariables.call(this);
+
+        // 4. Define participant, visit, and measure sets.
+        defineSets.call(this);
+
+        // 5. Check controls.
+        checkControls.call(this);
+
+        // 6. Initialize custom events
+        initCustomEvents.call(this);
+    }
+
+    function identifyControls() {
+        var controlGroups = this.controls.wrap
+            .style('padding-bottom', '8px')
+            .selectAll('.control-group')
+            .style('vertical-align', 'middle');
+
+        //Give each control a unique ID.
+        controlGroups
+            .attr('id', function(d) {
+                return d.label.toLowerCase().replace(' ', '-');
+            })
+            .each(function(d) {
+                var controlGroup = d3.select(this);
+                controlGroup
+                    .classed(d.type, true)
+                    .classed(
+                        d.type.toLowerCase().replace(' ', '-') +
+                            ' ' +
+                            d.label.toLowerCase().replace(' ', '-'),
+                        true
+                    );
+            });
+
+        //Give y-axis controls a common class name.
+        controlGroups
+            .filter(function(d) {
+                return ['y.domain[0]', 'y.domain[1]'].indexOf(d.option) > -1;
+            })
+            .classed('y-axis', true);
+
+        //Give normal range controls a common class name.
+        controlGroups
+            .filter(function(d) {
+                return (
+                    [
+                        'normal_range_method',
+                        'normal_range_sd',
+                        'normal_range_quantile_low',
+                        'normal_range_quantile_high'
+                    ].indexOf(d.option) > -1
+                );
+            })
+            .classed('normal-range', true);
+
+        //Give visit range controls a common class name.
+        controlGroups
+            .filter(function(d) {
+                return ['visits_without_data', 'unscheduled_visits'].indexOf(d.option) > -1;
+            })
+            .classed('visits', true);
+    }
+
+    function labelXaxisOptions() {
+        var _this = this;
+
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.option === 'x.column';
+            })
+            .selectAll('option')
+            .property('label', function(d) {
+                return _this.config.time_cols.find(function(time_col) {
+                    return time_col.value_col === d;
+                }).label;
+            });
+    }
+
+    function addYdomainResetButton() {
+        var _this = this;
+
+        var resetContainer = this.controls.wrap
+            .insert('div', '#lower')
+            .classed('control-group y-axis', true)
+            .datum({
+                type: 'button',
+                option: 'y.domain',
+                label: ''
+            })
+            .style('vertical-align', 'bottom');
+        var resetLabel = resetContainer
+            .append('span')
+            .attr('class', 'wc-control-label')
+            .text('Limits');
+        var resetButton = resetContainer
+            .append('button')
+            .text(' Reset ')
+            .style('padding', '0px 5px')
+            .on('click', function() {
+                _this.config.y.domain = _this.measure.domain; //reset axis to full range
+                _this.draw();
+            });
+    }
+
+    function insertGrouping(selector, label) {
+        var grouping = this.controls.wrap
+            .insert('div', selector)
+            .style({
+                display: 'inline-block',
+                'margin-right': '5px',
+                'vertical-align': 'middle'
+            })
+            .append('fieldset')
+            .style('padding', '0px 2px');
+        grouping.append('legend').text(label);
+        this.controls.wrap.selectAll(selector).each(function(d) {
+            this.style.marginTop = '0px';
+            this.style.marginRight = '2px';
+            this.style.marginBottom = '2px';
+            this.style.marginLeft = '2px';
+            grouping.node().appendChild(this);
+        });
+    }
+
+    function groupControls() {
+        //Group y-axis controls.
+        insertGrouping.call(this, '.y-axis', 'Y-axis');
+
+        //Group filters.
+        if (this.filters.length > 1)
+            insertGrouping.call(this, '.subsetter:not(#measure)', 'Filters');
+
+        //Group normal controls.
+        insertGrouping.call(this, '.normal-range', 'Normal Range');
+
+        //Group visit controls.
+        insertGrouping.call(this, '.visits', 'Visits');
+    }
+
+    function hideNormalRangeInputs() {
+        var _this = this;
+        var controls = this.controls.wrap.selectAll('.control-group');
+
+        //Normal range method control
+        var normalRangeMethodControl = controls.filter(function(d) {
+            return d.label === 'Method';
+        });
+
+        //Normal range inputs
+        var normalRangeInputs = controls
+            .filter(function(d) {
+                return (
+                    [
+                        'normal_range_sd',
+                        'normal_range_quantile_low',
+                        'normal_range_quantile_high'
+                    ].indexOf(d.option) > -1
+                );
+            })
+            .style('display', function(d) {
+                return (_this.config.normal_range_method !== 'Standard Deviation' &&
+                    d.option === 'normal_range_sd') ||
+                    (_this.config.normal_range_method !== 'Quantiles' &&
+                        ['normal_range_quantile_low', 'normal_range_quantile_high'].indexOf(
+                            d.option
+                        ) > -1)
+                    ? 'none'
+                    : 'inline-table';
+            });
+
+        //Set significant digits to .01.
+        normalRangeInputs.select('input').attr('step', 0.01);
+
+        normalRangeMethodControl.on('change', function() {
+            var normal_range_method = d3
+                .select(this)
+                .select('option:checked')
+                .text();
+
+            normalRangeInputs.style('display', function(d) {
+                return (normal_range_method !== 'Standard Deviation' &&
+                    d.option === 'normal_range_sd') ||
+                    (normal_range_method !== 'Quantiles' &&
+                        ['normal_range_quantile_low', 'normal_range_quantile_high'].indexOf(
+                            d.option
+                        ) > -1)
+                    ? 'none'
+                    : 'inline-table';
+            });
+        });
+    }
+
+    function customizeGroupByControl() {
+        var _this = this;
+
+        var context = this;
+
+        var groupControl = this.controls.wrap.selectAll('.control-group.dropdown.group-by');
+        if (groupControl.datum().values.length === 1) groupControl.style('display', 'none');
+        else
+            groupControl
+                .selectAll('select')
+                .on('change', function(d) {
+                    var label = d3
+                        .select(this)
+                        .selectAll('option:checked')
+                        .text();
+                    var value_col = context.config.groups.find(function(group) {
+                        return group.label === label;
+                    }).value_col;
+                    //context.config.marks[0].per[0] = value_col;
+                    context.config.color_by = value_col;
+                    context.config.legend.label = label;
+
+                    if (context.config.color_by !== 'soe_none') {
+                        delete context.config.marks.find(function(mark) {
+                            return mark.type === 'line';
+                        }).attributes.stroke;
+                        delete context.config.marks.find(function(mark) {
+                            return mark.type === 'circle';
+                        }).attributes.fill;
+                        delete context.config.marks.find(function(mark) {
+                            return mark.type === 'circle';
+                        }).attributes.stroke;
+                    } else {
+                        Object.assign(
+                            context.config.marks.find(function(mark) {
+                                return mark.type === 'line';
+                            }).attributes,
+                            context.config.line_attributes
+                        );
+                        Object.assign(
+                            context.config.marks.find(function(mark) {
+                                return mark.type === 'circle';
+                            }).attributes,
+                            context.config.point_attributes
+                        );
+                    }
+
+                    context.draw();
+                })
+                .selectAll('option')
+                .property('selected', function(d) {
+                    return d === _this.config.legend.label;
+                });
+    }
+
+    function addParticipantCountContainer() {
+        this.participantCount.container = this.controls.wrap
+            .style('position', 'relative')
+            .append('div')
+            .attr('id', 'participant-count')
+            .style({
+                position: 'absolute',
+                'font-style': 'italic',
+                bottom: '-10px',
+                left: 0
+            });
+    }
+
+    function addRemovedRecordsNote() {
+        var _this = this;
+
+        if (this.removedRecords.missing > 0 || this.removedRecords.nonNumeric > 0) {
+            var message =
+                this.removedRecords.missing > 0 && this.removedRecords.nonNumeric > 0
+                    ? this.removedRecords.missing +
+                      ' record' +
+                      (this.removedRecords.missing > 1 ? 's' : '') +
+                      ' with a missing result and ' +
+                      this.removedRecords.nonNumeric +
+                      ' record' +
+                      (this.removedRecords.nonNumeric > 1 ? 's' : '') +
+                      ' with a non-numeric result were removed.'
+                    : this.removedRecords.missing > 0
+                    ? this.removedRecords.missing +
+                      ' record' +
+                      (this.removedRecords.missing > 1 ? 's' : '') +
+                      ' with a missing result ' +
+                      (this.removedRecords.missing > 1 ? 'were' : 'was') +
+                      ' removed.'
+                    : this.removedRecords.nonNumeric > 0
+                    ? this.removedRecords.nonNumeric +
+                      ' record' +
+                      (this.removedRecords.nonNumeric > 1 ? 's' : '') +
+                      ' with a non-numeric result ' +
+                      (this.removedRecords.nonNumeric > 1 ? 'were' : 'was') +
+                      ' removed.'
+                    : '';
+            this.removedRecords.container = this.controls.wrap
+                .append('div')
+                .style({
+                    position: 'absolute',
+                    'font-style': 'italic',
+                    bottom: '-10px',
+                    right: 0
+                })
+                .text(message);
+            this.removedRecords.container
+                .append('span')
+                .style({
+                    color: 'blue',
+                    position: 'absolute',
+                    'text-decoration': 'underline',
+                    'font-style': 'normal',
+                    'font-weight': 'bold',
+                    cursor: 'pointer',
+                    'font-size': '16px',
+                    bottom: '8px',
+                    right: '-10px'
+                })
+                .html('<sup>x</sup>')
+                .on('click', function() {
+                    return _this.removedRecords.container.style('display', 'none');
+                });
+        }
+    }
+
+    function addBorderAboveChart() {
+        this.wrap.style({
+            'border-top': '1px solid #ccc'
+        });
+    }
+
+    function addSmallMultiplesContainer() {
+        this.multiples = {
+            container: this.wrap
+                .append('div')
+                .classed('multiples', true)
+                .style({
+                    'padding-top': '10px'
+                }),
+            id: null
+        };
+    }
+
+    function onLayout() {
+        identifyControls.call(this); // Distinguish controls to insert y-axis reset button in the correct position.
+        labelXaxisOptions.call(this);
+        addYdomainResetButton.call(this);
+        groupControls.call(this); // Group related controls visually.
+        hideNormalRangeInputs.call(this); // Hide normal range input controls depending on the normal range method.
+        customizeGroupByControl.call(this);
+        addParticipantCountContainer.call(this);
+        addRemovedRecordsNote.call(this);
+        addBorderAboveChart.call(this);
+        addSmallMultiplesContainer.call(this);
+    }
+
+    function getCurrentMeasure() {
+        this.measure.previous = this.measure.current;
+        this.measure.current = this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.value_col && d.value_col === 'soe_measure';
+            })
+            .select('option:checked')
+            .text();
+    }
+
+    function defineMeasureData() {
+        var _this = this;
+
+        this.measure.data = this.initial_data.filter(function(d) {
+            return d.soe_measure === _this.measure.current;
+        });
+        this.measure.unit =
+            this.config.unit_col && this.measure.data[0].hasOwnProperty(this.config.unit_col)
+                ? this.measure.data[0][this.config.unit_col]
+                : null;
+        this.measure.results = this.measure.data
+            .map(function(d) {
+                return +d[_this.config.value_col];
+            })
+            .sort(function(a, b) {
+                return a - b;
+            });
+        this.measure.domain = d3.extent(this.measure.results);
+        this.measure.range = this.measure.domain[1] - this.measure.domain[0];
+        this.measure.log10range = Math.log10(this.measure.range);
+        this.raw_data = this.measure.data.filter(function(d) {
+            return _this.config.unscheduled_visits || !d.unscheduled;
+        });
+    }
+
+    function removeVisitsWithoutData() {
+        var _this = this;
+
+        if (!this.config.visits_without_data)
+            this.config.x.domain = this.config.x.domain.filter(function(visit) {
+                return (
+                    d3
+                        .set(
+                            _this.raw_data.map(function(d) {
+                                return d[_this.config.time_settings.value_col];
+                            })
+                        )
+                        .values()
+                        .indexOf(visit) > -1
+                );
+            });
+    }
+
+    function removeUnscheduledVisits() {
+        var _this = this;
+
+        if (!this.config.unscheduled_visits) {
+            if (this.config.unscheduled_visit_values)
+                this.config.x.domain = this.config.x.domain.filter(function(visit) {
+                    return _this.config.unscheduled_visit_values.indexOf(visit) < 0;
+                });
+            else if (this.config.unscheduled_visit_regex)
+                this.config.x.domain = this.config.x.domain.filter(function(visit) {
+                    return !_this.config.unscheduled_visit_regex.test(visit);
+                });
+        }
+    }
+
+    function setXdomain() {
+        var _this = this;
+
+        //Attach the time settings object to the x-axis settings object.
+        this.config.time_settings = this.config.time_cols.find(function(time_col) {
+            return time_col.value_col === _this.config.x.column;
+        });
+        Object.assign(this.config.x, this.config.time_settings);
+
+        //When the domain is not specified, it's calculated on data transform.
+        if (this.config.x.type === 'linear') {
+            delete this.config.x.domain;
+            delete this.config.x.order;
+        }
+
+        //Remove unscheduled visits from x-domain if x-type is ordinal.
+        if (this.config.x.type === 'ordinal') {
+            removeVisitsWithoutData.call(this);
+            removeUnscheduledVisits.call(this);
+        }
+    }
+
+    function setYdomain() {
+        if (this.measure.current !== this.measure.previous)
+            this.config.y.domain = this.measure.domain;
+        else if (this.config.y.domain[0] > this.config.y.domain[1])
+            // reset y-domain
+            this.config.y.domain.reverse(); // reverse y-domain
+    }
+
+    function calculateYPrecision() {
+        //define the precision of the y-axis
+        this.config.y.precisionFactor = Math.round(this.measure.log10range);
+        this.config.y.precision = Math.pow(10, this.config.y.precisionFactor);
+        this.config.y.format =
+            this.config.y.precisionFactor > 0
+                ? '.0f'
+                : '.' + (Math.abs(this.config.y.precisionFactor) + 1) + 'f';
+
+        //define the size of the y-axis limit increments
+        var step =
+            this.measure.range > 0
+                ? Math.abs(this.measure.range / 15) // non-zero range
+                : this.measure.results[0] !== 0
+                ? Math.abs(this.measure.results[0] / 15) // zero range, non-zero result(s)
+                : 1; // zero range, zero result(s)
+        if (step < 1) {
+            var x10 = 0;
+            do {
+                step = step * 10;
+                ++x10;
+            } while (step < 1);
+            step = Math.round(step) / Math.pow(10, x10);
+        } else step = Math.round(step);
+        this.measure.step = step || 1;
+    }
+
+    function updateYaxisLimitControls() {
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(f) {
+                return f.option === 'y.domain[0]';
+            })
+            .select('input')
+            .attr('step', this.measure.step) // set in ./calculateYPrecision
+            .style('box-shadow', 'none')
+            .property('value', this.config.y.domain[0]);
+
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(f) {
+                return f.option === 'y.domain[1]';
+            })
+            .select('input')
+            .attr('step', this.measure.step) // set in ./calculateYPrecision
+            .style('box-shadow', 'none')
+            .property('value', this.config.y.domain[1]);
+    }
+
+    function setYaxisLabel() {
+        this.config.y.label = this.measure.current;
+    }
+
+    function updateYaxisResetButton() {
+        //Update tooltip of y-axis domain reset button.
+        if (this.currentMeasure !== this.previousMeasure)
+            this.controls.wrap
+                .selectAll('.y-axis')
+                .property(
+                    'title',
+                    'Initial Limits: [' +
+                        this.config.y.domain[0] +
+                        ' - ' +
+                        this.config.y.domain[1] +
+                        ']'
+                );
+    }
+
+    function deriveStatistics() {
+        var _this = this;
+
+        if (this.config.normal_range_method === 'LLN-ULN') {
+            this.lln = function(d) {
+                return d instanceof Object
+                    ? +d[_this.config.normal_col_low]
+                    : d3.median(_this.measure.data, function(d) {
+                          return +d[_this.config.normal_col_low];
+                      });
+            };
+            this.uln = function(d) {
+                return d instanceof Object
+                    ? +d[_this.config.normal_col_high]
+                    : d3.median(_this.measure.data, function(d) {
+                          return +d[_this.config.normal_col_high];
+                      });
+            };
+        } else if (this.config.normal_range_method === 'Standard Deviation') {
+            this.mean = d3.mean(this.measure.results);
+            this.sd = d3.deviation(this.measure.results);
+            this.lln = function() {
+                return _this.mean - _this.config.normal_range_sd * _this.sd;
+            };
+            this.uln = function() {
+                return _this.mean + _this.config.normal_range_sd * _this.sd;
+            };
+        } else if (this.config.normal_range_method === 'Quantiles') {
+            this.lln = function() {
+                return d3.quantile(_this.measure.results, _this.config.normal_range_quantile_low);
+            };
+            this.uln = function() {
+                return d3.quantile(_this.measure.results, _this.config.normal_range_quantile_high);
+            };
+        } else {
+            this.lln = function(d) {
+                return d instanceof Object
+                    ? d[_this.config.value_col] + 1
+                    : _this.measure.results[0];
+            };
+            this.uln = function(d) {
+                return d instanceof Object
+                    ? d[_this.config.value_col] - 1
+                    : _this.measure.results[_this.measure.results.length - 1];
+            };
+        }
+    }
+
+    function onPreprocess() {
+        // 1. Capture currently selected measure.
+        getCurrentMeasure.call(this);
+
+        // 2. Filter data on currently selected measure.
+        defineMeasureData.call(this);
+
+        // 3a Set x-domain given current visit settings.
+        setXdomain.call(this);
+
+        // 3b Set y-domain given currently selected measure.
+        setYdomain.call(this);
+
+        // 3c Calculate precision of y-domain.
+        calculateYPrecision.call(this);
+
+        // 3c Set y-axis label to current measure.
+        setYaxisLabel.call(this);
+
+        // 4a Update y-axis reset button when measure changes.
+        updateYaxisResetButton.call(this);
+
+        // 4b Update y-axis limit controls to match y-axis domain.
+        updateYaxisLimitControls.call(this);
+
+        // 4c Define normal range statistics.
+        deriveStatistics.call(this);
+    }
+
+    function onDatatransform() {}
+
+    function updateParticipantCount() {
+        var _this = this;
+
+        //count the number of unique ids in the current chart and calculate the percentage
+        this.participantCount.n = d3
+            .set(
+                this.filtered_data.map(function(d) {
+                    return d[_this.config.id_col];
+                })
+            )
+            .values().length;
+        this.participantCount.percentage = d3.format('0.1%')(
+            this.participantCount.n / this.participantCount.N
+        );
+
+        //clear the annotation
+        this.participantCount.container.selectAll('*').remove();
+
+        //update the annotation
+        this.participantCount.container.text(
+            '\n' +
+                this.participantCount.n +
+                ' of ' +
+                this.participantCount.N +
+                ' participant(s) shown (' +
+                this.participantCount.percentage +
+                ')'
+        );
+    }
+
+    function resetChart() {
+        this.svg.selectAll('.line,.point').remove();
+        this.wrap.select('div.overlapNote').remove();
+        //delete this.hovered_id;
+        //delete this.selected_id;
+        //if (this.multiples.chart)
+        //    this.multiples.chart.destroy();
+    }
+
+    function extendYDomain() {
+        if (
+            this.config.y.domain[0] === this.measure.domain[0] &&
+            this.config.y.domain[1] === this.measure.domain[1] &&
+            this.config.y.domain[0] < this.measure.domain[1]
+        )
+            this.y_dom = [
+                this.config.y.domain[0] - this.measure.range * 0.01,
+                this.config.y.domain[1] + this.measure.range * 0.01
+            ];
+    }
+
+    function updateBottomMargin() {
+        this.config.margin.bottom = this.config.x.vertical_space;
+    }
+
+    function onDraw() {
+        //Annotate participant count.
+        updateParticipantCount.call(this);
+
+        //Clear current multiples.
+        resetChart.call(this);
+
+        //Extend y-domain to avoid obscuring minimum and maximum points.
+        extendYDomain.call(this);
+
+        //Update bottom margin for tick label rotation.
+        updateBottomMargin.call(this);
+    }
+
+    function attachMarks() {
+        this.marks.forEach(function(mark) {
+            mark.groups.each(function(group) {
+                group.attributes = mark.attributes;
+                if (mark.type === 'circle') group.radius = mark.radius;
+            });
+        });
+        this.lines = this.svg.selectAll('.line');
+        this.points = this.svg.selectAll('.point');
+    }
+
+    function highlightSelected() {
+        var _this = this;
+
+        //Add _selected_ class to participant's marks.
+        this.marks.forEach(function(mark) {
+            mark.groups.classed('selected', function(d) {
+                return mark.type === 'line'
+                    ? d.values[0].values.raw[0][_this.config.id_col] === _this.selected_id
+                    : d.values.raw[0][_this.config.id_col] === _this.selected_id;
+            });
+        });
+
+        //Update attributes of selected line.
+        this.lines
+            .filter(function(d) {
+                return d.values[0].values.raw[0][_this.config.id_col] === _this.selected_id;
+            })
+            .select('path')
+            .attr('stroke-width', function(d) {
+                return d.attributes['stroke-width'] * 8;
+            });
+
+        //Update attributes of selected points.
+        this.points
+            .filter(function(d) {
+                return d.values.raw[0][_this.config.id_col] === _this.selected_id;
+            })
+            .select('circle')
+            .attr({
+                r: function r(d) {
+                    return d.radius;
+                },
+                stroke: 'black',
+                'stroke-width': function strokeWidth(d) {
+                    return d.attributes['stroke-width'] * 8;
+                }
+            });
+    }
+
+    function maintainHighlight() {
+        if (this.selected_id) highlightSelected.call(this);
+    }
+
+    function drawNormalRange() {
+        if (this.normalRange) this.normalRange.remove();
+        this.normalRange = this.svg.insert('g', '.line-supergroup').classed('normal-range', true);
+
+        if (this.config.normal_range_method) {
+            this.normalRange
+                .append('rect')
+                .attr({
+                    x: 0,
+                    y: this.y(this.uln()),
+                    width: this.plot_width,
+                    height: this.y(this.lln()) - this.y(this.uln()),
+                    'clip-path': 'url(#' + this.id + ')'
+                })
+                .style({
+                    fill: 'blue',
+                    'fill-opacity': 0.1
+                });
+            this.normalRange.append('title').text('Normal range: ' + this.lln() + '-' + this.uln());
+        }
+    }
+
+    function clearHovered() {
+        this.lines
+            .filter(function() {
+                return !d3.select(this).classed('selected');
+            })
+            .select('path')
+            .each(function(d) {
+                d3.select(this).attr(d.attributes);
+            });
+        this.points
+            .filter(function() {
+                return !d3.select(this).classed('selected');
+            })
+            .select('circle')
+            .each(function(d) {
+                d3.select(this).attr(d.attributes);
+                d3.select(this).attr('r', d.radius);
+            });
+        delete this.hovered_id;
+    }
+
+    function clearSelected() {
+        this.marks.forEach(function(mark) {
+            var element = mark.type === 'line' ? 'path' : mark.type;
+            mark.groups
+                .classed('selected', false)
+                .select(element)
+                .attr(mark.attributes);
+        });
+        if (this.multiples.chart) this.multiples.chart.destroy();
+        delete this.selected_id;
+
+        //Trigger participantsSelected event
+        this.participantsSelected = [];
+        this.events.participantsSelected.data = this.participantsSelected;
+        this.wrap.node().dispatchEvent(this.events.participantsSelected);
+    }
+
+    function addOverlayEventListener() {
+        var _this = this;
+
+        var context = this;
+        this.overlay
+            .on('mouseover', function() {
+                clearHovered.call(_this);
+            })
+            .on('click', function() {
+                clearHovered.call(_this);
+                clearSelected.call(_this);
+                context.wrap.select('div.overlapNote').remove();
+            });
+    }
+
+    function addOverlayEventListener$1() {
+        var _this = this;
+
+        this.normalRange
+            .on('mouseover', function() {
+                clearHovered.call(_this);
+            })
+            .on('click', function() {
+                clearHovered.call(_this);
+                clearSelected.call(_this);
+            });
+    }
+
+    function highlightHovered() {
+        var _this = this;
+
+        //Update attributes of hovered line.
+        this.lines
+            .filter(function(d) {
+                return d.values[0].values.raw[0][_this.config.id_col] === _this.hovered_id;
+            })
+            .select('path')
+            .attr('stroke-width', function(d) {
+                return d.attributes['stroke-width'] * 4;
+            });
+
+        //Update attributes of hovered points.
+        this.points
+            .filter(function(d) {
+                return d.values.raw[0][_this.config.id_col] === _this.hovered_id;
+            })
+            .select('circle')
+            .attr({
+                r: function r(d) {
+                    return d.radius;
+                },
+                //stroke: 'black',
+                'stroke-width': function strokeWidth(d) {
+                    return d.attributes['stroke-width'] * 4;
+                }
+            });
+    }
+
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
+
+    /*------------------------------------------------------------------------------------------------\
+      Clone a variable (http://stackoverflow.com/a/728694).
+    \------------------------------------------------------------------------------------------------*/
+
+    function clone(obj) {
+        var copy;
+
+        //Handle the 3 simple types, and null or undefined
+        if (null == obj || 'object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)))
+            return obj;
+
+        //Handle Date
+        if (obj instanceof Date) {
+            copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        //Handle Array
+        if (obj instanceof Array) {
+            copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = clone(obj[i]);
+            }
+            return copy;
+        }
+
+        //Handle Object
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+            }
+            return copy;
+        }
+
+        throw new Error("Unable to copy obj! Its type isn't supported.");
+    }
+
+    function defineSmallMultiples() {
+        //Define small multiples settings.
+        this.multiples.settings = Object.assign(
+            {},
+            clone(this.config),
+            clone(Object.getPrototypeOf(this.config))
+        );
+        this.multiples.settings.x.domain = null;
+        this.multiples.settings.y.domain = null;
+        Object.assign(
+            this.multiples.settings.marks.find(function(mark) {
+                return mark.type === 'line';
+            }).attributes,
+            this.config.line_attributes
+        );
+        Object.assign(
+            this.multiples.settings.marks.find(function(mark) {
+                return mark.type === 'circle';
+            }).attributes,
+            this.config.point_attributes
+        );
+        this.multiples.settings.resizable = false;
+        this.multiples.settings.scale_text = false;
+
+        if (this.multiples.settings.multiples_sizing.width)
+            this.multiples.settings.width = this.multiples.settings.multiples_sizing.width;
+        if (this.multiples.settings.multiples_sizing.height)
+            this.multiples.settings.height =
+                this.multiples.settings.multiples_sizing.height +
+                (this.multiples.settings.margin.bottom ? this.multiples.settings.margin.bottom : 0);
+
+        this.multiples.settings.margin = { bottom: this.multiples.settings.margin.bottom || 20 };
+
+        //Add participant dropdown.
+        this.multiples.settings.selected_id = this.selected_id;
+        this.multiples.controls = webcharts.createControls(this.multiples.container.node(), {
+            inputs: [
+                {
+                    type: 'dropdown',
+                    label: 'All Measures for',
+                    option: 'selected_id',
+                    values: this.IDOrder.map(function(d) {
+                        return d.ID;
+                    }),
+                    require: true
+                }
+            ]
+        });
+
+        //Initialize small multiples.
+        this.multiples.chart = webcharts.createChart(
+            this.multiples.container.node(),
+            this.multiples.settings,
+            this.multiples.controls
+        );
+        this.multiples.chart.safetyOutlierExplorer = this;
+    }
+
+    function participantCharacteristics() {
+        var _this = this;
+
+        this.multiples.detail_table = this.multiples.chart.wrap
+            .insert('table', '.legend')
+            .append('tbody')
+            .classed('detail-listing', true);
+        this.multiples.detail_table
+            .append('thead')
+            .selectAll('th')
+            .data(['', ''])
+            .enter()
+            .append('th');
+        this.multiples.detail_table.append('tbody');
+
+        //Insert a line for each item in [ settings.detail_cols ].
+        if (Array.isArray(this.config.details) && this.config.details.length) {
+            var participantDatum = this.multiples.data[0];
+            this.config.details.forEach(function(detail) {
+                var value_col = detail.value_col ? detail.value_col : detail;
+                var label = detail.label
+                    ? detail.label
+                    : detail.value_col
+                    ? detail.value_col
+                    : detail;
+                var tuple = [label, participantDatum[value_col]];
+
+                if (tuple[1] !== undefined)
+                    _this.multiples.detail_table
+                        .select('tbody')
+                        .append('tr')
+                        .selectAll('td')
+                        .data(tuple)
+                        .enter()
+                        .append('td')
+                        .style('text-align', function(d, i) {
+                            return i === 0 ? 'right' : 'left';
+                        })
+                        .text(function(d, i) {
+                            return i === 0 ? d + ':' : d;
+                        });
+            });
+        }
+    }
+
+    function onLayout$1() {
+        this.multiples.chart.on('layout', function() {
+            //Define multiple styling.
+            this.wrap.style('display', 'block');
+            this.wrap
+                .selectAll('.wc-chart-title')
+                .style('display', 'block')
+                .style('border-top', '1px solid #eee');
+            this.wrap.selectAll('.wc-chart').style('padding-bottom', '2px');
+
+            //Set y-label to measure unit.
+            this.config.y.label = '';
+
+            //Outline currently selected measure.
+            //if (this.filters[0].val === this.parent.safetyOutlierExplorer.measure.current)
+            //    this.wrap
+            //        .select('.wc-chart-title')
+            //        .append('span')
+            //        .html(' &#9432;')
+            //        .style({
+            //            'font-weight': 'bold',
+            //            'cursor': 'default',
+            //        })
+            //        .attr('title', 'Currently selected measure');
+        });
+    }
+
+    function onPreprocess$1() {
+        this.multiples.chart.on('preprocess', function() {
+            var _this = this;
+
+            //Define y-domain as minimum of lower limit of normal and minimum result and maximum of
+            //upper limit of normal and maximum result.
+            var filtered_data = this.raw_data.filter(function(f) {
+                return f[_this.filters[0].col] === _this.filters[0].val;
+            });
+
+            //Calculate range of normal range.
+            var normlo = Math.min.apply(
+                null,
+                filtered_data
+                    .map(function(m) {
+                        return +m[_this.config.normal_col_low];
+                    })
+                    .filter(function(f) {
+                        return +f || +f === 0;
+                    })
+            );
+            var normhi = Math.max.apply(
+                null,
+                filtered_data
+                    .map(function(m) {
+                        return +m[_this.config.normal_col_high];
+                    })
+                    .filter(function(f) {
+                        return +f || +f === 0;
+                    })
+            );
+
+            //Calculate range of data.
+            var ylo = d3.min(
+                filtered_data
+                    .map(function(m) {
+                        return +m[_this.config.y.column];
+                    })
+                    .filter(function(f) {
+                        return +f || +f === 0;
+                    })
+            );
+            var yhi = d3.max(
+                filtered_data
+                    .map(function(m) {
+                        return +m[_this.config.y.column];
+                    })
+                    .filter(function(f) {
+                        return +f || +f === 0;
+                    })
+            );
+
+            //Set y-domain.
+            this.config.y_dom = [Math.min(normlo, ylo), Math.max(normhi, yhi)];
+        });
+    }
+
+    function adjustTicks() {
+        if (this.config.x.rotate_tick_labels)
+            this.svg
+                .selectAll('.x.axis .tick text')
+                .attr({
+                    transform: 'rotate(-45)',
+                    dx: -10,
+                    dy: 10
+                })
+                .style('text-anchor', 'end');
+    }
+
+    function rangePolygon() {
+        var _this = this;
+
+        var area = d3.svg
+            .area()
+            .x(function(d) {
+                return (
+                    _this.x(d['TIME']) +
+                    (_this.config.x.type === 'ordinal' ? _this.x.rangeBand() / 2 : 0)
+                );
+            })
+            .y0(function(d) {
+                return /^-?[0-9.]+$/.test(d[_this.config.normal_col_low])
+                    ? _this.y(d[_this.config.normal_col_low])
+                    : 0;
+            })
+            .y1(function(d) {
+                return /^-?[0-9.]+$/.test(d[_this.config.normal_col_high])
+                    ? _this.y(d[_this.config.normal_col_high])
+                    : 0;
+            });
+
+        var dRow = this.filtered_data[0];
+
+        var myRows = this.x_dom.slice().map(function(m) {
+            return {
+                STNRLO: dRow[_this.config.normal_col_low],
+                STNRHI: dRow[_this.config.normal_col_high],
+                TIME: m
+            };
+        });
+
+        //remove what is there now
+        this.svg.select('.norms').remove();
+
+        //add new
+        var normalRange = this.svg
+            .append('g')
+            .datum(myRows)
+            .attr('class', 'norms');
+        normalRange
+            .append('path')
+            .attr('fill', 'blue')
+            .attr('fill-opacity', 0.1)
+            .attr('d', area);
+        normalRange.append('title').text(function(d) {
+            return 'Normal range: ' + d[0].STNRLO + '-' + d[0].STNRHI;
+        });
+    }
+
+    function onResize() {
+        this.multiples.chart.on('resize', function() {
+            //Resize text manually.
+            this.wrap.select('.wc-chart-title').style('font-size', '12px');
+            this.svg.selectAll('.axis .tick text').style('font-size', '10px');
+
+            //Draw normal range.
+            if (this.filtered_data.length) rangePolygon.call(this);
+
+            //Axis tweaks
+            this.svg
+                .select('.x.axis')
+                .select('.axis-title')
+                .remove();
+
+            //Delete legend.
+            this.legend.remove();
+
+            //Rotate ticks.
+            adjustTicks.call(this);
+        });
+    }
+
+    function updateParticipantDropdown() {
+        var context = this; // chart
+
+        var participantDropdown = this.multiples.controls.wrap
+            .style('margin', 0)
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.option === 'selected_id';
+            })
+            .style('margin', 0)
+            .style('display', 'block'); // firefox is being weird about inline-table
+        participantDropdown.selectAll('*').style('display', 'inline-block');
+        participantDropdown.selectAll('.wc-control-label').style('font-weight', 'bold');
+        participantDropdown
+            .selectAll('select')
+            .style('margin-left', '3px')
+            .style('width', null)
+            .style('max-width', '10%')
+            .on('change', function(d) {
+                context.multiples.id = d3
+                    .select(this)
+                    .selectAll('option:checked')
+                    .text();
+                clearSelected.call(context);
+                context.selected_id = context.multiples.id;
+                highlightSelected.call(context);
+                smallMultiples.call(context);
+                context.wrap.select('div.overlapNote').remove();
+
+                //Trigger participantsSelected event
+                context.participantsSelected = [context.selected_id];
+                context.events.participantsSelected.data = context.participantsSelected;
+                context.wrap.node().dispatchEvent(context.events.participantsSelected);
+            });
+    }
+
+    function smallMultiples() {
+        var _this = this;
+
+        //Define participant data.
+        this.multiples.data = this.initial_data.filter(function(d) {
+            return d[_this.config.id_col] === _this.selected_id;
+        });
+
+        //Define small multiples.
+        defineSmallMultiples.call(this);
+
+        //Insert participant characteristics table.
+        participantCharacteristics.call(this);
+
+        //Add callbacks to small multiples.
+        onLayout$1.call(this);
+        onPreprocess$1.call(this);
+        onResize.call(this);
+
+        //Initialize small multiples.
+        webcharts.multiply(this.multiples.chart, this.multiples.data, 'soe_measure', this.measures);
+
+        //Update participant dropdown.
+        updateParticipantDropdown.call(this);
+    }
+
+    function addLineEventListeners() {
+        var _this = this;
+
+        this.lines
+            .on('mouseover', function(d) {
+                clearHovered.call(_this);
+                _this.hovered_id = d.values[0].values.raw[0][_this.config.id_col];
+                if (_this.hovered_id !== _this.selected_id) highlightHovered.call(_this);
+            })
+            .on('mouseout', function(d) {
+                clearHovered.call(_this);
+            })
+            .on('click', function(d) {
+                clearHovered.call(_this);
+                clearSelected.call(_this);
+                _this.selected_id = d.values[0].values.raw[0][_this.config.id_col];
+                highlightSelected.call(_this);
+                smallMultiples.call(_this);
+
+                //Trigger participantsSelected event
+                _this.participantsSelected = [_this.selected_id];
+                _this.events.participantsSelected.data = _this.participantsSelected;
+                _this.wrap.node().dispatchEvent(_this.events.participantsSelected);
+            });
+    }
+
+    function checkPointOverlap(d, chart) {
+        // Get the position of the clicked point
+        var click_x = d3
+            .select(this)
+            .select('circle')
+            .attr('cx');
+        var click_y = d3
+            .select(this)
+            .select('circle')
+            .attr('cy');
+        var click_r = d3
+            .select(this)
+            .select('circle')
+            .attr('r');
+        var click_id = d.values.raw[0][chart.config.id_col];
+
+        // See if any other points overlap
+        var overlap_ids = chart.points
+            .filter(function(f) {
+                var point_id = f.values.raw[0][chart.config.id_col];
+                var point_x = d3
+                    .select(this)
+                    .select('circle')
+                    .attr('cx');
+                var point_y = d3
+                    .select(this)
+                    .select('circle')
+                    .attr('cy');
+                var distance_x2 = Math.pow(click_x - point_x, 2);
+                var distance_y2 = Math.pow(click_y - point_y, 2);
+                var distance = Math.sqrt(distance_x2 + distance_y2);
+
+                var max_distance = click_r * 2;
+                var overlap = distance <= max_distance;
+                var diff_id = point_id != click_id;
+                return diff_id & overlap;
+            })
+            .data()
+            .map(function(d) {
+                return d.values.raw[0][chart.config.id_col];
+            });
+
+        return overlap_ids;
+    }
+
+    function addOverlapNote(d, chart) {
+        function showID(d) {
+            //click an overlapping ID to see details for that participant
+            var participantDropdown = chart.multiples.controls.wrap
+                .style('margin', 0)
+                .selectAll('.control-group')
+                .filter(function(d) {
+                    return d.option === 'selected_id';
+                })
+                .select('select')
+                .property('value', d);
+
+            //participantDropdown.on("change")() // Can't quite get this to work, so copy/pasting for now ...
+
+            var context = chart;
+            chart.multiples.id = d;
+            clearSelected.call(context);
+            context.selected_id = context.multiples.id;
+            highlightSelected.call(context);
+            smallMultiples.call(context);
+
+            //Trigger participantsSelected event
+            context.participantsSelected = [context.selected_id];
+            context.events.participantsSelected.data = context.participantsSelected;
+            context.wrap.node().dispatchEvent(context.events.participantsSelected);
+        }
+
+        chart.wrap.select('div.overlapNote').remove();
+
+        // check for overlapping points
+        chart.overlap_ids = checkPointOverlap.call(this, d, chart);
+
+        // If there are overlapping points, add a note in the details section.
+
+        if (chart.overlap_ids.length) {
+            var click_id = d.values.raw[0][chart.config.id_col];
+            var overlap_div = chart.wrap
+                .insert('div', 'div.multiples')
+                .attr('class', 'overlapNote')
+                .style('background-color', '#eee')
+                .style('border', '1px solid #999')
+                .style('padding', '0.5em')
+                .style('border-radius', '0.2em')
+                .style('margin', '0 0.1em');
+
+            overlap_div
+                .append('span')
+                .html(
+                    '<strong>Note</strong>: ' +
+                        chart.overlap_ids.length +
+                        (' point' +
+                            (chart.overlap_ids.length === 1 ? '' : 's') +
+                            ' overlap' +
+                            (chart.overlap_ids.length === 1 ? 's' : '') +
+                            ' the clicked point for <span class="idLink">') +
+                        click_id +
+                        '</span>. Click an ID for details: '
+                );
+            overlap_div
+                .select('span.idLink')
+                .datum(click_id)
+                .style('color', 'blue')
+                .style('text-decoration', 'underline')
+                .style('cursor', 'pointer')
+                .on('click', showID)
+                .on('mouseover', function(d) {
+                    clearHovered.call(chart);
+                    chart.hovered_id = d;
+                    if (chart.hovered_id !== chart.selected_id) highlightHovered.call(chart);
+                })
+                .on('mouseout', function(d) {
+                    clearHovered.call(chart);
+                });
+            var overlap_ul = overlap_div
+                .append('ul')
+                .style('list-style', 'none')
+                .style('padding', '0')
+                .style('display', 'inline-block');
+
+            overlap_ul
+                .selectAll('li')
+                .data(chart.overlap_ids)
+                .enter()
+                .append('li')
+                .style('display', 'inline-block')
+                .style('padding-right', '.5em')
+                .attr('class', 'idLink')
+                .style('color', 'blue')
+                .style('text-decoration', 'underline')
+                .style('cursor', 'pointer')
+                .text(function(d) {
+                    return d;
+                })
+                .on('click', showID)
+                .on('mouseover', function(d) {
+                    clearHovered.call(chart);
+                    chart.hovered_id = d;
+                    if (chart.hovered_id !== chart.selected_id) highlightHovered.call(chart);
+                })
+                .on('mouseout', function(d) {
+                    clearHovered.call(chart);
+                });
+        }
+    }
+
+    function addOverlapTitle(d, chart) {
+        // check for overlapping points
+        var overlap = checkPointOverlap.call(this, d, chart);
+
+        // If there are overlapping points, add a note in the details section.
+
+        if (overlap.length > 0) {
+            var titleEl = d3.select(this).select('title');
+            var currentTitle = titleEl.text();
+            var hasOverlapNote = currentTitle.search('overlapping'); //minor hack ...
+            if (hasOverlapNote == -1) {
+                var newTitle =
+                    currentTitle + '\nNumber of overlapping point(s) = ' + overlap.length;
+                titleEl.text(newTitle);
+            }
+        }
+    }
+
+    function addPointEventListeners() {
+        var _this = this;
+
+        var chart = this;
+        this.points
+            .on('mouseover', function(d) {
+                addOverlapTitle.call(this, d, chart);
+                clearHovered.call(chart);
+                chart.hovered_id = d.values.raw[0][chart.config.id_col];
+                if (chart.hovered_id !== chart.selected_id) highlightHovered.call(chart);
+            })
+            .on('mouseout', function(d) {
+                clearHovered.call(_this);
+            })
+            .on('click', function(d) {
+                clearHovered.call(chart);
+                clearSelected.call(chart);
+                chart.selected_id = d.values.raw[0][chart.config.id_col];
+                highlightSelected.call(chart);
+                smallMultiples.call(chart);
+
+                //Trigger participantsSelected event
+                chart.participantsSelected = [chart.selected_id];
+                chart.events.participantsSelected.data = chart.participantsSelected;
+                chart.wrap.node().dispatchEvent(chart.events.participantsSelected);
+
+                //check for overlapping points
+                addOverlapNote.call(this, d, chart);
+            });
+    }
+
+    function addEventListeners() {
+        addOverlayEventListener.call(this);
+        addOverlayEventListener$1.call(this);
+        addLineEventListeners.call(this);
+        addPointEventListeners.call(this);
+    }
+
+    function addBoxPlot() {
+        //Clear box plot.
+        this.svg.select('g.boxplot').remove();
+
+        //Customize box plot.
+        var svg = this.svg;
+        var results = this.current_data
+            .map(function(d) {
+                return +d.values.y;
+            })
+            .sort(d3.ascending);
+        var height = this.plot_height;
+        var width = 1;
+        var domain = this.y_dom;
+        var boxPlotWidth = 10;
+        var boxColor = '#bbb';
+        var boxInsideColor = 'white';
+        var fmt = d3.format('.3r');
+
+        //set up scales
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        {
+            y.domain(domain);
+        }
+
+        var probs = [0.05, 0.25, 0.5, 0.75, 0.95];
+        for (var i = 0; i < probs.length; i++) {
+            probs[i] = d3.quantile(results, probs[i]);
+        }
+
+        var boxplot = this.svg
+            .append('g')
+            .attr('class', 'boxplot')
+            .datum({
+                values: results,
+                probs: probs
+            })
+            .attr(
+                'transform',
+                'translate(' + (this.plot_width + this.config.margin.right / 2) + ',0)'
+            );
+
+        //draw rectangle from q1 to q3
+        var box_x = x(0.5 - boxPlotWidth / 2);
+        var box_width = x(0.5 + boxPlotWidth / 2) - x(0.5 - boxPlotWidth / 2);
+        var box_y = y(probs[3]);
+        var box_height = -y(probs[3]) + y(probs[1]);
+
+        boxplot
+            .append('rect')
+            .attr('class', 'boxplot fill')
+            .attr('x', box_x)
+            .attr('width', box_width)
+            .attr('y', box_y)
+            .attr('height', box_height)
+            .style('fill', boxColor);
+
+        //draw dividing lines at median, 95% and 5%
+        var iS = [0, 2, 4];
+        var iSclass = ['', 'median', ''];
+        var iSColor = [boxColor, boxInsideColor, boxColor];
+        for (var i = 0; i < iS.length; i++) {
+            boxplot
+                .append('line')
+                .attr('class', 'boxplot ' + iSclass[i])
+                .attr('x1', x(0.5 - boxPlotWidth / 2))
+                .attr('x2', x(0.5 + boxPlotWidth / 2))
+                .attr('y1', y(probs[iS[i]]))
+                .attr('y2', y(probs[iS[i]]))
+                .style('fill', iSColor[i])
+                .style('stroke', iSColor[i]);
+        }
+
+        //draw lines from 5% to 25% and from 75% to 95%
+        var iS = [[0, 1], [3, 4]];
+        for (var i = 0; i < iS.length; i++) {
+            boxplot
+                .append('line')
+                .attr('class', 'boxplot')
+                .attr('x1', x(0.5))
+                .attr('x2', x(0.5))
+                .attr('y1', y(probs[iS[i][0]]))
+                .attr('y2', y(probs[iS[i][1]]))
+                .style('stroke', boxColor);
+        }
+
+        boxplot
+            .append('circle')
+            .attr('class', 'boxplot mean')
+            .attr('cx', x(0.5))
+            .attr('cy', y(d3.mean(results)))
+            .attr('r', x(boxPlotWidth / 3))
+            .style('fill', boxInsideColor)
+            .style('stroke', boxColor);
+
+        boxplot
+            .append('circle')
+            .attr('class', 'boxplot mean')
+            .attr('cx', x(0.5))
+            .attr('cy', y(d3.mean(results)))
+            .attr('r', x(boxPlotWidth / 6))
+            .style('fill', boxColor)
+            .style('stroke', 'None');
+
+        boxplot.append('title').text(function(d) {
+            var tooltip =
+                'N = ' +
+                d.values.length +
+                '\n' +
+                'Min = ' +
+                d3.min(d.values) +
+                '\n' +
+                '5th % = ' +
+                fmt(d3.quantile(d.values, 0.05)).replace(/^ */, '') +
+                '\n' +
+                'Q1 = ' +
+                fmt(d3.quantile(d.values, 0.25)).replace(/^ */, '') +
+                '\n' +
+                'Median = ' +
+                fmt(d3.median(d.values)).replace(/^ */, '') +
+                '\n' +
+                'Q3 = ' +
+                fmt(d3.quantile(d.values, 0.75)).replace(/^ */, '') +
+                '\n' +
+                '95th % = ' +
+                fmt(d3.quantile(d.values, 0.95)).replace(/^ */, '') +
+                '\n' +
+                'Max = ' +
+                d3.max(d.values) +
+                '\n' +
+                'Mean = ' +
+                fmt(d3.mean(d.values)).replace(/^ */, '') +
+                '\n' +
+                'StDev = ' +
+                fmt(d3.deviation(d.values)).replace(/^ */, '');
+            return tooltip;
+        });
+    }
+
+    function removeLegend() {
+        if (this.config.color_by === 'soe_none') this.wrap.select('.legend').remove();
+    }
+
+    function onResize$1() {
+        //Attach mark groups to central chart object.
+        attachMarks.call(this);
+
+        //Maintain mark highlighting.
+        maintainHighlight.call(this);
+
+        //Draw normal range.
+        drawNormalRange.call(this);
+
+        //Add event listeners to lines, points, and overlay.
+        addEventListeners.call(this);
+
+        //Draw a marginal box plot.
+        addBoxPlot.call(this);
+
+        //Rotate tick marks to prevent text overlap.
+        adjustTicks.call(this);
+
+        // Remove legend when not stratifying.
+        removeLegend.call(this);
+    }
+
+    function onDestroy() {}
+
+    var callbacks = {
+        onInit: onInit,
+        onLayout: onLayout,
+        onPreprocess: onPreprocess,
+        onDatatransform: onDatatransform,
+        onDraw: onDraw,
+        onResize: onResize$1,
+        onDestroy: onDestroy
+    };
+
+    function safetyOutlierExplorer(element, settings) {
+        //Merge user settings with default settings.
+        var mergedSettings = Object.assign({}, configuration.settings, settings);
+
+        //Sync options within settings object, e.g. data mappings.
+        var syncedSettings = configuration.syncSettings(mergedSettings);
+
+        //Sync control inputs with with settings object.
+        var syncedControlInputs = configuration.syncControlInputs(
+            configuration.controlInputs(),
+            syncedSettings
+        );
+
+        //Define controls.
+        var controls = webcharts.createControls(element, {
+            location: 'top',
+            inputs: syncedControlInputs
+        });
+
+        //Define chart.
+        var chart = webcharts.createChart(element, syncedSettings, controls);
+        chart.config.marks.forEach(function(mark) {
+            mark.attributes = mark.attributes || {};
+            mark.attributes['clip-path'] = 'url(#' + chart.id + ')';
+        });
+
+        //Attach callbacks to chart.
+        for (var callback in callbacks) {
+            chart.on(callback.substring(2).toLowerCase(), callbacks[callback]);
+        }
+        return chart;
+    }
+
+    return safetyOutlierExplorer;
+});
