@@ -11,7 +11,6 @@
 #' settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
 #' tplyr_demog_chart(data, settings)
 #'
-#' @import kableExtra
 #' @import Tplyr
 #'
 #' @return tplyr table object
