@@ -2,5 +2,6 @@ label: Shift Table {Tplyr} + {kable}
 type: html
 domain: multiple
 pacakage: Tplyr
+export: false
 workflow:
   main: tplyr_shift_chart

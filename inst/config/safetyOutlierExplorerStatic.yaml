@@ -2,5 +2,6 @@ label: Outlier Explorer (Static)
 type: plot
 domain: labs
 package: safetyCharts
+export: true
 workflow:
   main: safety_outlier_explorer

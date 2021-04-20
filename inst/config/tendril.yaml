@@ -2,5 +2,6 @@ label: Tendril Plot {Tendril}
 type: plot
 domain: multiple
 package: safetyCharts
+export: true
 workflow:
   main: tendril_chart
