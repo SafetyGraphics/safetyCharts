@@ -6,19 +6,16 @@ HTMLWidgets.widget({
 
   factory: function(el, width, height) {
 
-   return {
+  return {
 
       renderValue: function(x) {
 
       el.innerHTML = "";
-        
-        
       x.data = HTMLWidgets.dataframeToD3(x.data);
-      
       console.log(x.settings);
-      
-       
-       aeTimelines(el, x.settings).init(x.data);
+  
+      let wrapID = "#"+d3.select(el).property("id");
+      aeTimelines(wrapID, x.settings).init(x.data);
 
       },
 
