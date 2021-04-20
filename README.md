@@ -1,5 +1,9 @@
 # safetyCharts
 
+<!-- badges: start -->
+[![R build status](https://github.com/SafetyGraphics/safetyCharts/workflows/R-CMD-check/badge.svg)](https://github.com/SafetyGraphics/safetyCharts/actions)
+<!-- badges: end -->
+
 The **safetyCharts** R package contains a set of charts used in clinical trial research. These charts are optimized for usage with the [**safetyGraphics** package](https://safetygraphics.github.io/safetyGraphics/) and shiny application, but can also easily be used as standalone displays. 
 
 # Chart Types
