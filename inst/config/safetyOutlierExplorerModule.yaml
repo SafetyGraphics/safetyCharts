@@ -2,7 +2,7 @@ label: Outlier Explorer (module)
 type: module
 domain: labs
 package: safetyCharts
-export: true
+export: false
 workflow:
   ui: safetyOutlierExplorer_ui
   server: safetyOutlierExplorer_server
