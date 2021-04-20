@@ -17,8 +17,9 @@ HTMLWidgets.widget({
         x.data = HTMLWidgets.dataframeToD3(x.data);
         
         console.log(x.settings);
+        let wrapID = x.ns ? "#"+x.ns : "#"+d3.select(el).property("id");
 
-        safetyShiftPlot("#" + x.ns, x.settings).init(x.data);
+        safetyShiftPlot(wrapID, x.settings).init(x.data);
 
       },
 
