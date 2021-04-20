@@ -1,0 +1,6 @@
+label: Delta-Delta
+type: htmlwidget
+domain: labs
+package: safetyCharts
+workflow:
+  widget: safetyDeltaDelta

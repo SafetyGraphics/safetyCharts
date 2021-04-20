@@ -19,6 +19,5 @@ Initialize Settings for Safety Results Over Time widget
 }
 \examples{
 
-a<-init_safetyResultsOverTime(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols 
-
+a <- init_safetyResultsOverTime(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
 }

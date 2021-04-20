@@ -1,0 +1,15 @@
+dependencies:
+ - name: d3
+   version: 3.5.17
+   src: htmlwidgets/lib/d3-3.5.17
+   script: d3.min.js
+ - name: webcharts
+   version: 1.9.1
+   src: htmlwidgets/lib/webcharts-1.11.6
+   script: webcharts.js
+   stylesheet: webcharts.css
+ - name: paneled-outlier-explorer
+   version: 1.1.4
+   src: htmlwidgets/lib/paneled-outlier-explorer-1.1.4
+   script: paneledOutlierExplorer.js 
+

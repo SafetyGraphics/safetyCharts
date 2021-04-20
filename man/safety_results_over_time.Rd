@@ -38,27 +38,26 @@ The settings object provides details the columns in the data set.
 lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
 sub_ids <- unique(lb$USUBJID)[1:100]
 lb <- lb \%>\% filter(USUBJID \%in\% sub_ids)
-settings<-list(
-    value_col="LBORRES", 
-    measure_col="LBTEST", 
-    measure_values=c("Chloride"),
-    visit_col="VISIT",
-    visitn_col="VISITNUM",
-    axis="log"
+settings <- list(
+    value_col = "LBORRES",
+    measure_col = "LBTEST",
+    measure_values = c("Chloride"),
+    visit_col = "VISIT",
+    visitn_col = "VISITNUM",
+    axis = "log"
 )
 safety_results_over_time(lb, settings)
 
-#remove unscheduled visits, add violin plot and 2nd panel
-settings$drop_visit_string<-"unscheduled"
+# remove unscheduled visits, add violin plot and 2nd panel
+settings$drop_visit_string <- "unscheduled"
 settings$violins <- TRUE
-settings$measure_values=c("Albumin")
+settings$measure_values <- c("Albumin")
 safety_results_over_time(lb, settings)
 
-#add grouping by treatment
+# add grouping by treatment
 dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
 dm_sub <- dm \%>\% select(USUBJID, ARM)
 dm_lb <- dm_sub \%>\% left_join(lb)
-settings$group_col <-"ARM"
+settings$group_col <- "ARM"
 safety_results_over_time(dm_lb, settings)
-
 }

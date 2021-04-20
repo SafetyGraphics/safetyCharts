@@ -20,5 +20,4 @@ Initialize Settings for Adverse Event Explorer widget
 \examples{
 
 init_aeExplorer(safetyData::aes, safetyGraphics::meta)
-
 }

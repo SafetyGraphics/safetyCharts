@@ -33,20 +33,19 @@ The settings object provides details regarding the columns in the data sets.
 \examples{
 aes <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/ae.csv")
 dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
-settings<-list(
-     dm=list(
-         id_col="USUBJID",
-         treatment_col="ARM",
-         treatment_values--group1="",
-         treatment_values--group2=""
-     ),
-     aes=list(
-         id_col="USUBJID",
-         bodsys_col="",
-         stdy_col=""
-     )
+settings <- list(
+    dm = list(
+        id_col = "USUBJID",
+        treatment_col = "ARM",
+        `treatment_values--group1` = "",
+        `treatment_values--group2` = ""
+    ),
+    aes = list(
+        id_col = "USUBJID",
+        bodsys_col = "",
+        stdy_col = ""
+    )
 )
-  
-tendril_plot(list(aes=aes, dm=dm), settings)
 
+tendril_plot(list(aes = aes, dm = dm), settings)
 }

@@ -31,13 +31,12 @@ The settings object provides details the columns in the data set.
 \examples{
 
 lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
-settings<-list(
-    id_col="USUBJID",
-    measure_col="LBTEST", 
-    measure_values=c("Albumin","Bilirubin","Chloride"),
-    studyday_col="VISITDY", 
-    value_col="LBORRES" 
+settings <- list(
+    id_col = "USUBJID",
+    measure_col = "LBTEST",
+    measure_values = c("Albumin", "Bilirubin", "Chloride"),
+    studyday_col = "VISITDY",
+    value_col = "LBORRES"
 )
 safety_outlier_explorer(lb, settings)
-
 }

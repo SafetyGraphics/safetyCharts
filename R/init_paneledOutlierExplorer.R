@@ -1,16 +1,16 @@
-#' Initialize Settings for Safety Outlier Explorer widget
+#' Initialize Settings for Paneled Outlier Explorer widget
 #'
 #' @param data labs data structured as one record per person per visit per measurement. See details for column requirements.
 #' @param settings named list of settings
 #'
 #' @examples
 #'
-#' a <- init_safetyOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
+#' a <- init_paneledOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
 #' @return returns list with data and settings
 #'
 #' @export
 
-init_safetyOutlierExplorer <- function(data, settings) {
+init_paneledOutlierExplorer <- function(data, settings) {
     settings$time_cols <- data_frame(
         value_col = c(settings[["visit_col"]], settings[["studyday_col"]]),
         type = c("ordinal", "linear"),
