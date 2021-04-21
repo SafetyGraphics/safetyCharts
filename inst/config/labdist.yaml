@@ -1,7 +1,8 @@
 label: Labs Distribution (custom shiny module)
 type: module
 domain: labs
+package: safetyCharts
 export: true
 workflow:
-  ui: labdist_ui
-  server: labdist_server
+  ui: lab_distribution_ui
+  server: lab_distribution_server
