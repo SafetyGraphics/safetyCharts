@@ -1,6 +1,7 @@
 label: Safety Timelines
 type: htmlwidget
 domain: aes
-package: safetyCharts  
+package: safetyCharts
+export: false  
 workflow:
   widget: aeTimelines

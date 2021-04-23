@@ -2,6 +2,7 @@ label: Results Over Time
 type: htmlwidget
 domain: labs
 package: safetyCharts
+export: true
 workflow:
   init: init_safetyResultsOverTime
   widget: safetyResultsOverTime

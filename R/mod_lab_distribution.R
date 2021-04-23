@@ -1,7 +1,17 @@
-#####################################################################
-# Step 1 - Write custom chart module code
-#####################################################################
-labdist_ui <- function(id) {
+#' Lab distribution Module - UI
+#' 
+#' A simple UI for a shiny module looking at lab histograms. Intended primarily for technical demos. 
+#'
+#' @param id module id
+#'
+#' @return returns shiny module UI
+#'
+#' @import shiny
+#'
+#' @export
+#'
+
+lab_distribution_ui <- function(id) {
     ns <- NS(id)
     tagList(
         checkboxInput(ns("show_points"), "Show points?", value = FALSE),
@@ -10,8 +20,24 @@ labdist_ui <- function(id) {
         plotOutput(ns("labdist"), width = "1000px")
     )
 }
+#' lab distribution Module - Server
+#'
+#' A simple server for a shiny module looking at lab histograms. Intended primarily for technical demos. 
+#' 
+#' @param input module input
+#' @param output module output
+#' @param session module session
+#' @param params parameters object with `data` and `settings` options.
+#'
+#' @return returns shiny module Server function
+#'
+#' @import shiny
+#' @import ggplot2
+#' @import dplyr
+#'
+#' @export
 
-labdist_server <- function(input, output, session, params) {
+lab_distribution_server <- function(input, output, session, params) {
     ns <- session$ns
 
     mapped_data <- reactive({

@@ -2,5 +2,6 @@ label: Results Over Time (Static)
 type: plot
 domain: labs
 package: safetyCharts
+export: true
 workflow:
   main: safety_results_over_time

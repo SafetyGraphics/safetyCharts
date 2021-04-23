@@ -14,7 +14,8 @@ HTMLWidgets.widget({
         el.innerHTML=""
         let settings = rSettings.settings;
         let data = HTMLWidgets.dataframeToD3(rSettings.data);
-        var chart = safetyDeltaDelta("#"+rSettings.ns, settings)
+        let wrapID = rSettings.ns ? "#"+rSettings.ns : "#"+d3.select(el).property("id");
+        var chart = safetyDeltaDelta(wrapID, settings)
         chart.init(data);
       },
       resize: function(width, height) {
