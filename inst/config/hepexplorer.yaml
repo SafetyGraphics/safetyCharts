@@ -2,5 +2,6 @@ label: Hepatic Safety Explorer
 type: htmlwidget
 domain: labs
 package: safetyCharts  
+export: true
 workflow:
   widget: hepexplorer

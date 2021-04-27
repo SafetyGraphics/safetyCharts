@@ -9,7 +9,7 @@
 #' - VISIT
 #'
 #' @import Tplyr
-#' @import kableExtra
+#' @importFrom kableExtra kable_styling
 #'
 #' @export
 

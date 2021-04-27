@@ -2,5 +2,6 @@ label: Delta-Delta
 type: htmlwidget
 domain: labs
 package: safetyCharts
+export: true
 workflow:
   widget: safetyDeltaDelta
