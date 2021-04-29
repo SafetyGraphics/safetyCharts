@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Shift Plot
 type: htmlwidget
 domain: labs
@@ -6,3 +7,9 @@ export: true
 workflow:
   init: init_safetyShiftPlot
   widget: safetyShiftPlot
+links:
+  Homepage: https://github.com/RhoInc/safety-shift-plot
+  Wiki: https://github.com/RhoInc/safety-shift-plot/wiki 
+  Issues: https://github.com/RhoInc/safety-shift-plot/issues
+  Demo: https://rhoinc.github.io/safety-shift-plot/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts

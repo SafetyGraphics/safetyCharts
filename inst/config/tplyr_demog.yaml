@@ -1,7 +1,11 @@
-label: Demographics Table {Tplyr} + {DT}
+env: safetyGraphics
+label: Demographics Table
 type: table
 domain: dm
 package: safetyCharts
 export: true
 workflow:
   main: tplyr_demog_chart
+links: 
+  Tplyr: https://CRAN.R-project.org/package=Tplyr 
+  DT: https://CRAN.R-project.org/package=DT

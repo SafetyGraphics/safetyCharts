@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Safety Timelines
 type: htmlwidget
 domain: aes
@@ -5,3 +6,10 @@ package: safetyCharts
 export: false  
 workflow:
   widget: aeTimelines
+links:
+  Homepage: https://github.com/RhoInc/ae-timelines
+  Wiki: https://github.com/RhoInc/ae-timelines/wiki 
+  Issues: https://github.com/RhoInc/ae-timelines/issues
+  Demo: https://rhoinc.github.io/ae-timelines/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

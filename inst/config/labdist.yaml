@@ -1,4 +1,5 @@
-label: Labs Distribution (custom shiny module)
+env: safetyGraphics
+label: Labs Distribution
 type: module
 domain: labs
 package: safetyCharts
@@ -6,3 +7,5 @@ export: false
 workflow:
   ui: lab_distribution_ui
   server: lab_distribution_server
+links:
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts

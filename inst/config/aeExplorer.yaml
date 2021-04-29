@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Adverse Event Explorer
 type: htmlwidget
 domain: multiple
@@ -6,3 +7,10 @@ export: true
 workflow:
   init: init_aeExplorer
   widget: aeExplorer
+links:
+  Homepage: https://github.com/RhoInc/aeexplorer
+  Wiki: https://github.com/RhoInc/aeexplorer/wiki 
+  Issues: https://github.com/RhoInc/aeexplorer/issues
+  Demo: https://rhoinc.github.io/aeexplorer/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

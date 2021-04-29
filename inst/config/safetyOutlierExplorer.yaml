@@ -1,4 +1,5 @@
-label: Outlier Explorer (widget)
+env: safetyGraphics
+label: Outlier Explorer - widget
 type: htmlwidget
 domain: labs
 package: safetyCharts
@@ -6,3 +7,10 @@ export: true
 workflow:
   init: init_safetyOutlierExplorer
   widget: safetyOutlierExplorer
+links:
+  Homepage: https://github.com/RhoInc/safety-outlier-explorer
+  Wiki: https://github.com/RhoInc/safety-outlier-explorer/wiki 
+  Issues: https://github.com/RhoInc/safety-outlier-explorer/issues
+  Demo: https://rhoinc.github.io/safety-outlier-explorer/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

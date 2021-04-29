@@ -1,4 +1,5 @@
-label: Outlier Explorer (module)
+env: safetyGraphics
+label: Outlier Explorer - Module
 type: module
 domain: labs
 package: safetyCharts
@@ -6,3 +7,5 @@ export: false
 workflow:
   ui: safetyOutlierExplorer_ui
   server: safetyOutlierExplorer_server
+links:
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts

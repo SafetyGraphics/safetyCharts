@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Histogram
 type: htmlwidget
 domain: labs
@@ -5,3 +6,10 @@ package: safetyCharts
 export: true
 workflow:
   widget: safetyHistogram
+links:
+  Homepage: https://github.com/RhoInc/safety-histogram
+  Wiki: https://github.com/RhoInc/safety-histogram/wiki 
+  Issues: https://github.com/RhoInc/safety-histogram/issues
+  Demo: https://rhoinc.github.io/safety-histogram/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+
