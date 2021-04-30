@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: RTF Renderer {Tplyr} + {huxtable} + {pharmaRTF}
 type: rtf
 domain: dm

@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Paneled Outlier Explorer (widget)
 type: htmlwidget
 domain: labs
