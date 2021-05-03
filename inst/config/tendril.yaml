@@ -7,4 +7,4 @@ export: true
 workflow:
   main: tendril_chart
 links: 
-  tendril: https://CRAN.R-project.org/package=tendril 
+  tendril: https://cran.r-project.org/package=Tendril
