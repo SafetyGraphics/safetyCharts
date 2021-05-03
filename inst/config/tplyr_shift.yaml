@@ -7,5 +7,4 @@ workflow:
   main: tplyr_shift_chart
 links: 
   Tplyr: https://CRAN.R-project.org/package=Tplyr 
-  kable: https://CRAN.R-project.org/package=kable  
-
+  kable: https://cran.r-project.org/package=knitr
