@@ -1,6 +1,10 @@
-label: Shift Table {Tplyr} + {kable}
+env: safetyGraphics
+label: Shift Table
 type: html
 domain: multiple
 package: safetyCharts
 workflow:
   main: tplyr_shift_chart
+links: 
+  Tplyr: https://CRAN.R-project.org/package=Tplyr 
+  kable: https://cran.r-project.org/package=knitr

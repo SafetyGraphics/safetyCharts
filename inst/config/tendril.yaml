@@ -1,7 +1,10 @@
-label: Tendril Plot {Tendril}
+env: safetyGraphics
+label: Tendril Plot
 type: plot
 domain: multiple
 package: safetyCharts
 export: true
 workflow:
   main: tendril_chart
+links: 
+  tendril: https://cran.r-project.org/package=Tendril

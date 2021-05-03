@@ -1,3 +1,4 @@
+env: safetyGraphics
 label: Delta-Delta
 type: htmlwidget
 domain: labs
@@ -5,3 +6,10 @@ package: safetyCharts
 export: true
 workflow:
   widget: safetyDeltaDelta
+links:
+  Homepage: https://github.com/RhoInc/safety-delta-delta
+  Wiki: https://github.com/RhoInc/safety-delta-delta/wiki 
+  Issues: https://github.com/RhoInc/safety-delta-delta/issues
+  Demo: https://rhoinc.github.io/safety-delta-delta/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+
