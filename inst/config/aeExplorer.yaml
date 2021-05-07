@@ -1,7 +1,9 @@
 env: safetyGraphics
 label: Adverse Event Explorer
 type: htmlwidget
-domain: multiple
+domain: 
+  - aes
+  - dm
 package: safetyCharts  
 export: true
 workflow:

@@ -1,7 +1,9 @@
 env: safetyGraphics
 label: Shift Table
 type: html
-domain: multiple
+domain: 
+  - labs
+  - dm
 package: safetyCharts
 workflow:
   main: tplyr_shift_chart
