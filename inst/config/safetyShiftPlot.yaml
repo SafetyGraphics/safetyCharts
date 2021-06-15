@@ -1,9 +1,10 @@
 env: safetyGraphics
 label: Shift Plot
 type: htmlwidget
-domain: labs
 package: safetyCharts
 export: true
+domain: 
+  - labs
 workflow:
   init: init_safetyShiftPlot
   widget: safetyShiftPlot

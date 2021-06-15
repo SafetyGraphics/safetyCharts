@@ -1,9 +1,10 @@
 env: safetyGraphics
-label: Safety Timelines
+label: Adverse Event Timelines
 type: htmlwidget
-domain: aes
 package: safetyCharts
-export: false  
+export: false 
+domain: 
+  - aes
 workflow:
   widget: aeTimelines
 links:

@@ -1,7 +1,8 @@
 env: safetyGraphics
-label: RTF Renderer {Tplyr} + {huxtable} + {pharmaRTF}
+label: Demographics Table
 type: rtf
-domain: dm
+domain: 
+  - dm
 package: safetyCharts
 workflow:
   main: pharmartf_render_table

@@ -1,8 +1,9 @@
 env: safetyGraphics
 label: Hepatic Safety Explorer
 type: htmlwidget
-domain: labs
 package: safetyCharts  
+domain: 
+  - labs
 export: true
 workflow:
   widget: hepexplorer

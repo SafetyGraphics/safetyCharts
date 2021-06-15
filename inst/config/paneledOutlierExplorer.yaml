@@ -1,7 +1,8 @@
 env: safetyGraphics
-label: Paneled Outlier Explorer (widget)
+label: Paneled Outlier Explorer
 type: htmlwidget
-domain: labs
+domain: 
+  - labs
 package: safetyCharts
 export: true
 workflow:

@@ -1,11 +1,11 @@
 env: safetyGraphics
 label: Adverse Event Explorer
 type: htmlwidget
+package: safetyCharts  
+export: true
 domain: 
   - aes
   - dm
-package: safetyCharts  
-export: true
 workflow:
   init: init_aeExplorer
   widget: aeExplorer
