@@ -6,11 +6,11 @@ domain:
   - labs
 export: true
 workflow:
-  widget: hepexplorer
+  widget: hepExplorer
 links:
   Clinical Users Guide (pdf): https://github.com/SafetyGraphics/SafetyGraphics.github.io/blob/master/guide/HepExplorerWorkflow_v1_2_1.pdf
   Homepage: https://github.com/SafetyGraphics/hep-explorer
-  Wiki: https://github.com/SafetyGraphics/hep-explorer/wiki 
+  Wiki: https://github.com/SafetyGraphics/hep-explorer/wiki
   Issues: https://github.com/SafetyGraphics/hep-explorer/issues
   Demo: https://safetygraphics.github.io/hep-explorer/test-page/example1/
   safetyCharts: https://github.com/SafetyGraphics/safetycharts

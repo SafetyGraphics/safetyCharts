@@ -1,5 +1,5 @@
 HTMLWidgets.widget({
-  name: "hepexplorer",
+  name: "hepExplorer",
   type: "output",
 
   factory: function(el, width, height) {
