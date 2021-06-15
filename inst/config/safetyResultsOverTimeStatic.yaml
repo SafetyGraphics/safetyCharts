@@ -3,6 +3,7 @@ label: Results Over Time
 type: plot
 package: safetyCharts
 export: true
+order: -1
 domain: 
   - labs
 workflow:
