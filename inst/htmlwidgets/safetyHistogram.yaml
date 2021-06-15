@@ -9,7 +9,7 @@ dependencies:
    script: webcharts.js
    stylesheet: webcharts.css
  - name: safetyHistogram
-   version: 2.1.0
-   src: htmlwidgets/lib/safety-histogram-2.1.0
+   version: 2.5.0
+   src: htmlwidgets/lib/safety-histogram-2.5.0
    script: safetyHistogram.js 
 
