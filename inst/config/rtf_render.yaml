@@ -1,6 +1,7 @@
 env: safetyGraphics
 label: Demographics Table
 type: rtf
+order: 1
 domain: 
   - dm
 package: safetyCharts

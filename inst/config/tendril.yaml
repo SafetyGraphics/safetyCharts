@@ -3,6 +3,7 @@ label: Tendril Plot
 type: plot
 package: safetyCharts
 export: true
+order: 4
 domain: 
   - aes
   - dm

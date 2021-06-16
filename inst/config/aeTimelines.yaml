@@ -3,6 +3,7 @@ label: Adverse Event Timelines
 type: htmlwidget
 package: safetyCharts
 export: false 
+order: 3
 domain: 
   - aes
 workflow:
