@@ -9,7 +9,7 @@ dependencies:
    script: webcharts.js
    stylesheet: webcharts.css
  - name: safety-outlier-explorer
-   version: 2.2.1
-   src: htmlwidgets/lib/safety-outlier-explorer-2.2.1
+   version: 2.7.0
+   src: htmlwidgets/lib/safety-outlier-explorer-2.7.0
    script: safetyOutlierExplorer.js 
 

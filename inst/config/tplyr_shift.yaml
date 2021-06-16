@@ -1,10 +1,11 @@
 env: safetyGraphics
 label: Shift Table
 type: html
+package: safetyCharts
+order: -1
 domain: 
   - labs
   - dm
-package: safetyCharts
 workflow:
   main: tplyr_shift_chart
 links: 

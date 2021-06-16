@@ -1,9 +1,11 @@
 env: safetyGraphics
 label: Labs Distribution
 type: module
-domain: labs
 package: safetyCharts
+domain: 
+  - labs
 export: false
+order: -1
 workflow:
   ui: lab_distribution_ui
   server: lab_distribution_server

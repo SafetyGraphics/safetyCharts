@@ -1,9 +1,11 @@
 env: safetyGraphics
 label: Demographics Table
 type: table
-domain: dm
 package: safetyCharts
 export: true
+order: -1
+domain: 
+  - dm
 workflow:
   main: tplyr_demog_chart
 links: 

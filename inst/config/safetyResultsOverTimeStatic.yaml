@@ -1,9 +1,11 @@
 env: safetyGraphics
-label: Results Over Time (Static)
+label: Results Over Time
 type: plot
-domain: labs
 package: safetyCharts
 export: true
+order: -1
+domain: 
+  - labs
 workflow:
   main: safety_results_over_time
 links:

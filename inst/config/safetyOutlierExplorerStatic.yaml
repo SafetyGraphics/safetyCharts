@@ -1,9 +1,11 @@
 env: safetyGraphics
-label: Outlier Explorer - Static
+label: Outlier Explorer
 type: plot
-domain: labs
 package: safetyCharts
 export: true
+order: -1
+domain: 
+  - labs
 workflow:
   main: safety_outlier_explorer
 links:

@@ -1,9 +1,11 @@
 env: safetyGraphics
 label: Outlier Explorer - Module
 type: module
-domain: labs
 package: safetyCharts
 export: false
+order: -1
+domain: 
+  - labs
 workflow:
   ui: safetyOutlierExplorer_ui
   server: safetyOutlierExplorer_server

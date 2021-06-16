@@ -1,8 +1,9 @@
 env: safetyGraphics
 label: Histogram
 type: htmlwidget
-domain: labs
 package: safetyCharts
+domain: 
+  - labs
 export: true
 workflow:
   widget: safetyHistogram

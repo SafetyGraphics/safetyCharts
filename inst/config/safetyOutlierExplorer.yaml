@@ -1,9 +1,10 @@
 env: safetyGraphics
-label: Outlier Explorer - widget
+label: Outlier Explorer
 type: htmlwidget
-domain: labs
 package: safetyCharts
 export: true
+domain: 
+  - labs
 workflow:
   init: init_safetyOutlierExplorer
   widget: safetyOutlierExplorer

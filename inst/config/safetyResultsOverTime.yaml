@@ -1,9 +1,10 @@
 env: safetyGraphics
 label: Results Over Time
 type: htmlwidget
-domain: labs
 package: safetyCharts
 export: true
+domain: 
+  - labs
 workflow:
   init: init_safetyResultsOverTime
   widget: safetyResultsOverTime

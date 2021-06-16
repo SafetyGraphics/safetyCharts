@@ -9,7 +9,7 @@ dependencies:
    script: webcharts.js
    stylesheet: webcharts.css
  - name: ae-timelines
-   version: 2.0.4
-   src: htmlwidgets/lib/ae-timelines-2.0.4
+   version: 2.1.6
+   src: htmlwidgets/lib/ae-timelines-2.1.6
    script: aeTimelines.js 
 

@@ -1,39 +1,129 @@
 (function(global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined'
-        ? (module.exports = factory(require('webcharts'), require('d3')))
+        ? (module.exports = factory(require('d3'), require('webcharts')))
         : typeof define === 'function' && define.amd
-          ? define(['webcharts', 'd3'], factory)
-          : (global.aeTimelines = factory(global.webCharts, global.d3));
-})(this, function(webcharts, d3) {
+          ? define(['d3', 'webcharts'], factory)
+          : (global.aeTimelines = factory(global.d3, global.webCharts));
+})(this, function(d3, webcharts) {
     'use strict';
 
-    /*------------------------------------------------------------------------------------------------\
-  Add assign method to Object if nonexistent.
-\------------------------------------------------------------------------------------------------*/
-
     if (typeof Object.assign != 'function') {
-        (function() {
-            Object.assign = function(target) {
-                'use strict';
-
-                if (target === undefined || target === null) {
+        Object.defineProperty(Object, 'assign', {
+            value: function assign(target, varArgs) {
+                if (target == null) {
+                    // TypeError if undefined or null
                     throw new TypeError('Cannot convert undefined or null to object');
                 }
 
-                var output = Object(target);
+                var to = Object(target);
+
                 for (var index = 1; index < arguments.length; index++) {
-                    var source = arguments[index];
-                    if (source !== undefined && source !== null) {
-                        for (var nextKey in source) {
-                            if (source.hasOwnProperty(nextKey)) {
-                                output[nextKey] = source[nextKey];
+                    var nextSource = arguments[index];
+
+                    if (nextSource != null) {
+                        // Skip over if undefined or null
+                        for (var nextKey in nextSource) {
+                            // Avoid bugs when hasOwnProperty is shadowed
+                            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                to[nextKey] = nextSource[nextKey];
                             }
                         }
                     }
                 }
-                return output;
-            };
-        })();
+
+                return to;
+            },
+            writable: true,
+            configurable: true
+        });
+    }
+
+    if (!Array.prototype.find) {
+        Object.defineProperty(Array.prototype, 'find', {
+            value: function value(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                }
+
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, 'length')).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
+                    // d. If testResult is true, return kValue.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return kValue;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return undefined.
+                return undefined;
+            }
+        });
+    }
+
+    if (!Array.prototype.findIndex) {
+        Object.defineProperty(Array.prototype, 'findIndex', {
+            value: function value(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                }
+
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, "length")).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
+                    // d. If testResult is true, return k.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return k;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return -1.
+                return -1;
+            }
+        });
     }
 
     var _typeof =
@@ -50,125 +140,9 @@
                       : typeof obj;
               };
 
-    var asyncGenerator = (function() {
-        function AwaitValue(value) {
-            this.value = value;
-        }
-
-        function AsyncGenerator(gen) {
-            var front, back;
-
-            function send(key, arg) {
-                return new Promise(function(resolve, reject) {
-                    var request = {
-                        key: key,
-                        arg: arg,
-                        resolve: resolve,
-                        reject: reject,
-                        next: null
-                    };
-
-                    if (back) {
-                        back = back.next = request;
-                    } else {
-                        front = back = request;
-                        resume(key, arg);
-                    }
-                });
-            }
-
-            function resume(key, arg) {
-                try {
-                    var result = gen[key](arg);
-                    var value = result.value;
-
-                    if (value instanceof AwaitValue) {
-                        Promise.resolve(value.value).then(
-                            function(arg) {
-                                resume('next', arg);
-                            },
-                            function(arg) {
-                                resume('throw', arg);
-                            }
-                        );
-                    } else {
-                        settle(result.done ? 'return' : 'normal', result.value);
-                    }
-                } catch (err) {
-                    settle('throw', err);
-                }
-            }
-
-            function settle(type, value) {
-                switch (type) {
-                    case 'return':
-                        front.resolve({
-                            value: value,
-                            done: true
-                        });
-                        break;
-
-                    case 'throw':
-                        front.reject(value);
-                        break;
-
-                    default:
-                        front.resolve({
-                            value: value,
-                            done: false
-                        });
-                        break;
-                }
-
-                front = front.next;
-
-                if (front) {
-                    resume(front.key, front.arg);
-                } else {
-                    back = null;
-                }
-            }
-
-            this._invoke = send;
-
-            if (typeof gen.return !== 'function') {
-                this.return = undefined;
-            }
-        }
-
-        if (typeof Symbol === 'function' && Symbol.asyncIterator) {
-            AsyncGenerator.prototype[Symbol.asyncIterator] = function() {
-                return this;
-            };
-        }
-
-        AsyncGenerator.prototype.next = function(arg) {
-            return this._invoke('next', arg);
-        };
-
-        AsyncGenerator.prototype.throw = function(arg) {
-            return this._invoke('throw', arg);
-        };
-
-        AsyncGenerator.prototype.return = function(arg) {
-            return this._invoke('return', arg);
-        };
-
-        return {
-            wrap: function(fn) {
-                return function() {
-                    return new AsyncGenerator(fn.apply(this, arguments));
-                };
-            },
-            await: function(value) {
-                return new AwaitValue(value);
-            }
-        };
-    })();
-
     /*------------------------------------------------------------------------------------------------\
-  Clone a variable (http://stackoverflow.com/a/728694).
-\------------------------------------------------------------------------------------------------*/
+      Clone a variable (http://stackoverflow.com/a/728694).
+    \------------------------------------------------------------------------------------------------*/
 
     function clone(obj) {
         var copy;
@@ -205,87 +179,185 @@
         throw new Error("Unable to copy obj! Its type isn't supported.");
     }
 
-    var defaultSettings =
-        //Template-specific settings
-        {
-            id_col: 'USUBJID',
-            seq_col: 'AESEQ',
-            stdy_col: 'ASTDY',
-            endy_col: 'AENDY',
-            term_col: 'AETERM',
+    var isMergeableObject = function isMergeableObject(value) {
+        return isNonNullObject(value) && !isSpecial(value);
+    };
 
-            color: {
-                value_col: 'AESEV',
-                label: 'Severity/Intensity',
-                values: ['MILD', 'MODERATE', 'SEVERE'],
-                colors: [
-                    '#66bd63', // green
-                    '#fdae61', // sherbet
-                    '#d73027', // red
-                    '#377eb8',
-                    '#984ea3',
-                    '#ff7f00',
-                    '#a65628',
-                    '#f781bf',
-                    '#999999'
-                ]
-            },
+    function isNonNullObject(value) {
+        return (
+            !!value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object'
+        );
+    }
 
-            highlight: {
-                value_col: 'AESER',
-                label: 'Serious Event',
-                value: 'Y',
-                detail_col: null,
+    function isSpecial(value) {
+        var stringValue = Object.prototype.toString.call(value);
+
+        return (
+            stringValue === '[object RegExp]' ||
+            stringValue === '[object Date]' ||
+            isReactElement(value)
+        );
+    }
+
+    // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+    var canUseSymbol = typeof Symbol === 'function' && Symbol.for;
+    var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for('react.element') : 0xeac7;
+
+    function isReactElement(value) {
+        return value.$$typeof === REACT_ELEMENT_TYPE;
+    }
+
+    function emptyTarget(val) {
+        return Array.isArray(val) ? [] : {};
+    }
+
+    function cloneUnlessOtherwiseSpecified(value, options) {
+        return options.clone !== false && options.isMergeableObject(value)
+            ? deepmerge(emptyTarget(value), value, options)
+            : value;
+    }
+
+    function defaultArrayMerge(target, source, options) {
+        return target.concat(source).map(function(element) {
+            return cloneUnlessOtherwiseSpecified(element, options);
+        });
+    }
+
+    function mergeObject(target, source, options) {
+        var destination = {};
+
+        if (options.isMergeableObject(target)) {
+            Object.keys(target).forEach(function(key) {
+                destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+            });
+        }
+
+        Object.keys(source).forEach(function(key) {
+            if (!options.isMergeableObject(source[key]) || !target[key]) {
+                destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+            } else {
+                destination[key] = deepmerge(target[key], source[key], options);
+            }
+        });
+
+        return destination;
+    }
+
+    function deepmerge(target, source, options) {
+        options = options || {};
+
+        options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+
+        options.isMergeableObject = options.isMergeableObject || isMergeableObject;
+
+        var sourceIsArray = Array.isArray(source);
+
+        var targetIsArray = Array.isArray(target);
+
+        var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+        if (!sourceAndTargetTypesMatch) {
+            return cloneUnlessOtherwiseSpecified(source, options);
+        } else if (sourceIsArray) {
+            return options.arrayMerge(target, source, options);
+        } else {
+            return mergeObject(target, source, options);
+        }
+    }
+
+    deepmerge.all = function deepmergeAll(array, options) {
+        if (!Array.isArray(array)) {
+            throw new Error('first argument should be an array');
+        }
+
+        return array.reduce(function(prev, next) {
+            return deepmerge(prev, next, options);
+        }, {});
+    };
+
+    var deepmerge_1 = deepmerge;
+
+    var rendererSpecificSettings = {
+        id_col: 'USUBJID',
+        seq_col: 'AESEQ',
+        stdy_col: 'ASTDY',
+        endy_col: 'AENDY',
+        term_col: 'AETERM',
+
+        color: {
+            value_col: 'AESEV',
+            label: 'Severity/Intensity',
+            values: ['MILD', 'MODERATE', 'SEVERE'],
+            colors: [
+                '#66bd63', // mild
+                '#fdae61', // moderate
+                '#d73027', // severe
+                '#377eb8',
+                '#984ea3',
+                '#ff7f00',
+                '#a65628',
+                '#f781bf'
+            ]
+        },
+
+        highlight: {
+            value_col: 'AESER',
+            label: 'Serious Event',
+            value: 'Y',
+            detail_col: null,
+            attributes: {
+                stroke: 'black',
+                'stroke-width': '2',
+                fill: 'none'
+            }
+        },
+
+        filters: null,
+        details: null,
+        custom_marks: null
+    };
+
+    var webchartsSettings = {
+        x: {
+            column: 'wc_value',
+            type: 'linear',
+            label: null
+        },
+        y: {
+            column: null, // set in syncSettings()
+            type: 'ordinal',
+            label: '',
+            sort: 'earliest',
+            behavior: 'flex'
+        },
+        marks: [
+            {
+                type: 'line',
+                per: null, // set in syncSettings()
+                tooltip: null, // set in syncSettings()
                 attributes: {
-                    stroke: 'black',
-                    'stroke-width': '2',
-                    fill: 'none'
+                    'stroke-width': 5,
+                    'stroke-opacity': 0.5
                 }
             },
-
-            filters: null,
-            details: null,
-            custom_marks: null,
-
-            //Standard chart settings
-            x: {
-                column: 'wc_value',
-                type: 'linear',
-                label: null
-            },
-            y: {
-                column: null, // set in syncSettings()
-                type: 'ordinal',
-                label: '',
-                sort: 'earliest',
-                behavior: 'flex'
-            },
-            marks: [
-                {
-                    type: 'line',
-                    per: null, // set in syncSettings()
-                    tooltip: null, // set in syncSettings()
-                    attributes: {
-                        'stroke-width': 5,
-                        'stroke-opacity': 0.5
-                    }
-                },
-                {
-                    type: 'circle',
-                    per: null, // set in syncSettings()
-                    tooltip: null, // set in syncSettings()
-                    attributes: {
-                        'fill-opacity': 0.5,
-                        'stroke-opacity': 0.5
-                    }
+            {
+                type: 'circle',
+                per: null, // set in syncSettings()
+                tooltip: null, // set in syncSettings()
+                attributes: {
+                    'fill-opacity': 0.5,
+                    'stroke-opacity': 0.5
                 }
-            ],
-            legend: { location: 'top' },
-            gridlines: 'y',
-            range_band: 15,
-            margin: { top: 50 }, // for second x-axis
-            resizable: true
-        };
+            }
+        ],
+        legend: { location: 'top', mark: 'circle' },
+        gridlines: 'y',
+        range_band: 15,
+        margin: { top: 50 }, // for second x-axis
+        resizable: true
+    };
+
+    var defaultSettings = Object.assign({}, rendererSpecificSettings, webchartsSettings);
 
     function syncSettings(preSettings) {
         var nextSettings = clone(preSettings);
@@ -368,12 +440,13 @@
         nextSettings.legend = nextSettings.legend || { location: 'top' };
         nextSettings.legend.label = nextSettings.color.label;
         nextSettings.legend.order = nextSettings.color.values;
+        nextSettings.color_dom = nextSettings.color.values;
 
         //Default filters
         if (!nextSettings.filters || nextSettings.filters.length === 0) {
             nextSettings.filters = [
                 { value_col: nextSettings.color.value_col, label: nextSettings.color.label },
-                { value_col: nextSettings.id_col, label: 'Subject Identifier' }
+                { value_col: nextSettings.id_col, label: 'Participant Identifier' }
             ];
             if (nextSettings.highlight)
                 nextSettings.filters.unshift({
@@ -452,7 +525,7 @@
         {
             type: 'dropdown',
             option: 'y.sort',
-            label: 'Sort Subject IDs',
+            label: 'Sort Participant IDs',
             values: ['earliest', 'alphabetical-descending'],
             require: true
         }
@@ -501,29 +574,9 @@
         return nextSettings;
     }
 
-    /*------------------------------------------------------------------------------------------------\
-  Expand a data array to one item per original item per specified column.
-\------------------------------------------------------------------------------------------------*/
-
-    function lengthenRaw(data, columns) {
-        var my_data = [];
-
-        data.forEach(function(d) {
-            columns.forEach(function(column) {
-                var obj = Object.assign({}, d);
-                obj.wc_category = column;
-                obj.wc_value = d[column];
-                my_data.push(obj);
-            });
-        });
-
-        return my_data;
-    }
-
-    function onInit() {
+    function calculatePopulationSize() {
         var _this = this;
 
-        //Count total number of IDs for population count.
         this.populationCount = d3
             .set(
                 this.raw_data.map(function(d) {
@@ -531,94 +584,177 @@
                 })
             )
             .values().length;
+    }
 
-        //Remove non-AE records.
-        this.superRaw = this.raw_data.filter(function(d) {
-            return /[^\s]/.test(d[_this.config.term_col]);
+    function cleanData() {
+        var _this = this;
+
+        this.superRaw = this.raw_data;
+        var N = this.superRaw.length;
+
+        //Remove records with empty verbatim terms.
+        this.superRaw = this.superRaw.filter(function(d) {
+            return /[^\s*$]/.test(d[_this.config.term_col]);
         });
+        var n1 = this.superRaw.length;
+        var diff1 = N - n1;
+        if (diff1)
+            console.warn(diff1 + ' records without [ ' + this.config.term_col + ' ] removed.');
 
-        //Set empty settings.color_by values to 'N/A'.
+        //Remove records with non-integer start days.
+        this.superRaw = this.superRaw.filter(function(d) {
+            return /^-?\d+$/.test(d[_this.config.stdy_col]);
+        });
+        var n2 = this.superRaw.length;
+        var diff2 = n1 - n2;
+        if (diff2)
+            console.warn(diff2 + ' records without [ ' + this.config.stdy_col + ' ] removed.');
+    }
+
+    function checkFilters() {
+        var _this = this;
+
+        this.controls.config.inputs = this.controls.config.inputs.filter(function(input) {
+            if (input.type !== 'subsetter') return true;
+            else {
+                var levels = d3
+                    .set(
+                        _this.superRaw.map(function(d) {
+                            return d[input.value_col];
+                        })
+                    )
+                    .values();
+                if (levels.length < 2) {
+                    console.warn(
+                        'The [ ' +
+                            input.value_col +
+                            ' ] filter was removed because the variable has only one level.'
+                    );
+                    return false;
+                }
+
+                return true;
+            }
+        });
+    }
+
+    function checkColorBy() {
+        var _this = this;
+
         this.superRaw.forEach(function(d) {
-            return (d[_this.config.color_by] = /[^\s]/.test(d[_this.config.color_by])
+            return (d[_this.config.color_by] = /[^\s*$]/.test(d[_this.config.color_by])
                 ? d[_this.config.color_by]
                 : 'N/A');
         });
 
-        //Append unspecified settings.color_by values to settings.legend.order and define a shade of
-        //gray for each.
+        //Flag NAs
+        if (
+            this.superRaw.some(function(d) {
+                return d[_this.config.color_by] === 'N/A';
+            })
+        )
+            this.na = true;
+    }
+
+    function defineColorDomain() {
+        var _this = this;
+
         var color_by_values = d3
             .set(
                 this.superRaw.map(function(d) {
                     return d[_this.config.color_by];
                 })
             )
-            .values();
+            .values()
+            .sort(function(a, b) {
+                var aIndex = _this.config.color.values.indexOf(a);
+                var bIndex = _this.config.color.values.indexOf(b);
+                var diff = aIndex > -1 && bIndex > -1 ? aIndex - bIndex : 0;
+
+                return diff
+                    ? diff
+                    : aIndex > -1
+                      ? -1
+                      : bIndex > -1
+                        ? 1
+                        : a === 'N/A'
+                          ? 1
+                          : b === 'N/A' ? -1 : a.toLowerCase() < b.toLowerCase() ? -1 : 1;
+            });
         color_by_values.forEach(function(color_by_value, i) {
-            if (_this.config.legend.order.indexOf(color_by_value) === -1) {
+            if (_this.config.color.values.indexOf(color_by_value) < 0) {
+                _this.config.color_dom.push(color_by_value);
                 _this.config.legend.order.push(color_by_value);
+                _this.chart2.config.color_dom.push(color_by_value);
                 _this.chart2.config.legend.order.push(color_by_value);
-            }
-        });
-
-        //Derived data manipulation
-        this.raw_data = lengthenRaw(this.superRaw, [this.config.stdy_col, this.config.endy_col]);
-        this.raw_data.forEach(function(d) {
-            d.wc_value = d.wc_value ? +d.wc_value : NaN;
-        });
-
-        // Remove filters for variables with 0 or 1 levels
-        var chart = this;
-
-        this.controls.config.inputs = this.controls.config.inputs.filter(function(d) {
-            if (d.type != 'subsetter') {
-                return true;
-            } else {
-                var levels = d3
-                    .set(
-                        chart.raw_data.map(function(f) {
-                            return f[d.value_col];
-                        })
-                    )
-                    .values();
-                if (levels.length < 2) {
-                    console.warn(
-                        d.value_col + ' filter not shown since the variable has less than 2 levels'
-                    );
-                }
-                return levels.length >= 2;
             }
         });
     }
 
-    function onLayout() {
+    /*------------------------------------------------------------------------------------------------\
+      Expand a data array to one item per original item per specified column.
+    \------------------------------------------------------------------------------------------------*/
+
+    function lengthenRaw() {
+        var data = this.superRaw;
+        var columns = [this.config.stdy_col, this.config.endy_col];
+        var my_data = [];
+
+        data.forEach(function(d) {
+            columns.forEach(function(column) {
+                var obj = Object.assign({}, d);
+                obj.wc_category = column;
+                obj.wc_value = parseFloat(d[column]);
+                my_data.push(obj);
+            });
+        });
+
+        this.raw_data = my_data;
+    }
+
+    function initCustomEvents() {
+        var chart = this;
+        chart.participantsSelected = [];
+        chart.events.participantsSelected = new CustomEvent('participantsSelected');
+    }
+
+    function onInit() {
+        calculatePopulationSize.call(this);
+        cleanData.call(this);
+        checkFilters.call(this);
+        checkColorBy.call(this);
+        defineColorDomain.call(this);
+        lengthenRaw.call(this);
+        initCustomEvents.call(this);
+    }
+
+    function sortLegendFilter() {
         var _this = this;
 
-        //Add div for participant counts.
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.value_col === _this.config.color.value_col;
+            })
+            .selectAll('option')
+            .sort(function(a, b) {
+                return _this.config.legend.order.indexOf(a) - _this.config.legend.order.indexOf(b);
+            });
+    }
+
+    function addParticipantCountContainer() {
         this.wrap
             .select('.legend')
             .append('span')
             .classed('annote', true)
-            .style('float', 'right');
+            .style('float', 'right')
+            .style('font-style', 'italic');
+    }
 
-        //Create div for back button and participant ID title.
-        this.chart2.wrap
-            .insert('div', ':first-child')
-            .attr('id', 'backButton')
-            .insert('button', '.legend')
-            .html('&#8592; Back')
-            .style('cursor', 'pointer')
-            .on('click', function() {
-                _this.chart2.wrap.select('.id-title').remove();
-                _this.chart2.wrap.style('display', 'none');
-                _this.table.wrap.style('display', 'none');
-                _this.controls.wrap.style('display', 'block');
-                _this.wrap.style('display', 'block');
-                _this.draw();
-            });
-
-        //Add top x-axis.
-        var x2 = this.svg.append('g').attr('class', 'x2 axis linear');
-        x2
+    function addTopXaxis() {
+        this.svg
+            .append('g')
+            .attr('class', 'x2 axis linear')
             .append('text')
             .attr({
                 class: 'axis-title top',
@@ -628,20 +764,60 @@
             .text(this.config.x_label);
     }
 
-    function onDataTransform() {}
+    function addBackButton() {
+        var _this = this;
+
+        this.chart2.wrap
+            .insert('div', ':first-child')
+            .attr('id', 'backButton')
+            .insert('button', '.legend')
+            .html('&#8592; Back')
+            .style('cursor', 'pointer')
+            .on('click', function() {
+                //Trigger participantsSelected event
+                _this.participantsSelected = [];
+                _this.events.participantsSelected.data = _this.participantsSelected;
+                _this.wrap.node().dispatchEvent(_this.events.participantsSelected);
+
+                //remove the details chart
+                _this.chart2.wrap.select('.id-title').remove();
+                _this.chart2.wrap.style('display', 'none');
+                _this.table.wrap.style('display', 'none');
+                _this.controls.wrap.style('display', 'block');
+                _this.wrap.style('display', 'block');
+                _this.draw();
+            });
+    }
+
+    function onLayout() {
+        sortLegendFilter.call(this);
+        addParticipantCountContainer.call(this);
+        addTopXaxis.call(this);
+        addBackButton.call(this);
+    }
+
+    function onPreprocess() {}
+
+    function onDatatransform() {}
+
+    function addNAToColorScale() {
+        if (this.na)
+            // defined in ../onInit/checkColorBy
+            this.colorScale.range().splice(this.colorScale.domain().indexOf('N/A'), 1, '#999999');
+    }
 
     /*------------------------------------------------------------------------------------------------\
-  Annotate number of participants based on current filters, number of participants in all, and
-  the corresponding percentage.
+      Annotate number of participants based on current filters, number of participants in all, and
+      the corresponding percentage.
 
-  Inputs:
+      Inputs:
 
-    chart - a webcharts chart object
-    id_unit - a text string to label the units in the annotation (default = 'participants')
-    selector - css selector for the annotation
-\------------------------------------------------------------------------------------------------*/
+        chart - a webcharts chart object
+        id_unit - a text string to label the units in the annotation (default = 'participants')
+        selector - css selector for the annotation
+    \------------------------------------------------------------------------------------------------*/
 
-    function updateSubjectCount(chart, selector, id_unit) {
+    function updateParticipantCount(chart, selector, id_unit) {
         //count the number of unique ids in the current chart and calculate the percentage
         var filtered_data = chart.raw_data.filter(function(d) {
             var filtered = d[chart.config.seq_col] === '';
@@ -675,13 +851,9 @@
         );
     }
 
-    function onDraw() {
+    function sortYdomain() {
         var _this = this;
 
-        //Annotate number of selected participants out of total participants.
-        updateSubjectCount(this, '.annote', 'subject ID(s)');
-
-        //Sort y-axis based on `Sort IDs` control selection.
         var yAxisSort = this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
@@ -705,7 +877,7 @@
                 return !filtered;
             });
 
-            //Capture all subject IDs with adverse events with a start day.
+            //Capture all participant IDs with adverse events with a start day.
             var withStartDay = d3
                 .nest()
                 .key(function(d) {
@@ -733,7 +905,7 @@
                     return d.key;
                 });
 
-            //Capture all subject IDs with adverse events without a start day.
+            //Capture all participant IDs with adverse events without a start day.
             var withoutStartDay = d3
                 .set(
                     filtered_data
@@ -754,59 +926,15 @@
         } else this.y_dom = this.y_dom.sort(d3.descending);
     }
 
-    /*------------------------------------------------------------------------------------------------\
-  Sync colors of legend marks and chart marks.
-\------------------------------------------------------------------------------------------------*/
-
-    function syncColors(chart) {
-        //Recolor legend.
-        var legendItems = chart.wrap.selectAll('.legend-item:not(.highlight)');
-        legendItems.each(function(d, i) {
-            d3
-                .select(this)
-                .select('.legend-mark')
-                .style('stroke', chart.config.colors[chart.config.legend.order.indexOf(d.label)])
-                .style('stroke-width', '25%');
-        });
-
-        //Recolor circles.
-        var circles = chart.svg.selectAll(
-            'circle.wc-data-mark:not(.highlight), circle.wc-data-mark:not(.custom)'
-        );
-        circles.each(function(d, i) {
-            var color_by_value = d.values.raw[0][chart.config.color_by];
-            d3
-                .select(this)
-                .style(
-                    'stroke',
-                    chart.config.colors[chart.config.legend.order.indexOf(color_by_value)]
-                );
-            d3
-                .select(this)
-                .style(
-                    'fill',
-                    chart.config.colors[chart.config.legend.order.indexOf(color_by_value)]
-                );
-        });
-
-        //Recolor lines.
-        var lines = chart.svg.selectAll(
-            'path.wc-data-mark:not(.highlight), path.wc-data-mark:not(.custom)'
-        );
-        lines.each(function(d, i) {
-            var color_by_value = d.values[0].values.raw[0][chart.config.color_by];
-            d3
-                .select(this)
-                .style(
-                    'stroke',
-                    chart.config.colors[chart.config.legend.order.indexOf(color_by_value)]
-                );
-        });
+    function onDraw() {
+        addNAToColorScale.call(this);
+        updateParticipantCount(this, '.annote', 'participant ID(s)');
+        sortYdomain.call(this);
     }
 
     /*------------------------------------------------------------------------------------------------\
-  Add highlighted adverse event legend item.
-\------------------------------------------------------------------------------------------------*/
+      Add highlighted adverse event legend item.
+    \------------------------------------------------------------------------------------------------*/
 
     function addHighlightLegendItem(chart) {
         chart.wrap.select('.legend li.highlight').remove();
@@ -853,18 +981,7 @@
             .text(chart.config.highlight.label);
     }
 
-    function onResize() {
-        var _this = this;
-
-        var context = this;
-
-        //Sync legend and mark colors.
-        syncColors(this);
-
-        //Add highlight adverse event legend item.
-        if (this.config.highlight) addHighlightLegendItem(this);
-
-        //Draw second x-axis at top of chart.
+    function drawTopXaxis() {
         var x2Axis = d3.svg
             .axis()
             .scale(this.x)
@@ -887,8 +1004,12 @@
             'shape-rendering': 'crispEdges'
         });
         g_x2_axis.selectAll('.tick line').attr('stroke', '#eee');
+    }
 
-        //Draw second chart when y-axis tick label is clicked.
+    function addTickClick() {
+        var _this = this;
+
+        var context = this;
         this.svg
             .select('.y.axis')
             .selectAll('.tick')
@@ -905,6 +1026,11 @@
                     .attr('class', 'id-title')
                     .style('margin-left', '1%')
                     .text('Participant: ' + d);
+
+                //Trigger participantsSelected event
+                context.participantsSelected = [d];
+                context.events.participantsSelected.data = context.participantsSelected;
+                context.wrap.node().dispatchEvent(context.events.participantsSelected);
 
                 //Sort listing by sequence.
                 var seq_col = context.config.seq_col;
@@ -942,12 +1068,25 @@
                 _this.wrap.style('display', 'none');
                 _this.controls.wrap.style('display', 'none');
             });
+    }
+
+    function onResize() {
+        var context = this;
+
+        //Add highlight adverse event legend item.
+        if (this.config.highlight) addHighlightLegendItem(this);
+
+        //Draw second x-axis at top of chart.
+        drawTopXaxis.call(this);
+
+        //Draw second chart when y-axis tick label is clicked.
+        addTickClick.call(this);
 
         /**-------------------------------------------------------------------------------------------\
-      Second chart callbacks.
-    \-------------------------------------------------------------------------------------------**/
+          Second chart callbacks.
+        \-------------------------------------------------------------------------------------------**/
 
-        this.chart2.on('datatransform', function() {
+        this.chart2.on('preprocess', function() {
             //Define color scale.
             this.config.color_dom = context.colorScale.domain();
         });
@@ -958,17 +1097,23 @@
         });
 
         this.chart2.on('resize', function() {
-            //Sync legend and mark colors.
-            syncColors(this);
-
             //Add highlight adverse event legend item.
             if (this.config.highlight) addHighlightLegendItem(this);
         });
     }
 
-    function aeTimelines(element, settings) {
+    // utilities
+
+    function aeTimelines() {
+        var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
+        var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
         //Merge default settings with custom settings.
-        var mergedSettings = Object.assign({}, defaultSettings, settings);
+        var mergedSettings = deepmerge_1(defaultSettings, settings, {
+            arrayMerge: function arrayMerge(destination, source) {
+                return source;
+            }
+        });
 
         //Sync properties within settings object.
         var syncedSettings = syncSettings(mergedSettings);
@@ -989,7 +1134,8 @@
         var chart = webcharts.createChart(element, syncedSettings, controls);
         chart.on('init', onInit);
         chart.on('layout', onLayout);
-        chart.on('datatransform', onDataTransform);
+        chart.on('preprocess', onPreprocess);
+        chart.on('datatransform', onDatatransform);
         chart.on('draw', onDraw);
         chart.on('resize', onResize);
 

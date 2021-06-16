@@ -1,12 +1,14 @@
 env: safetyGraphics
 label: Hepatic Safety Explorer
 type: htmlwidget
-domain: labs
-package: safetyCharts
+package: safetyCharts  
+domain: 
+  - labs
 export: true
 workflow:
   widget: hepExplorer
 links:
+  Clinical Users Guide (pdf): https://github.com/SafetyGraphics/SafetyGraphics.github.io/blob/master/guide/HepExplorerWorkflow_v1_2_1.pdf
   Homepage: https://github.com/SafetyGraphics/hep-explorer
   Wiki: https://github.com/SafetyGraphics/hep-explorer/wiki
   Issues: https://github.com/SafetyGraphics/hep-explorer/issues

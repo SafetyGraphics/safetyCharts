@@ -9,7 +9,7 @@ dependencies:
    script: webcharts.js
    stylesheet: webcharts.css
  - name: safety-results-over-time
-   version: 2.2.0
-   src: htmlwidgets/lib/safety-results-over-time-2.2.0
+   version: 2.3.3
+   src: htmlwidgets/lib/safety-results-over-time-2.3.3
    script: safetyResultsOverTime.js
 

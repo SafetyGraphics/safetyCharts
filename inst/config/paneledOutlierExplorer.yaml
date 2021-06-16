@@ -1,7 +1,8 @@
 env: safetyGraphics
-label: Paneled Outlier Explorer (widget)
+label: Paneled Outlier Explorer
 type: htmlwidget
-domain: labs
+domain: 
+  - labs
 package: safetyCharts
 export: true
 workflow:
@@ -12,5 +13,4 @@ links:
   Wiki: https://github.com/RhoInc/paneled-outlier-explorer/wiki 
   Issues: https://github.com/RhoInc/paneled-outlier-explorer/issues
   Demo: https://rhoinc.github.io/paneled-outlier-explorer/test-page/
-  htmlwidget: https://github.com/SafetyGraphics/safetycharts
 
