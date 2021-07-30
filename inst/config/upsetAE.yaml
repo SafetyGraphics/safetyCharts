@@ -1,0 +1,13 @@
+env: safetyGraphics
+label: UpSet AE Co-occurence explorer
+type: plot
+package: safetyCharts  
+export: true
+order: 2
+domain: 
+  - aes
+workflow:
+  main: upset_ae
+links:
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+
