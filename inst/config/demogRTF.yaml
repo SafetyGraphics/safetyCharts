@@ -1,12 +1,13 @@
 env: safetyGraphics
 label: Demographics Table
-type: rtf
+type: module
 order: 1
 domain: 
   - dm
 package: safetyCharts
 workflow:
-  main: pharmartf_render_table
+  server: demogRTF_server
+  ui: demogRTF_ui
 links: 
   Tplyr: https://CRAN.R-project.org/package=Tplyr 
   huxtable: https://CRAN.R-project.org/package=huxtable  
