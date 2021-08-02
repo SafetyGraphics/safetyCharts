@@ -30,23 +30,23 @@
 #'
 upset_ae <- function(data, settings) {
     # Convert settings to symbols ready for standard evaluation
-    ae_id_sym <- sym(settings[["aes"]][["id_col"]])
-    ae_bodsys_sym <- sym(settings[["aes"]][["bodsys_col"]])
+    ae_id_sym <- sym(settings[["id_col"]])
+    ae_bodsys_sym <- sym(settings[["bodsys_col"]])
 
-    ae_w<-ae %>% 
+    ae_w<-data %>% 
         select(!!ae_id_sym, !!ae_bodsys_sym) %>%
         mutate(count=1)%>%
-        mutate(System = substr(!!ae_bodsys_sym,0,10))%>%
+        mutate(System = substr(!!ae_bodsys_sym,0,25))%>%
+        #mutate(System = !!ae_bodsys_sym)%>%
         distinct()%>%
-        pivot_wider(
-            id_cols=System, 
-            names_from=!!ae_bodsys_sym,
-            values_from = "count", 
+        tidyr::pivot_wider(
+            id_cols=!!ae_id_sym, 
+            names_from=System,
+            values_from = count, 
             values_fill=0
         )
 
     p<-upset(as.data.frame(ae_w), order.by = "freq", nsets=10)
-
 
     return(p)
 }
