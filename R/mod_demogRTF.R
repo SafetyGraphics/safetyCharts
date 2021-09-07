@@ -68,8 +68,8 @@ demogRTF_server <- function(input, output, session, params) {
 #' settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
 #' demogRTF_table(data, settings)
 #'
-#' @import pharmaRTF
-#' @import huxtable
+#' @importFrom pharmaRTF rtf_doc add_titles hf_line add_footnotes set_font_size set_ignore_cell_padding set_column_header_buffer
+#' @importFrom huxtable as_hux set_bold set_align set_valign set_bottom_border set_width set_escape_contents set_col_width
 #' @import Tplyr
 #'
 #' @return rtf doc object
