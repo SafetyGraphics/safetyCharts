@@ -1,5 +1,5 @@
 Package: safetyCharts
-Title: Charts for Monitoring Clinical Trial Safety Designed for Use with {safetyGraphics}
+Title: Charts for Monitoring Clinical Trial Safety
 Version: 0.2.0
 Authors@R:
     person(
