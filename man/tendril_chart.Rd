@@ -31,21 +31,35 @@ The settings object provides details regarding the columns in the data sets.
 }
 }
 \examples{
-aes <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/ae.csv")
-dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
-settings <- list(
-    dm = list(
-        id_col = "USUBJID",
-        treatment_col = "ARM",
-        `treatment_values--group1` = "",
-        `treatment_values--group2` = ""
-    ),
-    aes = list(
-        id_col = "USUBJID",
-        bodsys_col = "",
-        stdy_col = ""
-    )
+library(yaml)
+# Load Data
+data <- list(
+   aes=safetyData::adam_adae,
+   dm=safetyData::adam_adsl
 )
+# Load mapping
+# NOTE: mapping can also be saved as a .yaml and used for multiple charts.
+mapping_yaml<-"aes:
+ id_col: USUBJID
+ seq_col: AESEQ
+ stdy_col: ASTDY
+ endy_col: AENDY
+ term_col: AETERM
+ bodsys_col: AEBODSYS
+dm:
+ id_col: USUBJID
+ treatment_col: ARM
+ treatment_values:
+   group1: ''
+   group2: ''
+ sex_col: SEX
+ race_col: RACE
+ age_col: AGE
+"
+mapping <- read_yaml(text=mapping_yaml)
+# Create Parameter list
+params<-list(data=data, settings=mapping)
+# Run the chart
+do.call(tendril_chart,params)
 
-tendril_plot(list(aes = aes, dm = dm), settings)
 }

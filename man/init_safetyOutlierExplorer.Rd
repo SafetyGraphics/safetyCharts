@@ -17,7 +17,3 @@ returns list with data and settings
 \description{
 Initialize Settings for Safety Outlier Explorer widget
 }
-\examples{
-
-a <- init_safetyOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
-}

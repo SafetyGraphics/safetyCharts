@@ -46,14 +46,14 @@ lab_distribution_server <- function(input, output, session, params) {
                 Value = params()$settings[["value_col"]],
                 Measure = params()$settings[["measure_col"]]
             ) %>%
-            filter(!is.na(Value))
+            filter(!is.na(.data$Value))
     })
 
     output$labdist <- renderPlot({
         req(mapped_data())
 
         # set up the plot
-        p <- ggplot(data = mapped_data(), aes(x = Measure, y = Value)) +
+        p <- ggplot(data = mapped_data(), aes(x = .data$Measure, y = .data$Value)) +
             theme_bw() +
             theme(
                 axis.text.x = element_text(angle = 25, hjust = 1),

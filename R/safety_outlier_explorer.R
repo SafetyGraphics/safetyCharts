@@ -15,7 +15,6 @@
 #'
 #' @examples
 #'
-#' lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
 #' settings <- list(
 #'     id_col = "USUBJID",
 #'     measure_col = "LBTEST",
@@ -23,12 +22,13 @@
 #'     studyday_col = "VISITDY",
 #'     value_col = "LBORRES"
 #' )
-#' safety_outlier_explorer(lb, settings)
+#' safety_outlier_explorer(safetyData::sdtm_lb, settings)
 #' @return returns a chart object
 #'
 #' @import ggplot2
 #' @import rlang
 #' @import dplyr
+#' @importFrom utils hasName
 #'
 #' @export
 

@@ -16,19 +16,25 @@ RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Imports:
     dplyr,
+    DT,
     Tplyr,
     ggplot2,
     rlang,
     shiny,
+    knitr,
     RColorBrewer,
+    stringr,
     forcats,
     vdiffr (>= 0.3.3),
     Tendril,
     kableExtra,
     huxtable, 
-    pharmaRTF
+    pharmaRTF, 
+    yaml
 Suggests:
     testthat,
-    shinytest
+    shinytest,
+    safetyData,
+    safetyGraphics
 Depends:
     R (>= 2.10)

@@ -9,7 +9,7 @@ ui <- tagList(
     )
 )
 
-lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
+lb <- safetyData::sdtm_lb
 sub <- lb %>% filter(LBTEST %in% c("Albumin", "Bilirubin", "Chloride"))
 settings <- list(
     measure_col = "LBTEST",
@@ -24,5 +24,6 @@ params <- reactive({
 server <- function(input, output, session) {
     callModule(safetyOutlierExplorer_server, "example1", params)
 }
+
 
 shinyApp(ui, server)

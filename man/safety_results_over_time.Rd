@@ -34,10 +34,10 @@ The settings object provides details the columns in the data set.
 }
 }
 \examples{
-
-lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
+library(dplyr)
+lb <- safetyData::sdtm_lb
 sub_ids <- unique(lb$USUBJID)[1:100]
-lb <- lb \%>\% filter(USUBJID \%in\% sub_ids)
+lb<-lb \%>\% filter(USUBJID \%in\% sub_ids)
 settings <- list(
     value_col = "LBORRES",
     measure_col = "LBTEST",
@@ -55,9 +55,9 @@ settings$measure_values <- c("Albumin")
 safety_results_over_time(lb, settings)
 
 # add grouping by treatment
-dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
-dm_sub <- dm \%>\% select(USUBJID, ARM)
+dm_sub <- safetyData::sdtm_dm \%>\% select(USUBJID, ARM)
 dm_lb <- dm_sub \%>\% left_join(lb)
 settings$group_col <- "ARM"
 safety_results_over_time(dm_lb, settings)
+
 }

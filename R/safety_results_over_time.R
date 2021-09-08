@@ -19,10 +19,10 @@
 #' }
 #'
 #' @examples
-#'
-#' lb <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/lb.csv")
+#' library(dplyr)
+#' lb <- safetyData::sdtm_lb
 #' sub_ids <- unique(lb$USUBJID)[1:100]
-#' lb <- lb %>% filter(USUBJID %in% sub_ids)
+#' lb<-lb %>% filter(USUBJID %in% sub_ids)
 #' settings <- list(
 #'     value_col = "LBORRES",
 #'     measure_col = "LBTEST",
@@ -40,16 +40,18 @@
 #' safety_results_over_time(lb, settings)
 #'
 #' # add grouping by treatment
-#' dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
-#' dm_sub <- dm %>% select(USUBJID, ARM)
+#' dm_sub <- safetyData::sdtm_dm %>% select(USUBJID, ARM)
 #' dm_lb <- dm_sub %>% left_join(lb)
 #' settings$group_col <- "ARM"
 #' safety_results_over_time(dm_lb, settings)
+#' 
 #' @return returns a chart object
 #'
 #' @import ggplot2
 #' @import dplyr
-#'
+#' @importFrom utils hasName
+#' @importFrom stringr str_detect
+#' 
 #' @export
 
 safety_results_over_time <- function(data, settings) {
