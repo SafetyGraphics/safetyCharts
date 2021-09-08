@@ -1,5 +1,5 @@
 Package: safetyCharts
-Title: Charts for monitoring clinical trial safety designed for use with {safetyGraphics}
+Title: Charts for Monitoring Clinical Trial Safety Designed for Use with {safetyGraphics}
 Version: 0.2.0
 Authors@R:
     person(
@@ -8,8 +8,8 @@ Authors@R:
         role = c("aut", "cre"),
         email = "jwildfire@gmail.com"
     )
-Maintainer: Jeremy Wildfire <jeremy_wildfire@gmail.com>
-Description: safetyCharts contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
+Maintainer: Jeremy Wildfire <jwildfire@gmail.com>
+Description: Contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
 URL: https://github.com/SafetyGraphics/safetyCharts
 BugReports: https://github.com/SafetyGraphics/safetyCharts/issues
 License: MIT + file LICENSE
