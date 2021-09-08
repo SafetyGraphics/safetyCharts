@@ -37,4 +37,4 @@ Suggests:
     safetyData,
     safetyGraphics
 Depends:
-    R (>= 4)
+    R (>= 4.0)
