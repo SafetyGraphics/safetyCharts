@@ -25,16 +25,15 @@ Imports:
     RColorBrewer,
     stringr,
     forcats,
-    vdiffr (>= 0.3.3),
     Tendril,
     kableExtra,
     huxtable, 
-    pharmaRTF, 
-    yaml
+    pharmaRTF
 Suggests:
     testthat,
     shinytest,
     safetyData,
-    safetyGraphics
+    safetyGraphics,
+    yaml
 Depends:
     R (>= 4.0)
