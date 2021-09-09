@@ -2,4 +2,4 @@
 
 Initial CRAN release for safetyCharts. 
 
-See the [GitHub release tracker](https://github.com/ASA-DIA-InteractiveSafetyGraphics/safetyCharts/releases) for additional release documentation and links to issues. 
+See the [GitHub release tracker](https://github.com/safetyGraphics/safetyCharts/releases) for additional release documentation and links to issues. 

@@ -30,36 +30,3 @@ The settings object provides details regarding the columns in the data sets.
 \item{"settings$aes$stdy_col"}{Study Day}
 }
 }
-\examples{
-library(yaml)
-# Load Data
-data <- list(
-   aes=safetyData::adam_adae,
-   dm=safetyData::adam_adsl
-)
-# Load mapping
-# NOTE: mapping can also be saved as a .yaml and used for multiple charts.
-mapping_yaml<-"aes:
- id_col: USUBJID
- seq_col: AESEQ
- stdy_col: ASTDY
- endy_col: AENDY
- term_col: AETERM
- bodsys_col: AEBODSYS
-dm:
- id_col: USUBJID
- treatment_col: ARM
- treatment_values:
-   group1: ''
-   group2: ''
- sex_col: SEX
- race_col: RACE
- age_col: AGE
-"
-mapping <- read_yaml(text=mapping_yaml)
-# Create Parameter list
-params<-list(data=data, settings=mapping)
-# Run the chart
-do.call(tendril_chart,params)
-
-}
