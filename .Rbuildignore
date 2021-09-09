@@ -5,3 +5,4 @@ R_old
 ^\.github$
 Examples
 ^LICENSE\.md$
+^CRAN-RELEASE$
