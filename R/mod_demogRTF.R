@@ -91,7 +91,7 @@ demogRTF_table <- function(data, settings) {
     tab <- tplyr_tab %>%
         Tplyr::build() %>%
         arrange(.data$ord_layer_index, .data$ord_layer_1, .data$ord_layer_2) %>% 
-        select(starts_with("row_label"), treatment_vars, var1_Total) %>%
+        select(starts_with("row_label"), treatment_vars, .data$var1_Total) %>%
         Tplyr::add_column_headers(header, header_n = Tplyr::header_n(tplyr_tab))
 
     ht <- huxtable::as_hux(tab, add_colnames=FALSE) %>%
