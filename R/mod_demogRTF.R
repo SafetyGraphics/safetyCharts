@@ -86,10 +86,8 @@ demogRTF_table <- function(data, settings) {
 
     treatments<- unique(data[,settings$treatment_col])
     treatment_vars <- paste0("var1_",treatments)
-    print(treatment_vars)
     treatment_labels <- paste0(treatments, "\\line(N=**",treatments,"**)|", collapse=" ")
     header <- paste0(" | | ",treatment_labels," Total\\line(N=**Total**)")
-    print(header)
     tab <- tplyr_tab %>%
         Tplyr::build() %>%
         arrange(.data$ord_layer_index, .data$ord_layer_1, .data$ord_layer_2) %>% 
