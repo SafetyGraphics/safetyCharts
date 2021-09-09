@@ -83,15 +83,18 @@ demogRTF_table <- function(data, settings) {
         Tplyr::add_layer(
             Tplyr::group_desc(!!sym(settings$age_col), by = "Age (Years)")
         )
+
+    treatments<- unique(data[,settings$treatment_col])
+    treatment_vars <- paste0("var1_",treatments)
+    print(treatment_vars)
+    treatment_labels <- paste0(treatments, "\\line(N=**",treatments,"**)|", collapse=" ")
+    header <- paste0(" | | ",treatment_labels," Total\\line(N=**Total**)")
+    print(header)
     tab <- tplyr_tab %>%
         Tplyr::build() %>%
         arrange(.data$ord_layer_index, .data$ord_layer_1, .data$ord_layer_2) %>% 
-        select(starts_with("row_label"), .data$var1_Placebo, .data$`var1_Xanomeline Low Dose`, .data$`var1_Xanomeline High Dose`, .data$var1_Total) %>%
-        Tplyr::add_column_headers(
-            paste0(" | | Placebo\\line(N=**Placebo**)| Xanomeline Low Dose\\line(N=**Xanomeline Low Dose**) ", 
-            "| Xanomeline High Dose\\line(N=**Xanomeline High Dose**) | Total\\line(N=**Total**)"), 
-            header_n = Tplyr::header_n(tplyr_tab)
-        )
+        select(starts_with("row_label"), treatment_vars, var1_Total) %>%
+        Tplyr::add_column_headers(header, header_n = Tplyr::header_n(tplyr_tab))
 
     ht <- huxtable::as_hux(tab, add_colnames=FALSE) %>%
         huxtable::set_bold(1, 1:ncol(tab), TRUE) %>% # bold the first row
@@ -105,7 +108,7 @@ demogRTF_table <- function(data, settings) {
 
     doc <- pharmaRTF::rtf_doc(ht) %>% 
         pharmaRTF::add_titles(
-            pharmaRTF::hf_line("Protocol: CDISCPILOT01", "PAGE_FORMAT: Page %s of %s", align='split', bold=TRUE, italic=TRUE),
+            pharmaRTF::hf_line("Protocol: XXX", "PAGE_FORMAT: Page %s of %s", align='split', bold=TRUE, italic=TRUE),
             pharmaRTF::hf_line("Table 14-2.01", align='center', bold=TRUE, italic=TRUE),
             pharmaRTF::hf_line("Summary of Demographic and Baseline Characteristics", align='center', bold=TRUE, italic=TRUE)
         ) %>% 
