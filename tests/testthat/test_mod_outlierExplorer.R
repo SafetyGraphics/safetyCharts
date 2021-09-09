@@ -5,10 +5,13 @@ library(dplyr)
 library(shinytest)
 library(testthat)
 
-app <- ShinyDriver$new("./module_examples/outlierExplorer", loadTimeout = 1e+05)
-initial <- app$getAllValues()
+if(interactive()){
+    app <- ShinyDriver$new("module_examples/outlierExplorer")
+    initial <- app$getAllValues()
+}
 
-test_that("Chart has is image and has correct mapping", {
+test_that("Chart has image and has correct mapping", {
+    skip_if_not(interactive())
     expect_equal(substring(initial$output$`example1`$src, 1, 14), "data:image/png")
     mapping <- initial$output$`example1`$coordmap$panels[[1]]$mapping
     expect_equal(length(initial$output$`example1`$coordmap$panels), 3)
@@ -19,6 +22,7 @@ test_that("Chart has is image and has correct mapping", {
 })
 
 test_that("Changing the tests updates the chart", {
+    skip_if_not(interactive())
     app$setValue("example1-measures", c("Albumin", "Bilirubin"))
     Sys.sleep(3) # TODO inplement app$waitForValue() instead of sleeping
     new <- app$getAllValues()
@@ -26,4 +30,4 @@ test_that("Changing the tests updates the chart", {
     expectUpdate(app, `example1-measures` = c("Albumin"), "example1-outlierExplorer")
 })
 
-app$stop()
+if(interactive()) app$stop()

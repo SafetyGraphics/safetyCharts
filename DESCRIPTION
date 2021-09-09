@@ -1,32 +1,42 @@
 Package: safetyCharts
-Title: Charts for monitoring clinical trial safety designed for use with {safetyGraphics}
-Version: 0.1.1
+Title: Charts for Monitoring Clinical Trial Safety
+Version: 0.2.0
 Authors@R:
     person(
         given = "Jeremy",
         family = "Wildfire",
         role = c("aut", "cre"),
-        email = "jwildfire@gilead.com"
+        email = "jwildfire@gmail.com"
     )
-Description: safetyCharts contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
-License: MIT
+Maintainer: Jeremy Wildfire <jwildfire@gmail.com>
+Description: Contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
+URL: https://github.com/SafetyGraphics/safetyCharts
+BugReports: https://github.com/SafetyGraphics/safetyCharts/issues
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Imports:
     dplyr,
+    DT,
     Tplyr,
     ggplot2,
     rlang,
     shiny,
+    knitr,
     RColorBrewer,
+    stringr,
     forcats,
-    vdiffr (>= 0.3.3),
     Tendril,
-    kableExtra
+    kableExtra,
+    huxtable, 
+    pharmaRTF
 Suggests:
     testthat,
-    shinytest
+    shinytest,
+    safetyData,
+    safetyGraphics,
+    yaml
 Depends:
-    R (>= 2.10)
+    R (>= 4.0)

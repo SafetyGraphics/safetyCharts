@@ -23,8 +23,7 @@ rtf doc object
 create demographics RTF table
 }
 \examples{
-dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
 settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
-demogRTF_table(data, settings)
+demogRTF_table(safetyData::sdtm_dm, settings)
 
 }

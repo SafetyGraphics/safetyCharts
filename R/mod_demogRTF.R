@@ -27,7 +27,6 @@ demogRTF_ui <- function(id) {
 #'
 #' @return returns shiny module Server function
 #'
-#' @import shiny
 #' @import ggplot2
 #' @import dplyr
 #'
@@ -64,12 +63,11 @@ demogRTF_server <- function(input, output, session, params) {
 #' - age (settings$age_Col)
 #'
 #' @examples
-#' dm <- read.csv("https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/sdtm/cdisc-pilot-01/dm.csv")
 #' settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
-#' demogRTF_table(data, settings)
+#' demogRTF_table(safetyData::sdtm_dm, settings)
 #'
-#' @import pharmaRTF
-#' @import huxtable
+#' @importFrom pharmaRTF rtf_doc add_titles hf_line add_footnotes set_font_size set_ignore_cell_padding set_column_header_buffer
+#' @importFrom huxtable as_hux set_bold set_align set_valign set_bottom_border set_width set_escape_contents set_col_width
 #' @import Tplyr
 #'
 #' @return rtf doc object
@@ -87,8 +85,8 @@ demogRTF_table <- function(data, settings) {
         )
     tab <- tplyr_tab %>%
         Tplyr::build() %>%
-        arrange(ord_layer_index, ord_layer_1, ord_layer_2) %>% 
-        select(starts_with("row_label"), var1_Placebo, `var1_Xanomeline Low Dose`, `var1_Xanomeline High Dose`, var1_Total) %>%
+        arrange(.data$ord_layer_index, .data$ord_layer_1, .data$ord_layer_2) %>% 
+        select(starts_with("row_label"), .data$var1_Placebo, .data$`var1_Xanomeline Low Dose`, .data$`var1_Xanomeline High Dose`, .data$var1_Total) %>%
         Tplyr::add_column_headers(
             paste0(" | | Placebo\\line(N=**Placebo**)| Xanomeline Low Dose\\line(N=**Xanomeline Low Dose**) ", 
             "| Xanomeline High Dose\\line(N=**Xanomeline High Dose**) | Total\\line(N=**Total**)"), 

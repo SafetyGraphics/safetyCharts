@@ -3,9 +3,6 @@
 #' @param data labs data structured as one record per person per visit per measurement. See details for column requirements.
 #' @param settings named list of settings
 #'
-#' @examples
-#'
-#' a <- init_paneledOutlierExplorer(safetyData::lb, safetyGraphics::meta) # See a$settings$time_cols
 #' @return returns list with data and settings
 #'
 #' @export
