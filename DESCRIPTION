@@ -9,7 +9,7 @@ Authors@R:
         email = "jwildfire@gmail.com"
     )
 Maintainer: Jeremy Wildfire <jwildfire@gmail.com>
-Description: Contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the {safetyGraphics} package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
+Description: Contains chart code for monitoring clinical trial safety. Charts can be used as standalone output, but are also designed for use with the 'safetyGraphics' package, which makes it easy to load data and customize the charts using an interactive web-based interface created with Shiny.
 URL: https://github.com/SafetyGraphics/safetyCharts
 BugReports: https://github.com/SafetyGraphics/safetyCharts/issues
 License: MIT + file LICENSE
