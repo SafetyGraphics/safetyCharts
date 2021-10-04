@@ -84,7 +84,7 @@ demogRTF_table <- function(data, settings) {
             Tplyr::group_desc(!!sym(settings$age_col), by = "Age (Years)")
         )
 
-    treatments<- unique(data[,settings$treatment_col])
+    treatments<- data%>%pull(settings$treatment_col) %>% unique() 
     treatment_vars <- paste0("var1_",treatments)
     treatment_labels <- paste0(treatments, "\\line(N=**",treatments,"**)|", collapse=" ")
     header <- paste0(" | | ",treatment_labels," Total\\line(N=**Total**)")
