@@ -47,7 +47,7 @@ safety_outlier_explorer <- function(data, settings) {
     }
 
     p <- ggplot(data = sub, params) +
-        geom_path(color = "black", alpha = 0.15) +
+        geom_line(color = "black", alpha = 0.15) +
         labs(x = "Study Day", y = "Lab Value", title = "Lab Overview", subtitle = "") +
         facet_grid(
             rows = as.name(settings$measure_col),
