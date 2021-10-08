@@ -1,0 +1,11 @@
+env: safetyGraphics
+label: Time to Adverse Event
+type: plot
+package: safetyCharts
+export: true
+order: 2.2
+domain:
+  - aes
+  - dm
+workflow:
+  main: timeToAdverseEvent
