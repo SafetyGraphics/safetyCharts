@@ -1,0 +1,18 @@
+env: safetyGraphics
+label: QT Outlier Explorer
+type: htmlwidget
+package: safetyCharts
+export: true
+order: 31
+domain: 
+  - ecg
+workflow:
+  init: init_QTsafetyOutlierExplorer
+  widget: safetyOutlierExplorer
+links:
+  Homepage: https://github.com/RhoInc/safety-outlier-explorer
+  Wiki: https://github.com/RhoInc/safety-outlier-explorer/wiki 
+  Issues: https://github.com/RhoInc/safety-outlier-explorer/issues
+  Demo: https://rhoinc.github.io/safety-outlier-explorer/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

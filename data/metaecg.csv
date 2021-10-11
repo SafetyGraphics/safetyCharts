@@ -1,0 +1,23 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,ecg,id_col,NA,column,ID column,Unique subject identifier variable name.,FALSE,USUBJID,USUBJID
+value_col,ecg,value_col,NA,column,Value column,QT result variable name.,FALSE,AVAL,EGSTRESN
+measure_col,ecg,measure_col,NA,column,Measure column,QT measure variable name,FALSE,PARAM,EGTEST
+normal_col_low,ecg,normal_col_low,NA,column,Lower Limit of Normal column,Lower limit of normal variable name,FALSE,ANRLO,EGSTNRLO
+normal_col_high,ecg,normal_col_high,NA,column,Upper Limit of Normal column,Upper limit of normal variable name,FALSE,ANRHI,EGSTNRHI
+studyday_col,ecg,studyday_col,NA,column,Study Day column,Visit day variable name,FALSE,ADY,EGDY
+visit_col,ecg,visit_col,NA,column,Visit column,Visit variable name,FALSE,AVISIT,VISIT
+visitn_col,ecg,visitn_col,NA,column,Visit Number column,Visit number variable name,FALSE,AVISITN,VISITNUM
+tpt_col,ecg,tpt_col,NA,column,Timepoint column,Timepoint variable name,FALSE,ATPT,EGTPT
+tptn_col,ecg,tptn_col,NA,column,Timepoint number column,Timepoint number variable name,FALSE,ATPTN,NA
+period_col,ecg,period_col,NA,column,Period column ,Period variable name,FALSE,APERIOD,NA
+measure_values--QT,ecg,measure_col,QT,field,QT inteval,Value used for QT in the specified measure column,FALSE,QT,QT
+measure_values--QTcF,ecg,measure_col,QTcF,field,QT with Fridericia Correction ,Value used for QTcF in the specified measure column,FALSE,QTcF,QTCF
+measure_values--QTcB,ecg,measure_col,QTcB,field,QT with Bazett's Correction ,Value used for QTcB in the specified measure column,FALSE,QTcB,QTCB
+measure_values--RR,ecg,measure_col,RR,field,RR interval,Value used for RR interval in the specified measure column,FALSE,RR,RR
+measure_values--QRS,ecg,measure_col,QRS,field,QRS ,Value used for QRS interval in the specified measure column,FALSE,QRS,QRS
+unit_col,ecg,unit_col,NA,column,Unit column,Unit of measure variable name,FALSE,AVALU,EGSTRESU
+baseline_flag_col,ecg,baseline_flag_col,NA,column,Baseline column,An optional list defining which column represent the baseline visit(s) of the study.,FALSE,ABLFL,EGBLFL
+baseline_flag_values,ecg,baseline_flag_col,values,field,Baseline values,An optional list defining which values (one or more) represent the baseline visit(s) of the study.,TRUE,Y,Y
+treatment_col,ecg,treatment_col,NA,column,Treatment Column,Treatment Column,FALSE,TRTA,ARM
+analysis_flag_col,ecg,analysis_flag_col,NA,column,Analysis column,An optional list defining which column represent the analysis visit(s) of the study.,FALSE,NA,NA
+analysis_flag_values,ecg,analysis_flag_col,values,field,Analysis values,An optional list defining which values (one or more) represent the analysis visit(s) of the study.,TRUE,NA,NA
