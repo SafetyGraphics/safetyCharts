@@ -7,7 +7,7 @@ order: 34
 domain: 
   - ecg
 workflow:
-  init: init_QTsafetyResultsOverTime
+  init: init_safetyResultsOverTime
   widget: safetyResultsOverTime
 links:
   Homepage: https://github.com/RhoInc/safety-results-over-time

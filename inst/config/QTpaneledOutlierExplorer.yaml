@@ -7,7 +7,7 @@ package: safetyCharts
 export: true
 order: 32
 workflow:
-  init: init_QTpaneledOutlierExplorer
+  init: init_paneledOutlierExplorer
   widget: paneledOutlierExplorer
 links:
   Homepage: https://github.com/RhoInc/paneled-outlier-explorer

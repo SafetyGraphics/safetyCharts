@@ -7,7 +7,7 @@ order: 35
 domain: 
   - ecg
 workflow:
-  init: init_QTsafetyShiftPlot
+  init: init_safetyShiftPlot
   widget: safetyShiftPlot
 links:
   Homepage: https://github.com/RhoInc/safety-shift-plot
