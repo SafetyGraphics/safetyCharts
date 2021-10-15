@@ -24,7 +24,7 @@
 #'
 #' @export
 #'
-timeToAdverseEvent <- function(data, settings) {
+time_to_adverse_event <- function(data, settings) {
     require(dplyr)
     require(survival)
     require(survminer)

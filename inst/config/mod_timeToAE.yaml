@@ -1,6 +1,6 @@
 env: safetyGraphics
-label: Time to Adverse Event
-type: plot
+label: Time to Adverse Event - Module
+type: module
 package: safetyCharts
 export: true
 order: 2.2
@@ -8,4 +8,5 @@ domain:
   - aes
   - dm
 workflow:
-  main: timeToAdverseEvent
+  ui: timeToAE_ui
+  server: timeToAE_server
