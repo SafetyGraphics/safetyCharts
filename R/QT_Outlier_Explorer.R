@@ -19,7 +19,7 @@
 #'
 #' @return returns a chart object
 #'
-#' @import plotly
+#' @importFrom plotly plot_ly animation_slider layout
 #' @import rlang
 #' @importFrom rlang .data
 #' @import dplyr
@@ -56,40 +56,49 @@ QT_Outlier_Explorer <- function(data, settings)
     
     data1 <- data_bl %>% 
         mutate( BL = .data[[ settings$value_col ]]) %>% 
-        select( BL, settings$id_col) %>%
+        select( .data$BL, settings$id_col) %>%
         right_join(data_filtered, by = settings$id_col) %>% 
-        mutate(CHANGE = .data[[settings$value_col]] - BL) %>%
-        mutate(Y450 = 450-BL, Y480=480-BL, Y500=500-BL) 
+        mutate(CHANGE = .data[[settings$value_col]] - .data$BL) %>%
+        mutate(Y450 = 450-.data$BL, Y480=480-.data$BL, Y500=500-.data$BL) 
     
     
     #TODO: handle cross-over TQT study, VISIT-TPT scenario
     #TODO: add mean profile plot
     
     
-    (
-        fig <- data1 %>%
-            plot_ly(
-                x         = ~BL,
-                y         = ~CHANGE,
-                size      = ~CHANGE,
-                color     = ~.data[[settings$treatment_col]],
-                frame     = ~paste0(sprintf("%02d", .data[[settings$visitn_col]]), " - ", .data[[settings$visit_col]] ),
-                text      = ~paste0(.data[[settings$measure_col]], "<br>Time point: ", .data[[settings$visit_col]], "<br>Treatment: ",
-                                    .data[[settings$treatment_col]], "<br>Baseline:", BL, "<br>Change: ", CHANGE),
-                hoverinfo = "text",
-                type      = 'scatter',
-                mode      = 'markers'
-            ) %>%
-            animation_slider(
-                currentvalue = list(prefix = "Time Point: ")
+    
+    fig <- data1 %>%
+    plot_ly(
+        x         = ~BL,
+        y         = ~CHANGE,
+        size      = ~CHANGE,
+        color     = ~.data[[settings$treatment_col]],
+        frame     = ~paste0(sprintf("%02d", .data[[settings$visitn_col]]), " - ", .data[[settings$visit_col]] ),
+        text      = ~paste0(.data[[settings$measure_col]], "<br>Time point: ", .data[[settings$visit_col]], "<br>Treatment: ",
+                            .data[[settings$treatment_col]], "<br>Baseline:", BL, "<br>Change: ", CHANGE),
+        hoverinfo = "text",
+        type      = 'scatter',
+        mode      = 'markers'
+    ) %>%
+    animation_slider(
+        currentvalue = list(prefix = "Time Point: ")
+    ) %>%
+    layout(shapes = 
+        list(
+            hline(0), 
+            hline(30), 
+            hline(60),
+            list(
+                type="line", 
+                width= 2,  
+                line = list(dash = 'dash',color = "red"),
+                x0=0, 
+                x1=450, 
+                y0=450, 
+                y1=0
             )
-    )    
-    
-    
-    fig  %>%
-        layout(shapes = list(hline(0), hline(30), hline(60),
-                             list(type="line", width= 2,  line = list(dash = 'dash',color = "red"),
-                                  x0=0, x1=450, y0=450, y1=0)))
-    
-    
+        )
+    )
+
+return(fig)    
 }

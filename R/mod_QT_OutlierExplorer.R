@@ -6,6 +6,7 @@
 #' @return returns shiny module UI
 #'
 #' @import shiny
+#' @importFrom plotly plotlyOutput
 #'
 #' @export
 #'
@@ -17,8 +18,8 @@ QT_OutlierExplorer_ui <- function(id) {
     )
     main<-mainPanel(
         tabsetPanel(
-            tabPanel("QT Data Info", verbatimTextOutput(ns("info"))),
-            tabPanel("QT Vis", plotlyOutput(ns("QT_OutlierExplorer"), height = 800))
+            tabPanel("QT Vis", plotlyOutput(ns("QT_OutlierExplorer"), height = 800)),
+            tabPanel("QT Data Info", verbatimTextOutput(ns("info")))
         )
         
     )
@@ -44,6 +45,7 @@ QT_OutlierExplorer_ui <- function(id) {
 #' @return returns shiny module Server function
 #'
 #' @import shiny
+#' @importFrom plotly renderPlotly
 #'
 #' @export
 
@@ -75,11 +77,9 @@ QT_OutlierExplorer_server <- function(input, output, session, params) {
     })
     
     # data info
-    
+
     output$info <- renderPrint({
-        
-        params()$data %>% count(APERIOD, ATPTFCT, sort=FALSE) %>% data.frame
-        
+        params()$data %>% count(.data[[params()$settings$visit_col]], .data[[params()$settings$tpt_col]], sort=FALSE) %>% data.frame
     })
     
     #draw the chart
