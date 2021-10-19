@@ -1,5 +1,5 @@
 env: safetyGraphics
-label: Delta-Delta
+label: QT Delta-Delta
 type: htmlwidget
 package: safetyCharts
 export: true

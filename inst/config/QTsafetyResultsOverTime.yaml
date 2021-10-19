@@ -1,5 +1,5 @@
 env: safetyGraphics
-label: Results Over Time
+label: QT Results Over Time
 type: htmlwidget
 package: safetyCharts
 export: true

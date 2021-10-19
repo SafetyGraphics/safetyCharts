@@ -1,5 +1,5 @@
 env: safetyGraphics
-label: Histogram
+label: QT Histogram
 type: htmlwidget
 package: safetyCharts
 domain: 

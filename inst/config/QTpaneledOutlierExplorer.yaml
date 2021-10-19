@@ -1,5 +1,5 @@
 env: safetyGraphics
-label: Paneled Outlier Explorer
+label: QT Paneled Outlier Explorer
 type: htmlwidget
 domain: 
   - ecg

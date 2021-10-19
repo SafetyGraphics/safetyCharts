@@ -1,5 +1,5 @@
 env: safetyGraphics
-label: Shift Plot
+label: QT Shift Plot
 type: htmlwidget
 package: safetyCharts
 export: true
