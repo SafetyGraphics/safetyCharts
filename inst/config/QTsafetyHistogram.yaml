@@ -1,0 +1,17 @@
+env: safetyGraphics
+label: QT Histogram
+type: htmlwidget
+package: safetyCharts
+domain: 
+  - ecg
+export: true
+order: 33
+workflow:
+  widget: safetyHistogram
+links:
+  Homepage: https://github.com/RhoInc/safety-histogram
+  Wiki: https://github.com/RhoInc/safety-histogram/wiki 
+  Issues: https://github.com/RhoInc/safety-histogram/issues
+  Demo: https://rhoinc.github.io/safety-histogram/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

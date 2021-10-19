@@ -1,0 +1,17 @@
+env: safetyGraphics
+label: QT Results Over Time
+type: htmlwidget
+package: safetyCharts
+export: true
+order: 34
+domain: 
+  - ecg
+workflow:
+  init: init_safetyResultsOverTime
+  widget: safetyResultsOverTime
+links:
+  Homepage: https://github.com/RhoInc/safety-results-over-time
+  Wiki: https://github.com/RhoInc/safety-results-over-time/wiki
+  Issues: https://github.com/RhoInc/safety-results-over-time/issues
+  Demo: https://rhoinc.github.io/safety-results-over-time/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
