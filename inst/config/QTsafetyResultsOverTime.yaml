@@ -3,7 +3,7 @@ label: QT Results Over Time
 type: htmlwidget
 package: safetyCharts
 export: true
-order: 34
+order: -34
 domain: 
   - ecg
 workflow:

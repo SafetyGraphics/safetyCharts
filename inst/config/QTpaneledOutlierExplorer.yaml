@@ -5,7 +5,7 @@ domain:
   - ecg
 package: safetyCharts
 export: true
-order: 32
+order: -32
 workflow:
   init: init_paneledOutlierExplorer
   widget: paneledOutlierExplorer
