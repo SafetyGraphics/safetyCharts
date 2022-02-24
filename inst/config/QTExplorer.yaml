@@ -1,0 +1,13 @@
+env: safetyGraphics
+label: QT Explorer - Module
+name: qTexplorerNew
+type: module
+package: safetyCharts
+export: true
+domain: 
+  - ecg
+workflow:
+  ui: QT_Explorer_ui
+  server: QT_Explorer_server
+links:
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
