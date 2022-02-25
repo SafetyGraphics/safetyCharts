@@ -7,4 +7,4 @@ normal_col_high,labs,normal_col_high,,column,Upper Limit of Normal column,Upper 
 studyday_col,labs,studyday_col,,column,Study Day column,Visit day variable name,FALSE,ADY,LBDY
 visit_col,labs,visit_col,,column,Visit column,Visit variable name,FALSE,VISIT,VISIT
 visitn_col,labs,visitn_col,,column,Visit Number column,Visit number variable name,FALSE,VISITNUM,VISITNUM
-unit_col,labs,unit_col,,column,Unit column,Unit of measure variable name,FALSE,,LBSTRESU`
+unit_col,labs,unit_col,,column,Unit column,Unit of measure variable name,FALSE,,LBSTRESU
