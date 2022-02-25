@@ -19,5 +19,5 @@ unit_col,ecg,unit_col,NA,column,Unit column,Unit of measure variable name,FALSE,
 baseline_flag_col,ecg,baseline_flag_col,NA,column,Baseline column,An optional list defining which column represent the baseline visit(s) of the study.,FALSE,ABLFL,EGBLFL
 baseline_flag_values,ecg,baseline_flag_col,values,field,Baseline values,An optional list defining which values (one or more) represent the baseline visit(s) of the study.,TRUE,Y,Y
 treatment_col,ecg,treatment_col,NA,column,Treatment Column,Treatment Column,FALSE,TRTA,ARM
-analysis_flag_col,ecg,analysis_flag_col,NA,column,Analysis column,An optional list defining which column represent the analysis visit(s) of the study.,FALSE,NA,NA
-analysis_flag_values,ecg,analysis_flag_col,values,field,Analysis values,An optional list defining which values (one or more) represent the analysis visit(s) of the study.,TRUE,NA,NA
+analysis_flag_col,ecg,analysis_flag_col,NA,column,Analysis column,An optional list defining which column represent the analysis visit(s) of the study.,FALSE,,
+analysis_flag_values,ecg,analysis_flag_col,values,field,Analysis values,An optional list defining which values (one or more) represent the analysis visit(s) of the study.,TRUE,,

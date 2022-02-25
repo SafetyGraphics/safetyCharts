@@ -6,21 +6,21 @@ library(usethis)
 
 #Copy metadata to /data
 #ecg
-meta_ecg<-read_csv("data-raw/meta_ecg.csv")[]
+meta_ecg<-read_csv("data-raw/meta_ecg.csv",na="NA")[]
 usethis::use_data(meta_ecg, overwrite = TRUE)
 
 #labs
-meta_labs<-read_csv("data-raw/meta_labs.csv")[]
+meta_labs<-read_csv("data-raw/meta_labs.csv",na="NA")[]
 usethis::use_data(meta_labs, overwrite = TRUE)
 
 #aes
-meta_aes<-read_csv("data-raw/meta_aes.csv")[]
+meta_aes<-read_csv("data-raw/meta_aes.csv",na="NA")[]
 usethis::use_data(meta_aes, overwrite = TRUE)
 
 #dm
-meta_dm<-read_csv("data-raw/meta_dm.csv")[]
+meta_dm<-read_csv("data-raw/meta_dm.csv",na="NA")[]
 usethis::use_data(meta_dm, overwrite = TRUE)
 
 #hepExplorer
-meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]
+meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv",na="NA")[]
 usethis::use_data(meta_hepExplorer, overwrite = TRUE)
