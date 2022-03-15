@@ -5,7 +5,7 @@ package: safetyCharts
 export: true
 order: -36
 domain: 
-  - ecg
+  ecg
 workflow:
   widget: safetyDeltaDelta
 links:
