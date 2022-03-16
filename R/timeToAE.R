@@ -1,7 +1,20 @@
+#' Time to AE
+#'
+#' @param data list of data frames including dataframes named `aes` (adverse events) and `dm` (demographics)
+#' @param settings named list of domain-specific settings with the parameters specified below.
+#' @param ae AE of interest. Default="Any ae"
+#' @param stratum Default='None'
+#' 
+#' @return returns a chart object
+#'
+#' @import survival
+#' @import survminer
+#' @import dplyr
+#'
+#' @export
+#'
+
 timeToAE <- function(data, settings, ae = 'Any AE', stratum = 'None') {
-    require(dplyr)
-    require(survival)
-    require(survminer)
 
     # Participant-level data
     participants <- data$dm %>%

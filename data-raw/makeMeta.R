@@ -24,3 +24,7 @@ usethis::use_data(meta_dm, overwrite = TRUE)
 #hepExplorer
 meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]
 usethis::use_data(meta_hepExplorer, overwrite = TRUE)
+
+#time to AE
+meta_timeToAE<-read_csv("data-raw/meta_timeToAE.csv")[]
+usethis::use_data(meta_timeToAE, overwrite = TRUE)
