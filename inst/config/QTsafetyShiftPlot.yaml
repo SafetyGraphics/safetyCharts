@@ -1,0 +1,17 @@
+env: safetyGraphics
+label: QT Shift Plot
+type: htmlwidget
+package: safetyCharts
+export: true
+order: -35
+domain: 
+  - ecg
+workflow:
+  init: init_safetyShiftPlot
+  widget: safetyShiftPlot
+links:
+  Homepage: https://github.com/RhoInc/safety-shift-plot
+  Wiki: https://github.com/RhoInc/safety-shift-plot/wiki 
+  Issues: https://github.com/RhoInc/safety-shift-plot/issues
+  Demo: https://rhoinc.github.io/safety-shift-plot/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts

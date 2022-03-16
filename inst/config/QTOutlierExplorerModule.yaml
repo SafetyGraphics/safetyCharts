@@ -1,0 +1,14 @@
+env: safetyGraphics
+label: QT Outlier Explorer - Module
+name: qTexplorer
+type: module
+package: safetyCharts
+export: true
+order: -37
+domain: 
+  - ecg
+workflow:
+  ui: QT_OutlierExplorer_ui
+  server: QT_OutlierExplorer_server
+links:
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
