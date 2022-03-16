@@ -256,11 +256,7 @@
                 value_col: null, //synced with studyday_col in syncsettings()
                 values: [0]
             },
-            calculate_palt: false,
-            paltFlag: {
-                value_col: null,
-                values: []
-            },
+            calculate_palt: true,
             measure_values: {
                 ALT: 'Aminotransferase, alanine (ALT)',
                 AST: 'Aminotransferase, aspartate (AST)',
@@ -530,14 +526,6 @@
                 typeof settings$$1.analysisFlag.values == 'string'
                     ? [settings$$1.analysisFlag.values]
                     : [];
-        }
-
-        // If settings.paltFlag is null
-        if (!settings$$1.paltFlag) settings$$1.paltFlag = { value_col: null, values: [] };
-        if (!settings$$1.paltFlag.value_col) settings$$1.paltFlag.value_col = null;
-        if (!(settings$$1.paltFlag.values instanceof Array)) {
-            settings$$1.paltFlag.values =
-                typeof settings$$1.paltFlag.values == 'string' ? [settings$$1.paltFlag.values] : [];
         }
 
         //if it is null, set settings.baseline.value_col to settings.studyday_col.
@@ -1112,7 +1100,6 @@
         // Remove invalid rows
         /////////////////////////
         var numerics = ['value_col', 'studyday_col', 'normal_col_high'];
-        console.log(chart.initial_data)
         chart.imputed_data = chart.initial_data.filter(function(f) {
             return true;
         });
@@ -1225,18 +1212,6 @@
         });
     }
 
-    function makePaltFlag() {
-        var config = this.config;
-        this.imputed_data = this.imputed_data.map(function(d) {
-            var hasPaltSetting =
-                config.paltFlag.value_col != null && config.paltFlag.values.length > 0;
-            d.paltFlag = hasPaltSetting
-                ? config.paltFlag.values.indexOf(d[config.paltFlag.value_col]) > -1
-                : true;
-            return d;
-        });
-    }
-
     function makeRRatio() {
         var chart = this;
         var config = this.config;
@@ -1295,8 +1270,6 @@
             .filter(function(f) {
                 return f.absolute || f.relative_baseline;
             });
-
-        console.log(rRatio);
 
         var nrRatio = d3
             .nest()
@@ -1362,10 +1335,8 @@
             .filter(function(f) {
                 return f.absolute || f.relative_baseline;
             });
-        console.log(nrRatio);
 
         this.imputed_data = d3.merge([this.imputed_data, rRatio, nrRatio]);
-        console.log(this.imputed_data);
     }
 
     function cleanData() {
@@ -1379,7 +1350,6 @@
         imputeData.call(this);
         deriveVariables.call(this);
         makeAnalysisFlag.call(this);
-        makePaltFlag.call(this);
         makeRRatio.call(this);
     }
 
@@ -1704,18 +1674,6 @@
             .style('padding', '.2em');
 
         splot.append('div').attr('class', 'chart');
-
-        //layout rRatio plot
-        var rrplot = this.participantDetails.wrap.append('div').attr('class', 'rrPlot');
-        rrplot
-            .append('h3')
-            .attr('class', 'id')
-            .html('R Ratio by Study Day')
-            .style('border-top', '2px solid black')
-            .style('border-bottom', '2px solid black')
-            .style('padding', '.2em');
-
-        rrplot.append('div').attr('class', 'chart');
 
         //layout measure table
         var mtable = this.participantDetails.wrap.append('div').attr('class', 'measureTable');
@@ -2204,19 +2162,38 @@
                 .style('font-weight', 'bold')
                 .datum(chart.initial_data)
                 .on('click', function(d) {
-                    var systemVars = [
-                        'dropReason',
-                        'NONE',
-                        'ALT',
-                        'TB',
-                        'impute_flag',
-                        'key_measure',
-                        'analysisFlag'
-                    ];
-                    var cols = Object.keys(d[0]).filter(function(f) {
-                        return systemVars.indexOf(f) == -1;
-                    });
-                    downloadCSV.call(this, d, cols, 'eDishRawData');
+                    var cols = void 0;
+
+                    if (d3.event.ctrlKey) {
+                        var nrRatioData = d3.merge(
+                            chart.raw_data.map(function(m) {
+                                var obj = m.nrRatio_raw;
+                                obj.forEach(function(mm) {
+                                    mm.id = m[config.id_col];
+                                });
+                                return obj;
+                            })
+                        );
+                        cols = Object.keys(nrRatioData[0]);
+                        downloadCSV.call(this, nrRatioData, cols, 'eDish_nrRatioData_testing');
+                    } else if (d3.event.shiftKey) {
+                        cols = Object.keys(chart.raw_data[0]);
+                        downloadCSV.call(this, chart.raw_data, cols, 'eDish_RawData_testing');
+                    } else {
+                        var systemVars = [
+                            'dropReason',
+                            'NONE',
+                            'ALT',
+                            'TB',
+                            'impute_flag',
+                            'key_measure',
+                            'analysisFlag'
+                        ];
+                        cols = Object.keys(d[0]).filter(function(f) {
+                            return systemVars.indexOf(f) == -1;
+                        });
+                        downloadCSV.call(this, d, cols, 'eDish_InitialData');
+                    }
                 });
         }
     }
@@ -2698,44 +2675,6 @@
         });
     }
 
-    function calculateMaxRRatio(d, participant_obj) {
-        var config = this.config;
-
-        // R-ratio should be the ratio of ALT to ALP
-        console.log(d);
-        console.log(participant_obj);
-        // For current time point or maximal values (depends on view)
-        // participant_obj.rRatio_current = participant_obj['rRatio_relative_uln'];
-
-        // //get r-ratio data for every visit where both ALT and ALP are available
-        // var allMatches = chart.imputed_data.filter(
-        //     f => f[config.id_col] == participant_obj[config.id_col]
-        // );
-        // console.log(allMatches);
-        // participant_obj.rRatio_raw = allMatches.filter(f => f[config.measure_col] == 'rRatio');
-        // console.log(participant_obj.rRatio_raw);
-        // //max rRatios across visits
-        // participant_obj.rRatio_max = d3.max(participant_obj.rRatio_raw, f => f[config.value_col]); //max rRatio for all visits
-        // participant_obj.rRatio_max_anly = d3.max(
-        //     participant_obj.rRatio_raw.filter(f => f.analysisFlag),
-        //     f => f[config.value_col]
-        // );
-
-        // // rRatio at time of max ALT
-        // let maxAltRecord = participant_obj.rRatio_raw
-        //     .filter(f => f.analysisFlag)
-        //     .sort(function(a, b) {
-        //         return b.alt_relative_uln - a.alt_relative_uln; //descending sort (so max is first value)
-        //     })[0];
-
-        // participant_obj.rRatio_max_alt = maxAltRecord ? maxAltRecord.rRatio : null;
-
-        // // Use the r ratio at the tme of the max ALT value for standard eDish, otherwise use rRatio from the current time point
-        // participant_obj.rRatio = config.plot_max_values
-        //     ? participant_obj.rRatio_max_alt
-        //     : participant_obj.rRatio_current;
-    }
-
     function getMaxValues(d) {
         var chart = this;
         var config = this.config;
@@ -2857,10 +2796,6 @@
         //Add participant level metadata
         addParticipantLevelMetadata.call(chart, d, participant_obj);
 
-        //Calculate ratios between measures.
-        calculateMaxRRatio.call(chart, d, participant_obj);
-        //calculateNRRatio.call(chart, d, participant_obj);
-
         //calculate the day difference between x and y and total day range for all measure values
         participant_obj.day_diff = Math.abs(participant_obj.days_x - participant_obj.days_y);
         participant_obj.day_range = d3.extent(d, function(d) {
@@ -2919,16 +2854,14 @@
             .filter(function(f) {
                 return f[config.measure_col] == config.measure_values.ALT;
             })
-            .filter(function(f) {
-                return f.paltFlag;
-            })
             .map(function(d) {
                 var obj = {};
                 obj.value = d[config.value_col];
                 obj.day = d[config.studyday_col];
-                obj.hour = d.day * 24;
+                obj.hour = obj.day * 24;
                 return obj;
             });
+
         if (alt_values.length > 1) {
             //get peak alt value
             var alt_peak = d3.max(alt_values, function(f) {
@@ -2969,7 +2902,7 @@
                 ' <sup>0.18</sup> / 10<sup>5</sup> = ' +
                 p_alt_rounded +
                 '<br>' +
-                'P<sub>ALT</sub> shows promise in predicting the percentage hepatocyte loss on the basis of the maximum value and the AUC of serum ALT observed during a DILI event. For more details see <a href = "https://www.ncbi.nlm.nih.gov/pubmed/30303523">A Rapid Method to Estimate Hepatocyte Loss Due to Drug-Induced Liver Injury</a> by Chung et al.';
+                'P<sub>ALT</sub> shows promise in predicting the percentage hepatocyte loss on the basis of the maximum value and the AUC of serum ALT observed during a DILI event. For more details see <a target = "_blank" href = "https://www.ncbi.nlm.nih.gov/pubmed/30303523">A Rapid Method to Estimate Hepatocyte Loss Due to Drug-Induced Liver Injury</a> by Chung et al.';
 
             var obj = {
                 value: p_alt,
@@ -3739,9 +3672,6 @@
             .filter(function(d) {
                 return d[config.measure_col] != 'nrRatio';
             });
-        //.filter(function(d) {
-        //    return ['nrRatio', 'rRatio'].indexOf(d[config.measure_col] == -1);
-        //});
 
         var ranges = d3
             .nest()
@@ -3761,7 +3691,7 @@
                 return [lower_extent, upper_extent];
             })
             .entries(chart.initial_data);
-        console.log(ranges);
+
         //make nest by measure
         var nested = d3
             .nest()
@@ -3781,7 +3711,6 @@
                 measureObj.median = +d3.format('0.2f')(d3.median(measureObj.values));
                 measureObj.n = measureObj.values.length;
                 measureObj.spark = 'spark!';
-                console.log(measureObj);
                 measureObj.population_extent = ranges.find(function(f) {
                     return measureObj.key == f.key;
                 }).values;
@@ -4893,8 +4822,6 @@
             );
     }
 
-    //import { init as initRRatioPlot } from './addPointClick/rRatioPlot/init';
-
     function addPointClick() {
         var chart = this;
         var config = this.config;
@@ -4937,7 +4864,6 @@
             chart.participantDetails.wrap.selectAll('*').style('display', null);
             makeParticipantHeader.call(chart, d);
             init$3.call(chart, d); //NOTE: the measure table is initialized from within the spaghettiPlot
-            //initRRatioPlot.call(chart, d);
         });
     }
 
@@ -4973,53 +4899,62 @@
     function setPointSize() {
         var _this = this;
 
-        var chart = this;
         var config = this.config;
-        var points = this.marks[0].circles;
 
-        //create the scale
-        var base_size = config.marks[0].radius || config.flex_point_size;
-        var max_size = base_size * 5;
-        var small_size = base_size / 2;
+        // Create the scale.
+        var base_size = config.marks[0].radius || config.flex_point_size; // minimum radius
+        var max_size = base_size * 5; // maximum radius
+        var small_size = base_size / 2; // radius for missing values
 
-        if (config.point_size != 'Uniform') {
+        if (config.point_size !== 'Uniform') {
+            // Get all values of selected measure.
             var sizeValues_all = d3.merge(
-                chart.raw_data.map(function(m) {
-                    return m[config.point_size + '_raw'];
-                })
+                this.raw_data
+                    .map(function(d) {
+                        return d[config.point_size + '_raw'];
+                    })
+                    .filter(function(d) {
+                        return d !== undefined;
+                    })
             );
-            var sizeDomain_all = d3.extent(sizeValues_all, function(f) {
-                return f.value;
-            });
-            var sizeDomain_max = d3.extent(
-                chart.raw_data.map(function(m) {
-                    return m[config.point_size];
-                })
-            );
-            var sizeDomain_rRatio = [
-                0,
-                d3.max(this.raw_data, function(d) {
-                    return d.rRatio_max;
-                })
-            ];
-            var sizeDomain_nrRatio = [
-                0,
-                d3.max(this.raw_data, function(d) {
-                    return d.nrRatio_max;
-                })
-            ];
 
-            var sizeDomain = config.point_size == 'rRatio' ? sizeDomain_rRatio : sizeDomain_nrRatio;
-            chart.sizeScale = d3.scale
+            // Define the domain of the selected measure.
+            var sizeDomain =
+                config.point_size === 'rRatio'
+                    ? [
+                          0,
+                          d3.max(this.raw_data, function(d) {
+                              return d.rRatio_relative_uln;
+                          })
+                      ]
+                    : config.point_size === 'nrRatio'
+                    ? [
+                          0,
+                          d3.max(this.raw_data, function(d) {
+                              return d.nrRatio_relative_uln;
+                          })
+                      ]
+                    : config.plot_max_values
+                    ? d3.extent(
+                          this.raw_data.map(function(m) {
+                              return m[config.point_size];
+                          })
+                      )
+                    : d3.extent(sizeValues_all, function(f) {
+                          return f.value;
+                      });
+
+            // Scale the selected domain to the minimum and maximum radius values.
+            this.sizeScale = d3.scale
                 .linear()
-                .range([base_size, max_size])
-                .domain(sizeDomain);
+                .domain(sizeDomain)
+                .range([base_size, max_size]);
         }
 
         //TODO: draw a legend (coming later?)
 
-        //set the point radius
-        points
+        // Set the point radius.
+        this.marks[0].circles
             .transition()
             .attr('r', function(d) {
                 var raw = d.values.raw[0];
@@ -5028,7 +4963,7 @@
                 } else if (config.point_size == 'Uniform') {
                     return base_size;
                 } else {
-                    return chart.sizeScale(raw[config.point_size]);
+                    return _this.sizeScale(raw[config.point_size]);
                 }
             })
             .attr('cx', function(d) {
