@@ -2,24 +2,24 @@
 % Please edit documentation in R/hepExplorer.R
 \name{hepExplorer}
 \alias{hepExplorer}
-\title{Convience mapping of render_widget for hepExplorer}
+\title{Make standalone hepExplorer html widget}
 \usage{
 hepExplorer(df = safetyData::adam_adlbc, mapping = NULL, ...)
 }
 \arguments{
-\item{df}{data frame for hep-explorer}
+\item{df}{data frame containing lab data used to render for hepExplorer. Default is safetyDAta::adam_adlbc.}
 
 \item{mapping}{named list with the current data mappings. See details for default mapping.}
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
 }
 \description{
-Convience mapping of render_widget for hepExplorer
+Convience mapping of render_widget for hepExplorer.
 }
 \details{
 The \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{hepExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via `jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null").
 
-The default mapping - designed to work with safetyata::adam_adlbc is:\preformatted{mapping <- list(
+The default mapping - designed to work with the CDSISC AdAM format - like safetyata::adam_adlbc - is:\preformatted{mapping <- list(
            measure_col = "PARAM", 
            measure_values = list(
                ALT = "Alanine Aminotransferase (U/L)", 
@@ -27,23 +27,55 @@ The default mapping - designed to work with safetyata::adam_adlbc is:\preformatt
                TB = "Bilirubin (umol/L)",
                ALP = "Alkaline Phosphatase (U/L)"
            ), 
-           baseline_flag_col = "", 
-           baseline_flag_values = "", 
-           analysis_flag_col = "", 
-           analysis_flag_values = "",
-          id_col = "USUBJID", 
+           id_col = "USUBJID", 
            value_col = "AVAL", 
            normal_col_low = "A1LO",                    
            normal_col_high = "A1HI", 
            studyday_col = "ADY", 
            visit_col = "VISIT",
-           visitn_col = "VISITNUM", 
-           unit_col = ""
+           visitn_col = "VISITNUM"
        )                  
 }
+
+Parameters that are not included in the default mapping can be accessed via ...; Key options and defaults for safetyData::adam_adlbc shown below:
+\itemize{
+\item \code{filters}: list of columns to be included as data filters (e.g. filters=c("SEX","AGEGR1"))
+\item \code{group_cols}: list of columns used to define grouping and set point color (e.g. filters=c("SEX","AGEGR1"))
+\item \code{x_options} and \code{y_options} - specify which labs can be used for x and y axis dropdowns. By default, all options are included on x-axis, but only Bilirubin is shown on y-axis. To allow an interactive y-axis, use \code{y_options="all"}.
+\item \code{baseline} - flag defining the baseline visit for each participant. \code{baseline} must be provided to enable the mDish view on the hep-explorer chart. Define as a list with \code{value_col} and \code{values} (e.g. \code{baseline=list(value_col="ABLFL",values="Y")})
+\item \code{title} and \code{warningText} - Strings used to define the header text shown above the filters.
+}
+
+For more options see the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{full specs} for the javascript library.
 }
 \examples{
-hepExplorer() #render widget with defaults
-hepExplorer(group_cols=c("SEX","AGEGR1")) # Adding age group
+
+# Render widget with defaults
+hepExplorer() 
+
+# Add age group to default
+hepExplorer(group_cols=c("SEX","AGEGR1")) 
+
+# Enable interactive y-axis
+hepExplorer(y_options='all') 
+
+# Use custom mapping for SDTM data
+hepExplorer(
+    df=safetyData::sdtm_lb,
+    measure_col = "LBTEST", 
+    measure_values = list(
+        ALT = "Alanine Aminotransferase", 
+        AST = "Aspartate Aminotransferase", 
+        TB = "Bilirubin",
+        ALP = "Alkaline Phosphatase"
+    ), 
+    id_col = "USUBJID", 
+    value_col = "LBSTRESN", 
+    normal_col_low = "LBORNRLO",                    
+    normal_col_high = "LBORNRHI", 
+    studyday_col = "LBDY", 
+    visit_col = "VISIT",
+    visitn_col = "VISITNUM"
+)
 
 }
