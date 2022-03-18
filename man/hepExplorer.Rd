@@ -7,7 +7,7 @@
 hepExplorer(df = safetyData::adam_adlbc, mapping = NULL, ...)
 }
 \arguments{
-\item{df}{data frame containing lab data used to render for hepExplorer. Default is safetyDAta::adam_adlbc.}
+\item{df}{data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc.}
 
 \item{mapping}{named list with the current data mappings. See details for default mapping.}
 
@@ -17,9 +17,9 @@ hepExplorer(df = safetyData::adam_adlbc, mapping = NULL, ...)
 Convience mapping of render_widget for hepExplorer.
 }
 \details{
-The \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{hepExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via `jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null").
+The \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{hepExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via \code{jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")}.
 
-The default mapping - designed to work with the CDSISC AdAM format - like safetyata::adam_adlbc - is:\preformatted{mapping <- list(
+The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).\preformatted{mapping <- list(
            measure_col = "PARAM", 
            measure_values = list(
                ALT = "Alanine Aminotransferase (U/L)", 
@@ -39,14 +39,14 @@ The default mapping - designed to work with the CDSISC AdAM format - like safety
 
 Parameters that are not included in the default mapping can be accessed via ...; Key options and defaults for safetyData::adam_adlbc shown below:
 \itemize{
-\item \code{filters}: list of columns to be included as data filters (e.g. filters=c("SEX","AGEGR1"))
-\item \code{group_cols}: list of columns used to define grouping and set point color (e.g. filters=c("SEX","AGEGR1"))
+\item \code{filters}: list of columns to be included as data filters (e.g. `filters=c("SEX","AGEGR1")``)
+\item \code{group_cols}: list of columns used to define grouping and set point color (e.g. `filters=c("SEX","AGEGR1")``)
 \item \code{x_options} and \code{y_options} - specify which labs can be used for x and y axis dropdowns. By default, all options are included on x-axis, but only Bilirubin is shown on y-axis. To allow an interactive y-axis, use \code{y_options="all"}.
 \item \code{baseline} - flag defining the baseline visit for each participant. \code{baseline} must be provided to enable the mDish view on the hep-explorer chart. Define as a list with \code{value_col} and \code{values} (e.g. \code{baseline=list(value_col="ABLFL",values="Y")})
 \item \code{title} and \code{warningText} - Strings used to define the header text shown above the filters.
 }
 
-For more options see the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{full specs} for the javascript library.
+For more options see the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{full specs} in the javascript library.
 }
 \examples{
 
