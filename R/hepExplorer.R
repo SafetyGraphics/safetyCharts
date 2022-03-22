@@ -36,7 +36,7 @@
 #' For more options see the [full specs](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) in the javascript library.
 #' 
 #' @examples 
-#' 
+#' \dontrun{
 #' # Render widget with defaults
 #' hepExplorer() 
 #' 
@@ -64,6 +64,7 @@
 #'     visit_col = "VISIT",
 #'     visitn_col = "VISITNUM"
 #' )
+#' }
 #' 
 #' @param df data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc. 
 #' @param mapping named list with the current data mappings. See details for default mapping. 

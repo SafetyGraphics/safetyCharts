@@ -49,7 +49,7 @@ Parameters that are not included in the default mapping can be accessed via ...;
 For more options see the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{full specs} in the javascript library.
 }
 \examples{
-
+\dontrun{
 # Render widget with defaults
 hepExplorer() 
 
@@ -77,5 +77,6 @@ hepExplorer(
     visit_col = "VISIT",
     visitn_col = "VISITNUM"
 )
+}
 
 }
