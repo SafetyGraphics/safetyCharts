@@ -9,7 +9,7 @@ paneledOutlierExplorer <- function(data, width = NULL, height = NULL, elementId 
   # forward options using x
   x = list(
     data = data$data, 
-    settings = data$settings
+    settings = jsonlite::toJSON(data$settings)
   )
   
   # create widget
