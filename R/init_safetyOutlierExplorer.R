@@ -7,51 +7,41 @@
 #'
 #' @export
 
-init_paneledOutlierExplorer <- function(data) {
-  
-  x_value_col = "VISIT"
-  x_type = 'ordinal'
-  x_order = NULL
-  x_order_col = 'VISITNUM'
-  x_label = "VISIT"
-  x_rotate_tick_labels = TRUE
-  x_vertical_space = 75
-  
-  value_col = 'DY'
-  type = 'linear'
-  order = NULL
-  order_col = 'DY'
-  label = 'Study Day'
-  rotate_tick_labels = FALSE
-  vertical_space = 0
-  
-  y_value_col = "DY"
-  y_type = 'linear'
-  y_order = NULL
-  y_order_col = 'DY'
-  y_label = "Study Day"
-  y_rotate_tick_labels = FALSE
-  y_vertical_space = 0
-  
-  value_col = 'STRESN'
-  id_col = 'USUBJID'
-  unit_col = 'STRESU'
-  lln_col = 'STNRLO'
-  uln_col = 'STNRHI'
-  measures = NULL
-  filters = NULL
-  
-  multiples_sizing_width = 350
-  mutliples_sizing_height = 175
-  inliers = FALSE
-  normal_range_method = 'LLN-ULN'
-  normal_range_sd = 1.96
-  normal_range_quantile_low = 0.05
-  normal_range_quantile_high = 0.95
-  visits_without_data = FALSE
-  unscheduled_visits = FALSE
-  unscheduled_visit_pattern = '/unscheduled|early termination/i'
-  unscheduled_visit_values = NULL
+init_paneledOutlierExplorer <- function(
+    data,
+    x_value_col = "VISIT",
+    x_type = 'ordinal',
+    x_order = NULL,
+    x_order_col = 'VISITNUM',
+    x_label = "VISIT",
+    x_rotate_tick_labels = TRUE,
+    x_vertical_space = 75,
+    y_value_col = 'DY',
+    y_type = 'linear',
+    y_order = NULL,
+    y_order_col = 'DY',
+    y_label = 'Study Day',
+    y_rotate_tick_labels = FALSE,
+    y_vertical_space = 0,
+    value_col = 'STRESN',
+    id_col = 'USUBJID',
+    unit_col = 'STRESU',
+    lln_col = 'STNRLO',
+    uln_col = 'STNRHI',
+    measures = NULL,
+    filters = NULL,
+    multiples_sizing_width = 350,
+    mutliples_sizing_height = 175,
+    inliers = FALSE,
+    normal_range_method = 'LLN-ULN',
+    normal_range_sd = 1.96,
+    normal_range_quantile_low = 0.05,
+    normal_range_quantile_high = 0.95,
+    visits_without_data = FALSE,
+    unscheduled_visits = FALSE,
+    unscheduled_visit_pattern = '/unscheduled|early termination/i',
+    unscheduled_visit_values = NULL
+) {
   
   settings = list(
     measure_col = 'TEST',
