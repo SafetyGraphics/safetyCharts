@@ -4,12 +4,12 @@
 #'
 #' @export
 #' @example paneledOutlierExplorer(init_paneledOutlierExplorer(adbds, settings))
-paneledOutlierExplorer <- function(data, settings, width = NULL, height = NULL, elementId = NULL) {
+paneledOutlierExplorer <- function(data, width = NULL, height = NULL, elementId = NULL) {
   
   # forward options using x
   x = list(
-    data = data, 
-    settings = settings
+    data = data$data, 
+    settings = data$settings
   )
   
   # create widget
