@@ -19,7 +19,9 @@ Convience mapping of render_widget for paneledOutlierExplorer.
 \details{
 The \href{https://github.com/Rhoinc/paneled-outlier-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/RhoInc/paneled-outlier-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/rhoinc/paneled-outlier-explorer/wiki/Configuration}{paneledOutlierExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via \code{jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")}.
 
-The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).\preformatted{mapping <-  list(
+The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{mapping <-  list(
        measure_col = 'PARAM',
        time_cols = list(
          list(
@@ -46,7 +48,7 @@ The default mapping shown below is designed to work with data in the CDISC ADaM 
        lln_col = 'A1LO',
        uln_col = 'A1HI'
      )                
-}
+}\if{html}{\out{</div>}}
 
 Parameters that are not included in the default mapping can be accessed via ...; Key options and defaults for safetyData::adam_adlbc shown below:
 \itemize{

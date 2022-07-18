@@ -3,6 +3,7 @@
 export(QT_OutlierExplorer_server)
 export(QT_OutlierExplorer_ui)
 export(QT_Outlier_Explorer)
+export(aeExplorer)
 export(demogRTF_server)
 export(demogRTF_table)
 export(demogRTF_ui)
