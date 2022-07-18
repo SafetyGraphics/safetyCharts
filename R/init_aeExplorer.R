@@ -18,7 +18,7 @@ init_aeExplorer <- function(data, settings) {
     
     #if no treatment_col provided, create dummy treatment_col for group setting so that ae explorer JS doesn't bomb
     if (missing_trt_flag){
-        data$dm <- data$dm %>% mutate(group_placeholder=TRUE)
+        data$dm <- data$dm %>% mutate(group_placeholder="All")
         settings[["dm"]][["treatment_col"]] <- "group_placeholder"
     }
     
