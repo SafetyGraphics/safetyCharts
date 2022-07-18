@@ -13,9 +13,12 @@
 
 init_aeExplorer <- function(data, settings) {
     
+    # crates flag if treatment_col is missing to trigger actions to avoid downstream JS errors and enable visualization of blinded(no trt) data
+    missing_trt_flag <- trimws(settings[["dm"]][["treatment_col"]])=="" | is.null(settings[["dm"]][["treatment_col"]])
+    
     #if no treatment_col provided, create dummy treatment_col for group setting so that ae explorer JS doesn't bomb
-    if (trimws(settings[["dm"]][["treatment_col"]])=="" | is.null(settings[["dm"]][["treatment_col"]])){
-        data$dm <- data$dm %>% mutate(group_placeholder="All")
+    if (missing_trt_flag){
+        data$dm <- data$dm %>% mutate(group_placeholder=TRUE)
         settings[["dm"]][["treatment_col"]] <- "group_placeholder"
     }
     
@@ -49,7 +52,7 @@ init_aeExplorer <- function(data, settings) {
     )
     
     #if no treatment_col provided, remove total column and group selection dropdown
-    if ( settings[["dm"]][["treatment_col"]] == "group_placeholder"){
+    if (missing_trt_flag){
         ae_settings$defaults[["groupCols"]] = FALSE
         ae_settings$defaults[["useVariableControls"]] = FALSE
     }
