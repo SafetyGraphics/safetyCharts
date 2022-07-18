@@ -14,14 +14,13 @@
 init_aeExplorer <- function(data, settings) {
     
     # creates flag if treatment_col is missing to trigger actions to avoid downstream JS errors and enable visualization of blinded(no treatment_col) data
-    missing_trt_flag <- ifelse(is.null(settings[["dm"]][["treatment_col"]]),
-                               TRUE,
-                               ifelse(trimws(settings[["dm"]][["treatment_col"]]) == "",
-                                      TRUE,
-                                      FALSE))
-    
+    missing_trt_flag <- (
+        is.null(settings[["dm"]][["treatment_col"]]) || # Check NULL first and evaluate logic left to right
+        trimws(settings[["dm"]][["treatment_col"]])==""
+    )
+
     #if no treatment_col provided, create dummy treatment_col for group setting so that ae explorer JS doesn't bomb
-    if (missing_trt_flag){
+    if (missing_trt_flag) {
         data$dm <- data$dm %>% mutate(group_placeholder="All")
         settings[["dm"]][["treatment_col"]] <- "group_placeholder"
     }
