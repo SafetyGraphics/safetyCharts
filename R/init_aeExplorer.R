@@ -5,6 +5,9 @@
 #' 
 #' @return returns list with data and settings
 #'
+#' @importFrom magrittr %>%
+#' @import dplyr
+#'
 #' @export
 
 

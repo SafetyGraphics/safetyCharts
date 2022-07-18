@@ -25,6 +25,7 @@ Imports:
     htmlwidgets,
     huxtable,
     jsonlite, 
+    magrittr, 
     pharmaRTF,
     plotly,
     purrr,
