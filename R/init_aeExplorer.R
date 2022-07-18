@@ -13,7 +13,7 @@
 
 init_aeExplorer <- function(data, settings) {
     
-    # crates flag if treatment_col is missing to trigger actions to avoid downstream JS errors and enable visualization of blinded(no trt) data
+    # creates flag if treatment_col is missing to trigger actions to avoid downstream JS errors and enable visualization of blinded(no treatment_col) data
     missing_trt_flag <- trimws(settings[["dm"]][["treatment_col"]])=="" | is.null(settings[["dm"]][["treatment_col"]])
     
     #if no treatment_col provided, create dummy treatment_col for group setting so that ae explorer JS doesn't bomb
