@@ -19,7 +19,9 @@ Convience mapping of render_widget for hepExplorer.
 \details{
 The \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{hepExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via \code{jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")}.
 
-The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).\preformatted{mapping <- list(
+The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{mapping <- list(
            measure_col = "PARAM", 
            measure_values = list(
                ALT = "Alanine Aminotransferase (U/L)", 
@@ -35,7 +37,7 @@ The default mapping shown below is designed to work with data in the CDISC ADaM 
            visit_col = "VISIT",
            visitn_col = "VISITNUM"
        )                  
-}
+}\if{html}{\out{</div>}}
 
 Parameters that are not included in the default mapping can be accessed via ...; Key options and defaults for safetyData::adam_adlbc shown below:
 \itemize{
