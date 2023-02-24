@@ -1,6 +1,6 @@
 #' Initialize Settings for AE Timeline widget
 #' 
-#' @param data labs data structured as one record per person per visit per measurement. See details for column requirements.
+#' @param data adverse events data structured as one record per event. See details for column requirements.
 #' @param settings named list of settings
 #'
 #' @return returns list with data and settings
