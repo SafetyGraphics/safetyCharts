@@ -12,4 +12,11 @@ dependencies:
    version: 2.3.3
    src: htmlwidgets/lib/safety-results-over-time-2.3.3
    script: safetyResultsOverTime.js
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0

@@ -8,4 +8,11 @@ dependencies:
    src: htmlwidgets/lib/aeexplorer-3.4.1
    script: aeTable.js
    stylesheet: aeTable.css
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
