@@ -12,4 +12,11 @@ dependencies:
    version: 2.5.0
    src: htmlwidgets/lib/safety-histogram-2.5.0
    script: safetyHistogram.js 
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0

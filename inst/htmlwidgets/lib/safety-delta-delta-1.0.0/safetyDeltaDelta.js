@@ -1219,6 +1219,11 @@
                 .attr('stroke-width', 3)
                 .attr('stroke', 'black');
             drawMeasureTable.call(chart, d);
+
+            //Trigger participantsSelected event
+            chart.participantsSelected = [d.key];
+            chart.events.participantsSelected.data = chart.participantsSelected;
+            chart.wrap.node().dispatchEvent(chart.events.participantsSelected);
         });
     }
 

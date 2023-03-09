@@ -48,7 +48,7 @@
 #' 
 #' # Use custom mapping for SDTM data
 #' hepExplorer(
-#'     df=safetyData::sdtm_lb,
+#'     data=safetyData::sdtm_lb,
 #'     measure_col = "LBTEST", 
 #'     measure_values = list(
 #'         ALT = "Alanine Aminotransferase", 
@@ -66,7 +66,7 @@
 #' )
 #' }
 #' 
-#' @param df data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc. 
+#' @param data data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc. 
 #' @param mapping named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
 #' 
@@ -74,7 +74,7 @@
 #' 
 #' @export
 
-hepExplorer <- function(df=safetyData::adam_adlbc, mapping=NULL, ...){
+hepExplorer <- function(data=safetyData::adam_adlbc, mapping=NULL, ...){
     
     #default mapping
     if(is.null(mapping)){
@@ -102,5 +102,5 @@ hepExplorer <- function(df=safetyData::adam_adlbc, mapping=NULL, ...){
     }
 
     # render widget as standalone html page
-    render_widget("hepExplorer" ,df, mapping)
+    render_widget("hepExplorer" ,data, mapping)
 }

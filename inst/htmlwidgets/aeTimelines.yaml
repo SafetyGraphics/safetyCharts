@@ -11,5 +11,12 @@ dependencies:
  - name: ae-timelines
    version: 2.1.6
    src: htmlwidgets/lib/ae-timelines-2.1.6
-   script: aeTimelines.js 
-
+   script: aeTimelines.js
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0

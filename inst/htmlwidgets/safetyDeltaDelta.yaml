@@ -12,4 +12,11 @@ dependencies:
    version: 1.0.0
    src: htmlwidgets/lib/safety-delta-delta-1.0.0
    script: safetyDeltaDelta.js 
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
