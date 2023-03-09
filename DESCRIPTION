@@ -33,6 +33,8 @@ Imports:
     rlang,
     shiny,
     stringr,
+    survival,
+    survminer,
     Tendril,
     Tplyr
 Suggests:

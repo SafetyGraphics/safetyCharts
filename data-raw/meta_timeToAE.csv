@@ -1,0 +1,15 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,dm,id_col,,column,ID column,Unique subject identifier,FALSE,USUBJID,USUBJID
+treatment_col,dm,treatment_col,,column,Treatment column,Treatment group,FALSE,ARM,ARM
+sex_col,dm,sex_col,,column,Sex column,Sex,FALSE,SEX,SEX
+race_col,dm,race_col,,column,Race column,Race,FALSE,RACE,RACE
+stdt_col,dm,stdt_col,,column,Study start date column,Study start date,FALSE,TRTSDT,RFSTDTC
+endt_col,dm,endt_col,,column,Study end date column,Study end date,FALSE,TRTEDT,RFENDTC
+id_col,aes,id_col,,column,ID column,Unique subject identifier,FALSE,USUBJID,USUBJID
+seq_col,aes,seq_col,,column,Sequence column,Event sequence number,FALSE,ASEQ,AESEQ
+stdt_col,aes,stdt_col,,column,AE start day column,Event start date,FALSE,ASTDT,AESTDT
+endt_col,aes,endt_col,,column,AE end day column,Event end date,FALSE,AENDT,AEENDT
+stdy_col,aes,stdy_col,,column,AE start day column,Event start day,FALSE,ASTDY,AESTDY
+endy_col,aes,endy_col,,column,AE end day column,Event end day,FALSE,AENDY,AEENDY
+term_col,aes,term_col,,column,Dictionary-derived term column,Dictionary-derived term,FALSE,AEDECOD,AEDECOD
+bodsys_col,aes,bodsys_col,,column,Body system or organ class column,Body system or organ class,FALSE,AEBODSYS,AEBODSYS

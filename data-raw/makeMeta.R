@@ -2,7 +2,7 @@
 library(tidyverse)
 library(usethis)
 
- # brackets after read_csv to remove spec_tbl_df class per https://www.tidyverse.org/blog/2018/12/readr-1-3-1/
+# brackets after read_csv to remove spec_tbl_df class per https://www.tidyverse.org/blog/2018/12/readr-1-3-1/
 
 #Copy metadata to /data
 #ecg
@@ -24,3 +24,7 @@ usethis::use_data(meta_dm, overwrite = TRUE)
 #hepExplorer
 meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]
 usethis::use_data(meta_hepExplorer, overwrite = TRUE)
+
+#time to AE
+meta_timeToAE<-read_csv("data-raw/meta_timeToAE.csv")[]
+usethis::use_data(meta_timeToAE, overwrite = TRUE)
