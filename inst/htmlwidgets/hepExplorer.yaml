@@ -9,7 +9,14 @@ dependencies:
    script: webcharts.js
    stylesheet: webcharts.css
  - name: hepexplorer
-   version: 1.3.1
-   src: htmlwidgets/lib/hep-explorer-1.3.1
+   version: 1.4.2
+   src: htmlwidgets/lib/hep-explorer-1.4.2
    script: hepexplorer.js 
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0

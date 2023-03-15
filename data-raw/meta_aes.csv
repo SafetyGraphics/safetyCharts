@@ -1,0 +1,9 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,aes,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,USUBJID,USUBJID
+seq_col,aes,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,AESEQ,AESEQ
+stdy_col,aes,stdy_col,,column,AE Start day column,Event start day variable name,FALSE,ASTDY,AESTDY
+endy_col,aes,endy_col,,column,AE End day column,Event end day variable name,FALSE,AENDY,AEENDY
+term_col,aes,term_col,,column,Preferred Term Column,Dictionary-Derived Term,FALSE,AEDECOD,AEDECOD
+bodsys_col,aes,bodsys_col,,column,AE Body System,Body System or Organ Class,FALSE,AEBODSYS,AEBODSYS
+severity_col,aes,severity_col,,column,AE Severity,AE Severity,FALSE,AESEV,AESEV
+serious_col,aes,serious_col,,column,AE Seriousness,AE Seriousness,FALSE,AESER,AESER

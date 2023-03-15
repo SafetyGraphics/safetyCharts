@@ -1,6 +1,6 @@
 Package: safetyCharts
 Title: Charts for Monitoring Clinical Trial Safety
-Version: 0.2.1
+Version: 0.3.0
 Authors@R:
     person(
         given = "Jeremy",
@@ -15,23 +15,26 @@ BugReports: https://github.com/SafetyGraphics/safetyCharts/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 Roxygen: list(markdown = TRUE)
 Imports:
     dplyr,
     DT,
-    Tplyr,
+    forcats,
     ggplot2,
+    htmlwidgets,
+    huxtable,
+    jsonlite, 
+    magrittr, 
+    pharmaRTF,
+    plotly,
+    purrr,
+    RColorBrewer,
     rlang,
     shiny,
-    knitr,
-    RColorBrewer,
     stringr,
-    forcats,
     Tendril,
-    kableExtra,
-    huxtable, 
-    pharmaRTF
+    Tplyr
 Suggests:
     testthat,
     shinytest,
