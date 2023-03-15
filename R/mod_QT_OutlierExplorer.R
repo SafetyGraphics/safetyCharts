@@ -49,7 +49,7 @@ QT_OutlierExplorer_ui <- function(id) {
 #'
 #' @export
 
-QT_OutlierExplorer_server <- function(input, output, session, params) {
+QT_OutlierExplorer_server <- function(input, output, session, params, ...) {
     ns <- session$ns
     
     

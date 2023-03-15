@@ -32,7 +32,7 @@ demogRTF_ui <- function(id) {
 #'
 #' @export
 
-demogRTF_server <- function(input, output, session, params) {
+demogRTF_server <- function(input, output, session, params, charts, ...) {
     ns <- session$ns
     demogTable <- reactive({demogRTF_table(params()$data, params()$settings)})
 

@@ -46,7 +46,7 @@ safetyOutlierExplorer_ui <- function(id) {
 #'
 #' @export
 
-safetyOutlierExplorer_server <- function(input, output, session, params) {
+safetyOutlierExplorer_server <- function(input, output, session, params, ...) {
     ns <- session$ns
     # Populate control with measures and select all by default
     observe({

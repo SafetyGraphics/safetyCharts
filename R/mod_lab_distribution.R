@@ -37,7 +37,7 @@ lab_distribution_ui <- function(id) {
 #'
 #' @export
 
-lab_distribution_server <- function(input, output, session, params) {
+lab_distribution_server <- function(input, output, session, params, ...) {
     ns <- session$ns
 
     mapped_data <- reactive({
