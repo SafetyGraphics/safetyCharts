@@ -17,8 +17,8 @@ init_cmExplorer <- function(data, settings) {
     settings <- c(settings$cm, settings$labs)
 
     settings$variables <- list(
-        major = settings[["bodsys_col"]],
-        minor = settings[["term_col"]],
+        major = settings[["class_col"]],
+        minor = settings[["code_col"]],
         group = settings[["trt_col"]],
         id = paste0(settings[["id_col"]]),
         filters = list(),
@@ -34,7 +34,7 @@ init_cmExplorer <- function(data, settings) {
 
     settings$defaults <- list(
         placeholderFlag = list(
-            valueCol = settings[["bodsys_col"]],
+            valueCol = settings[["class_col"]],
             values = c("", NA, NULL)
         )
     )

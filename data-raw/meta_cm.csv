@@ -1,0 +1,7 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,cm,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,,USUBJID
+seq_col,cm,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,,CMSEQ
+stdy_col,cm,stdy_col,,column,CM Start day column,Event start day variable name,FALSE,,CMSTDY
+endy_col,cm,endy_col,,column,CM End day column,Event end day variable name,FALSE,,CMENDY
+code_col,cm,code_col,,column,CM Code Column,Dictionary-derived low-level code,FALSE,,CMDECOD
+class_col,cm,class_col,,column,CM Class System,Dictionary-derived high-level class,FALSE,,CMCLAS
