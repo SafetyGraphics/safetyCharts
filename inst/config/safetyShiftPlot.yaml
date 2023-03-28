@@ -5,6 +5,13 @@ package: safetyCharts
 export: true
 domain: 
   - labs
+dataSpec:
+  labs:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
 workflow:
   init: init_safetyShiftPlot
   widget: safetyShiftPlot

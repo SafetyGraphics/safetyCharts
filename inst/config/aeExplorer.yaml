@@ -5,8 +5,20 @@ package: safetyCharts
 export: true
 order: 2
 domain: 
-  - aes
   - dm
+  - aes
+dataSpec:
+  dm:
+    - id_col
+    - treatment_col
+  aes:
+    - id_col
+    - term_col
+    - bodsys_col
+    - serious_col
+    - severity_col
+    - relationship_col
+    - outcome_col
 workflow:
   init: init_aeExplorer
   widget: aeExplorer

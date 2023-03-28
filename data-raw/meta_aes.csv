@@ -1,9 +1,11 @@
 text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
-id_col,aes,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,USUBJID,USUBJID
-seq_col,aes,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,AESEQ,AESEQ
-stdy_col,aes,stdy_col,,column,AE Start day column,Event start day variable name,FALSE,ASTDY,AESTDY
-endy_col,aes,endy_col,,column,AE End day column,Event end day variable name,FALSE,AENDY,AEENDY
-term_col,aes,term_col,,column,Preferred Term Column,Dictionary-Derived Term,FALSE,AEDECOD,AEDECOD
-bodsys_col,aes,bodsys_col,,column,AE Body System,Body System or Organ Class,FALSE,AEBODSYS,AEBODSYS
-severity_col,aes,severity_col,,column,AE Severity,AE Severity,FALSE,AESEV,AESEV
-serious_col,aes,serious_col,,column,AE Seriousness,AE Seriousness,FALSE,AESER,AESER
+id_col,aes,id_col,,column,ID column,Unique subject identifier,FALSE,USUBJID,USUBJID
+stdy_col,aes,stdy_col,,column,AE Start Day,Event start day,FALSE,ASTDY,AESTDY
+endy_col,aes,endy_col,,column,AE End Day,Event end day,FALSE,AENDY,AEENDY
+seq_col,aes,seq_col,,column,Sequence,Event sequence number,FALSE,AESEQ,AESEQ
+term_col,aes,term_col,,column,Preferred Term,Dictionary-derived term,FALSE,AEDECOD,AEDECOD
+bodsys_col,aes,bodsys_col,,column,AE Body System,Body system or organ class,FALSE,AEBODSYS,AEBODSYS
+serious_col,aes,serious_col,,column,AE Seriousness,AE seriousness,FALSE,AESER,AESER
+severity_col,aes,severity_col,,column,AE Severity,AE severity,FALSE,AESEV,AESEV
+relationship_col,aes,relationship_col,,column,Relationship to Study Drug,Relationship to study drug,FALSE,AEREL,AEREL
+outcome_col,aes,outcome_col,,column,AE Outcome,AE outcome,FALSE,AEOUT,AEOUT
