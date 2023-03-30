@@ -6,6 +6,15 @@ export: false
 order: 3
 domain: 
   - aes
+dataSpec:
+  aes:
+    - id_col
+    - stdy_col
+    - endy_col
+    - seq_col
+    - term_col
+    - serious_col
+    - severity_col
 workflow:
   init: init_aeTimelines
   widget: aeTimelines
