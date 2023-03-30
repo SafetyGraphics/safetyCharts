@@ -25,6 +25,10 @@ usethis::use_data(meta_cm, overwrite = TRUE)
 meta_dm<-read_csv("data-raw/meta_dm.csv")[]
 usethis::use_data(meta_dm, overwrite = TRUE)
 
+#mh
+meta_mh<-read_csv("data-raw/meta_mh.csv")[]
+usethis::use_data(meta_mh, overwrite = TRUE)
+
 #hepExplorer
 meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]
 usethis::use_data(meta_hepExplorer, overwrite = TRUE)

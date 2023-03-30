@@ -7,7 +7,7 @@
 init_aeExplorer(data, settings)
 }
 \arguments{
-\item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
+\item{data}{adverse events data structured as one record per event. See details for column requirements.}
 
 \item{settings}{named list of settings}
 }

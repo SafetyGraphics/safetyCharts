@@ -1,0 +1,18 @@
+env: safetyGraphics
+label: Medical History Explorer
+type: htmlwidget
+package: safetyCharts  
+export: true
+order: 2
+domain: 
+  - mh
+  - dm
+workflow:
+  init: init_mhExplorer
+  widget: aeExplorer
+links:
+  Homepage: https://github.com/RhoInc/aeexplorer
+  Wiki: https://github.com/RhoInc/aeexplorer/wiki 
+  Issues: https://github.com/RhoInc/aeexplorer/issues
+  Demo: https://rhoinc.github.io/aeexplorer/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
