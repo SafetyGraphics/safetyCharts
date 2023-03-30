@@ -15,10 +15,6 @@ dataSpec:
     - id_col
     - term_col
     - bodsys_col
-    - serious_col
-    - severity_col
-    - relationship_col
-    - outcome_col
 workflow:
   init: init_aeExplorer
   widget: aeExplorer
