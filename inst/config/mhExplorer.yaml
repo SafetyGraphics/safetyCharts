@@ -5,7 +5,6 @@ package: safetyCharts
 export: true
 order: 2
 domain: 
-domain: 
   dm:
     - id_col
     - treatment_col
