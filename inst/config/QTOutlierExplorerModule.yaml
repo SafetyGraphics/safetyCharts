@@ -7,6 +7,14 @@ export: true
 order: -37
 domain: 
   - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
+    - baseline_flag_col
 workflow:
   ui: QT_OutlierExplorer_ui
   server: QT_OutlierExplorer_server

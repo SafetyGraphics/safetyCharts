@@ -4,6 +4,10 @@ type: module
 package: safetyCharts
 domain: 
   - labs
+dataSpec:
+  labs:
+    - measure_col
+    - value_col
 export: false
 order: -1
 workflow:

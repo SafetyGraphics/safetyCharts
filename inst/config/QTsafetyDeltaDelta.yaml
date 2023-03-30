@@ -5,7 +5,14 @@ package: safetyCharts
 export: true
 order: -36
 domain: 
-  ecg
+  - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
 workflow:
   widget: safetyDeltaDelta
 links:

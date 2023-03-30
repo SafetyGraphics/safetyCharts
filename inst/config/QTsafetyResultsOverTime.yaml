@@ -6,6 +6,13 @@ export: true
 order: -34
 domain: 
   - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
 workflow:
   init: init_safetyResultsOverTime
   widget: safetyResultsOverTime

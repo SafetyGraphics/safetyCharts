@@ -4,7 +4,23 @@ type: htmlwidget
 package: safetyCharts
 export: true
 domain: 
+  - dm
   - labs
+dataSpec:
+  dm:
+    - id_col
+    - age_col
+    - sex_col
+    - race_col
+  labs:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   init: init_safetyOutlierExplorer
   widget: safetyOutlierExplorer

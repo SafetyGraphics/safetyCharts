@@ -78,10 +78,13 @@ demogRTF_table <- function(data, settings) {
     tplyr_tab <- Tplyr::tplyr_table(data, !!sym(settings$treatment_col)) %>%
         Tplyr::add_total_group() %>%
         Tplyr::add_layer(
-            Tplyr::group_count(!!sym(settings$race_col), by = "Race")
+            Tplyr::group_desc(!!sym(settings$age_col), by = "Age (Years)")
         ) %>%
         Tplyr::add_layer(
-            Tplyr::group_desc(!!sym(settings$age_col), by = "Age (Years)")
+            Tplyr::group_desc(!!sym(settings$sex_col), by = "Sex")
+        ) %>%
+        Tplyr::add_layer(
+            Tplyr::group_count(!!sym(settings$race_col), by = "Race")
         )
 
     treatments<- data%>%pull(settings$treatment_col) %>% unique() 

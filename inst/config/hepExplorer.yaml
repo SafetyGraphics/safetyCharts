@@ -4,6 +4,16 @@ type: htmlwidget
 package: safetyCharts  
 domain: 
   - labs
+dataSpec:
+  labs:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 export: true
 workflow:
   widget: hepExplorer
