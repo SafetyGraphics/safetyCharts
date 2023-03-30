@@ -5,8 +5,14 @@ package: safetyCharts
 export: true
 order: 2
 domain: 
-  - mh
-  - dm
+domain: 
+  dm:
+    - id_col
+    - treatment_col
+  mh:
+    - id_col
+    - class_col
+    - code_col
 workflow:
   init: init_mhExplorer
   widget: aeExplorer
