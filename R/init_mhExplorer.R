@@ -1,13 +1,14 @@
-#' Initialize Settings for Conmeds Explorer widget
+#' Initialize Settings for Medical History Explorer widget
 #'
-#' @param data Con meds and demographics data. See details for column requirements.
+#' @param data medical history and demographics data.
 #' @param settings named list of settings
 #' 
 #' @return returns list with data and settings
 #'
 #' @export
 
-init_cmExplorer <- function(data, settings) {
+
+init_mhExplorer <- function(data, settings) {
     # Merge treatment with adverse events.
     dm_sub <- data$dm %>%
         select(
@@ -15,14 +16,14 @@ init_cmExplorer <- function(data, settings) {
             settings[["dm"]][["treatment_col"]]
         )
 
-    # left join to keep all rows in dm (even if there were no CMs)
+    # left join to keep all rows in dm (even if there were no AEs)
     anly <- dm_sub %>%
         left_join(
-            data$cm,
+            data$mh,
             settings[['dm']][['id_col']]
         )
 
-    settings <- settings$cm
+    settings <- settings$mh
 
     settings$variables <- list(
         major = settings[["class_col"]],

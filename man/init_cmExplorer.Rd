@@ -2,12 +2,12 @@
 % Please edit documentation in R/init_cmExplorer.R
 \name{init_cmExplorer}
 \alias{init_cmExplorer}
-\title{Initialize Settings for Adverse Event Explorer widget}
+\title{Initialize Settings for Conmeds Explorer widget}
 \usage{
 init_cmExplorer(data, settings)
 }
 \arguments{
-\item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
+\item{data}{Con meds and demographics data. See details for column requirements.}
 
 \item{settings}{named list of settings}
 }
@@ -15,5 +15,5 @@ init_cmExplorer(data, settings)
 returns list with data and settings
 }
 \description{
-Initialize Settings for Adverse Event Explorer widget
+Initialize Settings for Conmeds Explorer widget
 }

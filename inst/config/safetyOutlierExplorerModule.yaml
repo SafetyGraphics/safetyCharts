@@ -6,6 +6,12 @@ export: false
 order: -1
 domain: 
   - labs
+dataSpec:
+  labs:
+    - id_col
+    - studyday_col
+    - measure_col
+    - value_col
 workflow:
   ui: safetyOutlierExplorer_ui
   server: safetyOutlierExplorer_server

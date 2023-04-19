@@ -1,22 +1,22 @@
 env: safetyGraphics
-label: Adverse Event Explorer
+label: Medical History Explorer
 type: htmlwidget
 package: safetyCharts  
 export: true
 order: 2
-domain: 
+domain:
   - dm
-  - aes
-dataSpec:
+  - mh
+dataSpec: 
   dm:
     - id_col
     - treatment_col
-  aes:
+  mh:
     - id_col
-    - term_col
-    - bodsys_col
+    - class_col
+    - code_col
 workflow:
-  init: init_aeExplorer
+  init: init_mhExplorer
   widget: aeExplorer
 links:
   Homepage: https://github.com/RhoInc/aeexplorer
@@ -24,4 +24,3 @@ links:
   Issues: https://github.com/RhoInc/aeexplorer/issues
   Demo: https://rhoinc.github.io/aeexplorer/test-page/
   safetyCharts: https://github.com/SafetyGraphics/safetycharts
-

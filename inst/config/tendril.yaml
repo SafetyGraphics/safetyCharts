@@ -5,8 +5,17 @@ package: safetyCharts
 export: true
 order: 4
 domain: 
-  - aes
   - dm
+  - aes
+dataSpec:
+  dm:
+    - id_col
+    - treatment_col
+  aes:
+    - id_col
+    - stdy_col
+    - endy_col
+    - bodsys_col
 workflow:
   main: tendril_chart
 links: 
