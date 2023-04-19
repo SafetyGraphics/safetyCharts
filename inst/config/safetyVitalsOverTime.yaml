@@ -4,9 +4,9 @@ type: htmlwidget
 package: safetyCharts
 export: true
 domain: 
-  - labs
+  - vitals
 dataSpec:
-  vs:
+  vitals:
     - id_col
     - visit_col
     - visitn_col
