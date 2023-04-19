@@ -6,4 +6,4 @@ endy_col,ex,endy_col,,column,Ex End day column,Event end day variable name,FALSE
 treatment_col,ex,treatment_col,,column,Ex Treatment Column,Treatment,FALSE,,EXTRT
 dose_col,ex,dose_col,,column,Ex Dose System,Dose,FALSE,,EXDOSE
 visit_col,ex,visit_col,,column,Visit Column,Visit,FALSE,,VISIT
-visitn_col,ex,visitn_col,,column,Visit Number Column,Visit Number,FALSE,,VISITN
+visitn_col,ex,visitn_col,,column,Visit Number Column,Visit Number,FALSE,,VISITNUM
