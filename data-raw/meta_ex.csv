@@ -1,0 +1,9 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,ex,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,,USUBJID
+seq_col,ex,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,,EXSEQ
+stdy_col,ex,stdy_col,,column,Ex Start day column,Event start day variable name,FALSE,,EXSTDY
+endy_col,ex,endy_col,,column,Ex End day column,Event end day variable name,FALSE,,EXENDY
+treatment_col,ex,treatment_col,,column,Ex Treatment Column,Treatment,FALSE,,EXTRT
+dose_col,ex,dose_col,,column,Ex Dose System,Dose,FALSE,,EXDOSE
+visit_col,ex,visit_col,,column,Visit Column,Visit,FALSE,,VISIT
+visitn_col,ex,visitn_col,,column,Visit Number Column,Visit Number,FALSE,,VISITN
