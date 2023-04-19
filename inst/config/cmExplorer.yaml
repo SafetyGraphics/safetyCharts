@@ -5,8 +5,16 @@ package: safetyCharts
 export: true
 order: 2
 domain: 
-  - cm
   - dm
+  - cm
+dataSpec:
+  dm:
+    - id_col
+    - treatment_col
+  cm:
+    - id_col
+    - code_col
+    - class_col
 workflow:
   init: init_cmExplorer
   widget: aeExplorer

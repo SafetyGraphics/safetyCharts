@@ -6,7 +6,16 @@ export: false
 order: 3
 domain: 
   - cm
+dataSpec:
+  cm:
+    - id_col
+    - stdy_col
+    - endy_col
+    - seq_col
+    - code_col
+    - indication_col
 workflow:
+  init: init_cmTimelines
   widget: aeTimelines
 links:
   Homepage: https://github.com/RhoInc/ae-timelines

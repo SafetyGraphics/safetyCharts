@@ -1,18 +1,23 @@
-#' Initialize Settings for Adverse Event Explorer widget
+#' Initialize Settings for Concomitant Medication Explorer widget
 #'
-#' @param data labs data structured as one record per person per visit per measurement. See details for column requirements.
+#' @param data concomitant medication data structured as one record per person per visit per
+#' measurement. See details for column requirements.
 #' @param settings named list of settings
 #' 
 #' @return returns list with data and settings
 #'
 #' @export
 
-
 init_cmExplorer <- function(data, settings) {
-    print("CM TIME")
     # Merge treatment with adverse events.
-    dm_sub <- data$dm %>% select(settings[["dm"]][["id_col"]], settings[["dm"]][["treatment_col"]])
-    anly <- dm_sub %>% left_join(data$cm) # left join to keep all rows in dm (even if there were no AEs)
+    dm_sub <- data$dm %>%
+        select(
+            settings[["dm"]][["id_col"]],
+            settings[["dm"]][["treatment_col"]]
+        )
+
+    # left join to keep all rows in dm (even if there were no CMs)
+    anly <- dm_sub %>% left_join(data$cm)
 
     settings <- c(settings$cm, settings$labs)
 
