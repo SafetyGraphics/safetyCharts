@@ -1,7 +1,7 @@
 text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
-id_col,mh,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,,USUBJID
-seq_col,mh,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,,MHSEQ
-stdy_col,mh,dy_col,,column,MH Day column,Event start day variable name,FALSE,,MHDY
-code_col,mh,code_col,,column,MH Code Column,Dictionary-derived low-level code,FALSE,,MHTERM
-class_col,mh,class_col,,column,MH Class System,Dictionary-derived high-level class,FALSE,,MHBODSYS
-sev_col,mh,severity_col,,column,MH Severity,Severity,FALSE,,MHSEV
+id_col,mh,id_col,,column,ID column,Unique subject identifier variable name.,FALSE,USUBJID,USUBJID
+seq_col,mh,seq_col,,column,Sequence column,Event sequence number variable name,FALSE,ASEQ,MHSEQ
+stdy_col,mh,dy_col,,column,MH Day column,Event start day variable name,FALSE,ADY,MHDY
+code_col,mh,code_col,,column,MH Code Column,Dictionary-derived low-level code,FALSE,MHTERM,MHTERM
+class_col,mh,class_col,,column,MH Class System,Dictionary-derived high-level class,FALSE,MHBODSYS,MHBODSYS
+sev_col,mh,severity_col,,column,MH Severity,Severity,FALSE,MHSEV,MHSEV

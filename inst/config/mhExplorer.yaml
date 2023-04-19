@@ -4,7 +4,10 @@ type: htmlwidget
 package: safetyCharts  
 export: true
 order: 2
-domain: 
+domain:
+  - dm
+  - mh
+dataSpec: 
   dm:
     - id_col
     - treatment_col

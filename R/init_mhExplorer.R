@@ -9,12 +9,21 @@
 
 
 init_mhExplorer <- function(data, settings) {
-    print("MH TIME")
     # Merge treatment with adverse events.
-    dm_sub <- data$dm %>% select(settings[["dm"]][["id_col"]], settings[["dm"]][["treatment_col"]])
-    anly <- dm_sub %>% left_join(data$mh) # left join to keep all rows in dm (even if there were no AEs)
+    dm_sub <- data$dm %>%
+        select(
+            settings[["dm"]][["id_col"]],
+            settings[["dm"]][["treatment_col"]]
+        )
 
-    settings <- c(settings$mh, settings$labs)
+    # left join to keep all rows in dm (even if there were no AEs)
+    anly <- dm_sub %>%
+        left_join(
+            data$mh,
+            settings[['dm']][['id_col']]
+        )
+
+    settings <- settings$mh
 
     settings$variables <- list(
         major = settings[["class_col"]],

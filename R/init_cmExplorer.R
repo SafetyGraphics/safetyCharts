@@ -7,14 +7,22 @@
 #'
 #' @export
 
-
 init_cmExplorer <- function(data, settings) {
-    print("CM TIME")
     # Merge treatment with adverse events.
-    dm_sub <- data$dm %>% select(settings[["dm"]][["id_col"]], settings[["dm"]][["treatment_col"]])
-    anly <- dm_sub %>% left_join(data$cm) # left join to keep all rows in dm (even if there were no AEs)
+    dm_sub <- data$dm %>%
+        select(
+            settings[["dm"]][["id_col"]],
+            settings[["dm"]][["treatment_col"]]
+        )
 
-    settings <- c(settings$cm, settings$labs)
+    # left join to keep all rows in dm (even if there were no CMs)
+    anly <- dm_sub %>%
+        left_join(
+            data$cm,
+            settings[['dm']][['id_col']]
+        )
+
+    settings <- settings$cm
 
     settings$variables <- list(
         major = settings[["class_col"]],
