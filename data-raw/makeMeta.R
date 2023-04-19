@@ -17,9 +17,17 @@ usethis::use_data(meta_labs, overwrite = TRUE)
 meta_aes<-read_csv("data-raw/meta_aes.csv")[]
 usethis::use_data(meta_aes, overwrite = TRUE)
 
+#cm
+meta_cm<-read_csv("data-raw/meta_cm.csv")[]
+usethis::use_data(meta_cm, overwrite = TRUE)
+
 #dm
 meta_dm<-read_csv("data-raw/meta_dm.csv")[]
 usethis::use_data(meta_dm, overwrite = TRUE)
+
+#mh
+meta_mh<-read_csv("data-raw/meta_mh.csv")[]
+usethis::use_data(meta_mh, overwrite = TRUE)
 
 #hepExplorer
 meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]

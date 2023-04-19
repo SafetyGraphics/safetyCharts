@@ -4,10 +4,10 @@
 \alias{hepExplorer}
 \title{Make standalone hepExplorer html widget}
 \usage{
-hepExplorer(df = safetyData::adam_adlbc, mapping = NULL, ...)
+hepExplorer(data = safetyData::adam_adlbc, mapping = NULL, ...)
 }
 \arguments{
-\item{df}{data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc.}
+\item{data}{data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc.}
 
 \item{mapping}{named list with the current data mappings. See details for default mapping.}
 
@@ -63,7 +63,7 @@ hepExplorer(y_options='all')
 
 # Use custom mapping for SDTM data
 hepExplorer(
-    df=safetyData::sdtm_lb,
+    data=safetyData::sdtm_lb,
     measure_col = "LBTEST", 
     measure_values = list(
         ALT = "Alanine Aminotransferase", 
