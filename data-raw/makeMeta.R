@@ -13,6 +13,10 @@ usethis::use_data(meta_ecg, overwrite = TRUE)
 meta_labs<-read_csv("data-raw/meta_labs.csv")[]
 usethis::use_data(meta_labs, overwrite = TRUE)
 
+#vitals
+meta_vitals<-read_csv("data-raw/meta_vitals.csv")[]
+usethis::use_data(meta_vitals, overwrite = TRUE)
+
 #aes
 meta_aes<-read_csv("data-raw/meta_aes.csv")[]
 usethis::use_data(meta_aes, overwrite = TRUE)
