@@ -1,0 +1,27 @@
+env: safetyGraphics
+label: Nephrotoxicity Explorer
+type: htmlwidget
+package: safetyCharts
+domain: 
+  - labs
+dataSpec:
+  labs:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+export: true
+workflow:
+  widget: nepExplorer
+  ui: nepexplorer_ui
+  server: nepexplorer_server
+links:
+  Clinical Users Guide (pdf): 
+  Homepage: https://github.com/SafetyGraphics/nep-explorer
+  Wiki: https://github.com/SafetyGraphics/nep-explorer/wiki
+  Issues: https://github.com/SafetyGraphics/nep-explorer/issues
+  Demo: https://safetygraphics.github.io/nep-explorer/test-page/
+  safetyCharts: https://github.com/SafetyGraphics/safetycharts
+
