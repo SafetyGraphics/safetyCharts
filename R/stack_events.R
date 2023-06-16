@@ -64,7 +64,7 @@ standardize_events <- function(data, settings, domain=""){
       # make a details object with all other columns in settings
       cols<-as.character(settings) 
       details <- data %>% 
-        select(cols) %>%
+        select(all_of(cols)) %>%
         select(-settings[["id_col"]]) %>%
         select(-settings[["stdy_col"]]) %>%
         select(-settings[["endy_col"]]) %>%
