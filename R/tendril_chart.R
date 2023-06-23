@@ -19,9 +19,9 @@
 #' }
 #' @return returns a chart object
 #'
-#' @import Tendril
-#' @import rlang
 #' @import dplyr
+#' @importFrom Tendril Tendril
+#' @importFrom rlang sym
 #'
 #' @export
 #'
@@ -31,16 +31,16 @@ tendril_chart <- function(data, settings) {
     #########################################
 
     # Convert settings to symbols ready for standard evaluation
-    dm_id_sym <- sym(settings[["dm"]][["id_col"]])
-    dm_treatment_sym <- sym(settings[["dm"]][["treatment_col"]])
+    dm_id_sym <- rlang::sym(settings[["dm"]][["id_col"]])
+    dm_treatment_sym <- rlang::sym(settings[["dm"]][["treatment_col"]])
 
-    ae_id_sym <- sym(settings[["aes"]][["id_col"]])
-    ae_bodsys_sym <- sym(settings[["aes"]][["bodsys_col"]])
-    ae_stdy_sym <- sym(settings[["aes"]][["stdy_col"]])
+    ae_id_sym <- rlang::sym(settings[["aes"]][["id_col"]])
+    ae_bodsys_sym <- rlang::sym(settings[["aes"]][["bodsys_col"]])
+    ae_stdy_sym <- rlang::sym(settings[["aes"]][["stdy_col"]])
 
-    aes_arm <- left_join(
+    aes_arm <- dplyr::left_join(
         data$aes,
-        data$dm %>% select(!!dm_id_sym, !!dm_treatment_sym),
+        data$dm %>% dplyr::select(!!dm_id_sym, !!dm_treatment_sym),
         by = settings[["dm"]][["id_col"]]
     )
 
@@ -53,17 +53,17 @@ tendril_chart <- function(data, settings) {
     # TODO check that the treatments exsits in the data
 
     if (length(treatments) < 2) {
-        all_treatments <- unique(aes_arm %>% pull(!!dm_treatment_sym))
+        all_treatments <- unique(aes_arm %>% dplyr::pull(!!dm_treatment_sym))
         treatments <- all_treatments[1:2]
     }
 
     # subject data
     subj <- data$dm %>%
-        count(!!dm_id_sym, !!dm_treatment_sym) %>%
-        select(-n) %>%
+        dplyr::count(!!dm_id_sym, !!dm_treatment_sym) %>%
+        dplyr::select(-n) %>%
         as.data.frame()
 
-    data.tendril <- Tendril(
+    data.tendril <- Tendril::Tendril(
         mydata = aes_arm,
         rotations = rep(3, dim(aes_arm)[1]),
         AEfreqThreshold = 5,

@@ -4,7 +4,7 @@
 #' @param data named list of current data sets
 #' @param mapping named list with the current data mappings
 #'
-#' @import htmlwidgets
+#' @importFrom htmlwidgets createWidget sizingPolicy
 #' @importFrom jsonlite toJSON
 #'
 #' @export

@@ -7,8 +7,7 @@
 #' @return combined dataset with stacked AE and CM data
 #'
 #' @examples
-#' stack_events(
-#' )
+#' stack_events()
 #'
 #' @importFrom purrr map
 #'

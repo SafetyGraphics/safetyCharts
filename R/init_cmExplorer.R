@@ -5,19 +5,21 @@
 #' 
 #' @return returns list with data and settings
 #'
+#' @import dplyr
+#'
 #' @export
 
 init_cmExplorer <- function(data, settings) {
     # Merge treatment with adverse events.
     dm_sub <- data$dm %>%
-        select(
+        dplyr::select(
             settings[["dm"]][["id_col"]],
             settings[["dm"]][["treatment_col"]]
         )
 
     # left join to keep all rows in dm (even if there were no CMs)
     anly <- dm_sub %>%
-        left_join(
+        dplyr::left_join(
             data$cm,
             settings[['dm']][['id_col']]
         )

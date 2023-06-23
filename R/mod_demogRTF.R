@@ -4,6 +4,8 @@
 #'
 #' @return returns shiny module UI
 #'
+#' @importFrom DT DTOutput
+#' @importFrom htmltools div br
 #' @import shiny
 #'
 #' @export
@@ -14,7 +16,7 @@ demogRTF_ui <- function(id) {
     div(
         downloadButton(ns("downloadRTF"), "Download RTF", class="btn-primary pull-right"),
         br(),
-        DT::dataTableOutput(ns("rtfTable"))
+        DT::DTOutput(ns("rtfTable"))
     )
 }
 
@@ -29,14 +31,20 @@ demogRTF_ui <- function(id) {
 #'
 #' @import ggplot2
 #' @import dplyr
+#' @importFrom DT renderDT
+#' @importFrom pharmaRTF write_rtf
+#' @import shiny
 #'
 #' @export
 
 demogRTF_server <- function(input, output, session, params) {
     ns <- session$ns
-    demogTable <- reactive({demogRTF_table(params()$data, params()$settings)})
 
-    output[["rtfTable"]] <- DT::renderDataTable(
+    demogTable <- reactive({
+        demogRTF_table(params()$data, params()$settings)
+    })
+
+    output[["rtfTable"]] <- DT::renderDT(
         demogTable()$table, 
         rownames = FALSE,
         options = list(

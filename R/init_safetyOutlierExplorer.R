@@ -8,7 +8,7 @@
 #' @export
 
 init_safetyOutlierExplorer <- function(data, settings) {
-    settings$time_cols <- data_frame(
+    settings$time_cols <- data.frame(
         value_col = c(settings[["visit_col"]], settings[["studyday_col"]]),
         type = c("ordinal", "linear"),
         order_col = c(settings[["visitn_col"]], "null"),
