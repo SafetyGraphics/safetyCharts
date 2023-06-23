@@ -4,7 +4,7 @@
 \alias{standardize_events}
 \title{Create a standardized event data set}
 \usage{
-standardize_events(data, settings)
+standardize_events(data, settings, domain = "")
 }
 \arguments{
 \item{data}{safetyGraphics data object}

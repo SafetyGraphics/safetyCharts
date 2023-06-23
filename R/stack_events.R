@@ -3,27 +3,31 @@
 #' @param data safetyGraphics data object
 #' @param settings safetyGraphics settings object
 #' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
+#'
 #' @return combined dataset with stacked AE and CM data
-
 #'
 #' @examples
 #' stack_events(
 #' )
+#'
+#' @importFrom purrr map
+#'
+#' @export
 
-stack_events <- function(data, settings, domains=c("aes","cm", "ex")){
+stack_events <- function(data, settings, domains = c("aes","cm", "ex")) {
 
-  all_events <- domains %>% map(function(domain){
+  all_events <- domains %>% purrr::map(function(domain) {
     # check it exists in the data
-    if(!domain %in% names(data)){
+    if (!domain %in% names(data)) {
       message(paste0("'",domain, "' data not found in data object and will be skipped in stacked event data."))
+
       return(NULL)
-      
-    }else{
+    } else {
       domain_data <- data[[domain]]
       domain_settings<- settings[[domain]]
+
       return(standardize_events(domain_data, domain_settings, domain=domain))
     }
-
   }) %>% bind_rows
 
   return(all_events)
@@ -38,8 +42,11 @@ stack_events <- function(data, settings, domains=c("aes","cm", "ex")){
 #' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
 #' @return combined dataset with stacked AE and CM data
 #' 
-#' @import purrr
-#' @import tidyr
+#' @import dplyr
+#' @importFrom purrr imap
+#' @importFrom tidyr unite
+#'
+#' @export
 
 standardize_events <- function(data, settings, domain=""){
       # stop if id_col doesn't exist
@@ -64,22 +71,22 @@ standardize_events <- function(data, settings, domain=""){
       # make a details object with all other columns in settings
       cols<-as.character(settings) 
       details <- data %>% 
-        select(all_of(cols)) %>%
-        select(-settings[["id_col"]]) %>%
-        select(-settings[["stdy_col"]]) %>%
-        select(-settings[["endy_col"]]) %>%
-        imap( ~ paste(.y, .x, sep=": ")) %>%
-        as_tibble %>%
-        unite("details", sep="\n")
+        dplyr::select(dplyr::all_of(cols)) %>%
+        dplyr::select(-settings[["id_col"]]) %>%
+        dplyr::select(-settings[["stdy_col"]]) %>%
+        dplyr::select(-settings[["endy_col"]]) %>%
+        purrr::imap( ~ paste(.y, .x, sep=": ")) %>%
+        tibble::as_tibble %>%
+        tidyr::unite("details", sep="\n")
       
       # get id, start day and end day
-      event_data <-  data %>% select(
+      event_data <-  data %>% dplyr::select(
         id = settings[["id_col"]],
         stdy = settings[["stdy_col"]],
         endy = settings[["endy_col"]]
       ) %>% 
-      bind_cols(details) %>% 
-      mutate(domain = domain)
+      dplyr::bind_cols(details) %>% 
+      dplyr::mutate(domain = domain)
       
       return(event_data)
 }
