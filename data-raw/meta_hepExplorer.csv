@@ -3,5 +3,6 @@ measure_values--ALT,labs,measure_col,ALT,field,Alanine Aminotransferase value,Va
 measure_values--AST,labs,measure_col,AST,field,Aspartate Aminotransferase value,Value used for Aspartate Aminotransferase in the specified measure column,FALSE,Aspartate Aminotransferase (U/L),Aspartate Aminotransferase
 measure_values--TB,labs,measure_col,TB,field,Total Bilirubin value,Value used for Total Bilirubin in the specified measure column,FALSE,Bilirubin (umol/L),Bilirubin
 measure_values--ALP,labs,measure_col,ALP,field,Alkaline Phosphatase value,Value used for Alkaline Phosphatase in the specified measure column,FALSE,Alkaline Phosphatase (U/L),Alkaline Phosphatase
-baseline--value_col,labs,baseline_col,,column,Baseline Column,Column for assigning baseline visit,FALSE,ady,lbdy
+baseline--value_col,labs,baseline_col,,column,Baseline Column,Column for assigning baseline visit,FALSE,ADY,LBDY
+
 baseline--values,labs,baseline_col,,field,Baseline Value,Baseline values for calculating change from baseline,FALSE,,
