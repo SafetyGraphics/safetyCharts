@@ -21,8 +21,6 @@ Combine Event Domains
 }
 \examples{
 stack_events(
-  aes_data = params()$data$aes,
-  cm_data = params()$data$cm,
-  settings = params()$settings
 )
+
 }
