@@ -5,4 +5,4 @@ measure_values--TB,labs,measure_col,TB,field,Total Bilirubin value,Value used fo
 measure_values--ALP,labs,measure_col,ALP,field,Alkaline Phosphatase value,Value used for Alkaline Phosphatase in the specified measure column,FALSE,Alkaline Phosphatase (U/L),Alkaline Phosphatase
 baseline--value_col,labs,baseline_col,,column,Baseline Column,Column for assigning baseline visit,FALSE,ADY,LBDY
 
-baseline--values,labs,baseline_col,,field,Baseline Value,Baseline values for calculating change from baseline,FALSE,,
+baseline--values,labs,baseline_col,,field,Baseline Value,Baseline values for calculating change from baseline,FALSE,1,1
