@@ -74,8 +74,9 @@ standardize_events <- function(data, settings, domain=""){
         dplyr::select(-settings[["id_col"]]) %>%
         dplyr::select(-settings[["stdy_col"]]) %>%
         dplyr::select(-settings[["endy_col"]]) %>%
-        purrr::imap( ~ paste(.y, .x, sep=": ")) %>%
-        tibble::as_tibble %>%
+        purrr::imap(~ paste(.y, .x, sep=": ")) %>%
+        dplyr::bind_cols() %>%
+        tibble::as_tibble() %>%
         tidyr::unite("details", sep="\n")
       
       # get id, start day and end day
