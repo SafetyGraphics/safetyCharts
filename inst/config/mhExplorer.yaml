@@ -3,7 +3,7 @@ label: Medical History Explorer
 type: htmlwidget
 package: safetyCharts  
 export: true
-order: 2
+order: 2.2
 domain:
   - dm
   - mh

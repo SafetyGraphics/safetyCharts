@@ -3,6 +3,7 @@ label: Shift Plot
 type: htmlwidget
 package: safetyCharts
 export: true
+order: 9
 domain: 
   - labs
 dataSpec:
@@ -21,3 +22,4 @@ links:
   Issues: https://github.com/RhoInc/safety-shift-plot/issues
   Demo: https://rhoinc.github.io/safety-shift-plot/test-page/
   safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

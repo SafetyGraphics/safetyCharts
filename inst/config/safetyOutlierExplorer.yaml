@@ -3,6 +3,7 @@ label: Outlier Explorer
 type: htmlwidget
 package: safetyCharts
 export: true
+order: 7
 domain: 
   - dm
   - labs
