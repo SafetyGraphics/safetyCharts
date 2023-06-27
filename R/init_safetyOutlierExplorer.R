@@ -5,14 +5,15 @@
 #'
 #' @return returns list with data and settings
 #'
-#' @importFrom dplyr left_join
+#' @importFrom dplyr left_join select
 #' @importFrom stats setNames
 #'
 #' @export
 
 init_safetyOutlierExplorer <- function(data, settings) {
+    # Keep only those column in DM not present in LB.
     dm <- data$dm %>%
-        select(
+        dplyr::select(
             settings$dm$id_col,
             setdiff(
                 names(data$dm),
@@ -20,26 +21,48 @@ init_safetyOutlierExplorer <- function(data, settings) {
             )
         )
 
+    # Merge DM onto LB.
     labs <- data$labs %>%
-        left_join(
+        dplyr::left_join(
             dm,
-            setNames(
+            stats::setNames(
                 settings$dm$id_col,
                 settings$labs$id_col
             )
         )
-    print(names(labs))
-    View(labs)
 
+    # Capture both ordinal and discrete longitudinal settings.
     settings$labs$time_cols <- data.frame(
-        value_col = c(settings[["labs"]][["visit_col"]], settings[["labs"]][["studyday_col"]]),
-        type = c("ordinal", "linear"),
-        order_col = c(settings[["labs"]][["visitn_col"]], "null"),
-        label = c("Visit", "Study Day"),
-        rotate_tick_labels = c(T, F),
-        vertical_space = c(100, 0)
+        value_col = c(
+            settings$labs$visit_col,
+            settings$labs$studyday_col
+        ),
+        type = c(
+            "ordinal",
+            "linear"
+        ),
+        order_col = c(
+            settings$labs$visitn_col,
+            "null"
+        ),
+        label = c(
+            "Visit",
+            "Study Day"
+        ),
+        rotate_tick_labels = c(
+            T,
+            F
+        ),
+        vertical_space = c(
+            100,
+            0
+        )
     )
-    View(settings)
 
-    return(list(data = labs, settings = settings$labs))
+    return(
+        list(
+            data = labs,
+            settings = settings$labs
+        )
+    )
 }

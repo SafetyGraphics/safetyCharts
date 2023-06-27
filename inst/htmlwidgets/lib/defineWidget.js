@@ -5,7 +5,6 @@ const defineWidget = function(name, fn) {
         factory: function(el, width, height) {
             return {
                 renderValue: function(inputs) {
-                    console.log(inputs);
                     // clear element
                     el.innerHTML = "";
 
