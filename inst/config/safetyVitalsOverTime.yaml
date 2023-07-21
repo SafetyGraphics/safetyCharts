@@ -3,7 +3,8 @@ label: Vitals Over Time
 type: htmlwidget
 package: safetyCharts
 export: true
-domain: 
+order: -6.1
+domain:
   - vitals
 dataSpec:
   vitals:
@@ -21,3 +22,4 @@ links:
   Issues: https://github.com/RhoInc/safety-results-over-time/issues
   Demo: https://rhoinc.github.io/safety-results-over-time/test-page/
   safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

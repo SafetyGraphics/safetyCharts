@@ -19,18 +19,17 @@
 #'
 #' @return returns a chart object
 #'
+#' @import dplyr
 #' @importFrom plotly plot_ly animation_slider layout
 #' @import rlang
 #' @importFrom rlang .data
-#' @import dplyr
 #'
 #' @export
 
-
-
-
-QT_Outlier_Explorer <- function(data, settings)
-{
+QT_Outlier_Explorer <- function(
+    data,
+    settings
+) {
     
     # horizontal reference line
     hline <- function(y = 0, color = "blue") {

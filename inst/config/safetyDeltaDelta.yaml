@@ -3,6 +3,7 @@ label: Delta-Delta
 type: htmlwidget
 package: safetyCharts
 export: true
+order: 10
 domain: 
   - labs
 dataSpec:

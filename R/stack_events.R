@@ -7,8 +7,7 @@
 #' @return combined dataset with stacked AE and CM data
 #'
 #' @examples
-#' stack_events(
-#' )
+#' stack_events()
 #'
 #' @importFrom purrr map
 #'
@@ -75,8 +74,8 @@ standardize_events <- function(data, settings, domain=""){
         dplyr::select(-settings[["id_col"]]) %>%
         dplyr::select(-settings[["stdy_col"]]) %>%
         dplyr::select(-settings[["endy_col"]]) %>%
-        purrr::imap( ~ paste(.y, .x, sep=": ")) %>%
-        dplyr::bind_cols() %>% 
+        purrr::imap(~ paste(.y, .x, sep=": ")) %>%
+        dplyr::bind_cols() %>%
         tibble::as_tibble() %>%
         tidyr::unite("details", sep="\n")
       

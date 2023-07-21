@@ -1,11 +1,12 @@
 context("Tests for the outlierExplorer R module")
+
 library(safetyCharts)
 library(shiny)
 library(dplyr)
 library(shinytest)
 library(testthat)
 
-if(interactive()){
+if (interactive()) {
     app <- ShinyDriver$new("module_examples/outlierExplorer")
     initial <- app$getAllValues()
 }
@@ -30,4 +31,4 @@ test_that("Changing the tests updates the chart", {
     expectUpdate(app, `example1-measures` = c("Albumin"), "example1-outlierExplorer")
 })
 
-if(interactive()) app$stop()
+if (interactive()) app$stop()

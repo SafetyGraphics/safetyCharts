@@ -3,7 +3,7 @@ label: QT Shift Plot
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -35
+order: -9.2
 domain: 
   - ecg
 dataSpec:

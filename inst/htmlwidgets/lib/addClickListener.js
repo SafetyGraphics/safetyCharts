@@ -1,6 +1,5 @@
 // Communicate participantsSelected event with safetyGraphics when Shiny exists in the environment.
 const addClickListener = function(instance, el) {
-    console.log(instance);
     if (!!Shiny) {
         const wrap = instance.hasOwnProperty('chart')
             ? instance.chart.wrap

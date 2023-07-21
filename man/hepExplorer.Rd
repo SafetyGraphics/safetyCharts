@@ -7,9 +7,9 @@
 hepExplorer(data = safetyData::adam_adlbc, mapping = NULL, ...)
 }
 \arguments{
-\item{data}{data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc.}
+\item{data}{\code{data.frame} Data frame containing lab data used to render \code{hepExplorer}. Default: \code{safetyData::adam_adlbc}}
 
-\item{mapping}{named list with the current data mappings. See details for default mapping.}
+\item{mapping}{\code{list} named list with the current data mappings. See details for default mapping.}
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
 }

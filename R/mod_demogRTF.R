@@ -4,6 +4,8 @@
 #'
 #' @return returns shiny module UI
 #'
+#' @importFrom DT DTOutput
+#' @importFrom htmltools div br
 #' @import shiny
 #'
 #' @export
@@ -14,7 +16,7 @@ demogRTF_ui <- function(id) {
     div(
         downloadButton(ns("downloadRTF"), "Download RTF", class="btn-primary pull-right"),
         br(),
-        DT::dataTableOutput(ns("rtfTable"))
+        DT::DTOutput(ns("rtfTable"))
     )
 }
 
@@ -29,14 +31,20 @@ demogRTF_ui <- function(id) {
 #'
 #' @import ggplot2
 #' @import dplyr
+#' @importFrom DT renderDT
+#' @importFrom pharmaRTF write_rtf
+#' @import shiny
 #'
 #' @export
 
 demogRTF_server <- function(input, output, session, params) {
     ns <- session$ns
-    demogTable <- reactive({demogRTF_table(params()$data, params()$settings)})
 
-    output[["rtfTable"]] <- DT::renderDataTable(
+    demogTable <- reactive({
+        demogRTF_table(params()$data, params()$settings)
+    })
+
+    output[["rtfTable"]] <- DT::renderDT(
         demogTable()$table, 
         rownames = FALSE,
         options = list(
@@ -66,8 +74,8 @@ demogRTF_server <- function(input, output, session, params) {
 #' settings <- list(treatment_col = "ARM", sex_col = "SEX", race_col = "RACE", age_col = "AGE")
 #' demogRTF_table(safetyData::sdtm_dm, settings)
 #'
-#' @importFrom pharmaRTF rtf_doc add_titles hf_line add_footnotes set_font_size set_ignore_cell_padding set_column_header_buffer
 #' @importFrom huxtable as_hux set_bold set_align set_valign set_bottom_border set_width set_escape_contents set_col_width
+#' @importFrom pharmaRTF rtf_doc add_titles hf_line add_footnotes set_font_size set_ignore_cell_padding set_column_header_buffer
 #' @import Tplyr
 #'
 #' @return rtf doc object

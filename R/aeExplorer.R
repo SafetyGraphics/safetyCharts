@@ -1,8 +1,8 @@
 #' Make standalone aeExplorer html widget
 #' 
-#' Convience mapping of render_widget for aeExplorer. 
+#' Convience mapping of render_widget for aeExplorer.
 #' 
-#' @details The [data](https://github.com/RhoInc/aeexplorer/wiki/Data-Guidelines) and
+#' The [data](https://github.com/RhoInc/aeexplorer/wiki/Data-Guidelines) and
 #' [mapping](https://github.com/RhoInc/aeexplorer/wiki/Configuration) should match the specs
 #' described in the [aeExplorer](https://github.com/RhoInc/aeexplorer/wiki/Configuration)
 #' JavaScript library. Items passed in ... are added to mapping, and then the list is converted to
@@ -50,8 +50,9 @@
 #' )
 #' }
 #' 
-#' @param df data frame containing lab data used to render for aeExplorer. Default is safetyData::adam_adlbc. 
-#' @param mapping named list with the current data mappings. See details for default mapping. 
+#' @param data `list` Named list of data frames that includes participant-level subject data (`dm`)
+#' and event-level adverse event data (`aes`).
+#' @param mapping `list` Named list with current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
 #' 
 #' @importFrom purrr list_modify

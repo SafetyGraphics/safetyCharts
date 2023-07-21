@@ -2,6 +2,8 @@ env: safetyGraphics
 label: Hepatic Safety Explorer
 type: htmlwidget
 package: safetyCharts  
+export: true
+order: 9999
 domain: 
   - labs
 dataSpec:
@@ -14,7 +16,6 @@ dataSpec:
     - value_col
     - normal_col_low
     - normal_col_high
-export: true
 workflow:
   widget: hepExplorer
 links:

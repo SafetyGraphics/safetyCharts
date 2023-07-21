@@ -3,6 +3,7 @@ label: Results Over Time
 type: htmlwidget
 package: safetyCharts
 export: true
+order: 6
 domain: 
   - labs
 dataSpec:
@@ -21,3 +22,4 @@ links:
   Issues: https://github.com/RhoInc/safety-results-over-time/issues
   Demo: https://rhoinc.github.io/safety-results-over-time/test-page/
   safetyCharts: https://github.com/SafetyGraphics/safetycharts
+

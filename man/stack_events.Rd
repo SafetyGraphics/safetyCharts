@@ -20,7 +20,6 @@ combined dataset with stacked AE and CM data
 Combine Event Domains
 }
 \examples{
-stack_events(
-)
+stack_events()
 
 }
