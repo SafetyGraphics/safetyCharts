@@ -17,11 +17,11 @@ stack_events(
 )
 }
 \arguments{
-\item{data}{safetyGraphics data object}
+\item{data}{\code{list} Named list of data domains.}
 
-\item{settings}{safetyGraphics settings object}
+\item{settings}{\code{list} Named list of settings objects containing column and value mappings.}
 
-\item{domains}{list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default.}
+\item{domains}{\code{character} Vector of data domain names to stack.}
 }
 \value{
 combined dataset with stacked AE and CM data

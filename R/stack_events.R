@@ -1,8 +1,8 @@
 #' Combine Event Domains
 #'
-#' @param data safetyGraphics data object
-#' @param settings safetyGraphics settings object
-#' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
+#' @param data `list` Named list of data domains.
+#' @param settings `list` Named list of settings objects containing column and value mappings.
+#' @param domains `character` Vector of data domain names to stack.
 #'
 #' @return combined dataset with stacked AE and CM data
 #'
@@ -62,9 +62,10 @@ stack_events <- function(
 #'
 #' Create an event data set with a standard set of hard-coded column names using standard safetyGraphics settings and data. The settings for each specified domain should contain valid mappings for ID ("id_col"), event start date ("stdy_col") and event end date ("endy_col"). Missing start day and end day values are extrapolated to NA. All other columns specified in settings are collapsed into a single "details" column. The final standardized data contains the following columns: "id", "domain", "stdy", "endy", "details".
 #' 
-#' @param data safetyGraphics data object
-#' @param settings safetyGraphics settings object. 
-#' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
+#' @param data `data.frame` Data domain.
+#' @param settings `list` List of column and value mappings.
+#' @param domain `character` Name of data domain.
+#'
 #' @return combined dataset with stacked AE and CM data
 #' 
 #' @import dplyr
