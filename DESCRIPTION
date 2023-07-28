@@ -22,6 +22,7 @@ Imports:
     DT,
     forcats,
     ggplot2,
+    htmltools,
     htmlwidgets,
     huxtable,
     jsonlite, 
@@ -34,6 +35,7 @@ Imports:
     shiny,
     stringr,
     Tendril,
+    tidyr,
     Tplyr
 Suggests:
     testthat,
