@@ -4,7 +4,17 @@
 \alias{stack_events}
 \title{Combine Event Domains}
 \usage{
-stack_events(data, settings, domains = c("aes", "cm", "ex"))
+stack_events(
+  data = list(aes = safetyData::sdtm_ae, cm = safetyData::sdtm_cm, ex =
+    safetyData::sdtm_ex),
+  settings = list(aes = rlang::set_names(as.list(safetyCharts::meta_aes$standard_sdtm),
+    safetyCharts::meta_aes$col_key), cm =
+    rlang::set_names(as.list(safetyCharts::meta_cm$standard_sdtm),
+    safetyCharts::meta_cm$col_key), ex =
+    rlang::set_names(as.list(safetyCharts::meta_ex$standard_sdtm),
+    safetyCharts::meta_ex$col_key)),
+  domains = c("aes", "cm", "ex")
+)
 }
 \arguments{
 \item{data}{safetyGraphics data object}
