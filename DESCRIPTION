@@ -35,6 +35,7 @@ Imports:
     shiny,
     stringr,
     Tendril,
+    tibble,
     tidyr,
     Tplyr
 Suggests:
