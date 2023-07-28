@@ -23,7 +23,7 @@ stack_events <- function(data, settings, domains = c("aes","cm", "ex")) {
       return(NULL)
     } else {
       domain_data <- data[[domain]]
-      domain_settings<- settings[[domain]]
+      domain_settings <- settings[[domain]]
 
       return(standardize_events(domain_data, domain_settings, domain=domain))
     }
