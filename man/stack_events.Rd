@@ -4,14 +4,24 @@
 \alias{stack_events}
 \title{Combine Event Domains}
 \usage{
-stack_events(data, settings, domains = c("aes", "cm", "ex"))
+stack_events(
+  data = list(aes = safetyData::sdtm_ae, cm = safetyData::sdtm_cm, ex =
+    safetyData::sdtm_ex),
+  settings = list(aes = rlang::set_names(as.list(safetyCharts::meta_aes$standard_sdtm),
+    safetyCharts::meta_aes$col_key), cm =
+    rlang::set_names(as.list(safetyCharts::meta_cm$standard_sdtm),
+    safetyCharts::meta_cm$col_key), ex =
+    rlang::set_names(as.list(safetyCharts::meta_ex$standard_sdtm),
+    safetyCharts::meta_ex$col_key)),
+  domains = c("aes", "cm", "ex")
+)
 }
 \arguments{
-\item{data}{safetyGraphics data object}
+\item{data}{\code{list} Named list of data domains.}
 
-\item{settings}{safetyGraphics settings object}
+\item{settings}{\code{list} Named list of settings objects containing column and value mappings.}
 
-\item{domains}{list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default.}
+\item{domains}{\code{character} Vector of data domain names to stack.}
 }
 \value{
 combined dataset with stacked AE and CM data
@@ -20,7 +30,6 @@ combined dataset with stacked AE and CM data
 Combine Event Domains
 }
 \examples{
-stack_events(
-)
+stack_events()
 
 }

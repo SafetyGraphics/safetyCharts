@@ -25,35 +25,34 @@
 #' safety_outlier_explorer(safetyData::sdtm_lb, settings)
 #' @return returns a chart object
 #'
-#' @import ggplot2
-#' @import rlang
 #' @import dplyr
+#' @import ggplot2
+#' @importFrom rlang sym
 #' @importFrom utils hasName
 #'
 #' @export
 
 safety_outlier_explorer <- function(data, settings) {
-    params <- aes_(
+    params <- ggplot2::aes_(
         x = as.name(settings$studyday_col),
         y = as.name(settings$value_col),
         group = as.name(settings$id_col)
     )
 
-
-    if (hasName(settings, "measure_values")) {
-        sub <- data %>% filter(!!sym(settings$measure_col) %in% settings$measure_values)
+    if (utils::hasName(settings, "measure_values")) {
+        sub <- data %>% dplyr::filter(!!rlang::sym(settings$measure_col) %in% settings$measure_values)
     } else {
         sub <- data
     }
 
-    p <- ggplot(data = sub, params) +
-        geom_line(color = "black", alpha = 0.15) +
-        labs(x = "Study Day", y = "Lab Value", title = "Lab Overview", subtitle = "") +
-        facet_grid(
+    p <- ggplot2::ggplot(data = sub, params) +
+        ggplot2::geom_line(color = "black", alpha = 0.15) +
+        ggplot2::labs(x = "Study Day", y = "Lab Value", title = "Lab Overview", subtitle = "") +
+        ggplot2::facet_grid(
             rows = as.name(settings$measure_col),
             scales = "free_y"
         ) +
-        theme_bw()
+        ggplot2::theme_bw()
 
     return(p)
 }

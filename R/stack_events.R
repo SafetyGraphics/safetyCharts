@@ -1,20 +1,45 @@
 #' Combine Event Domains
 #'
-#' @param data safetyGraphics data object
-#' @param settings safetyGraphics settings object
-#' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
+#' @param data `list` Named list of data domains.
+#' @param settings `list` Named list of settings objects containing column and value mappings.
+#' @param domains `character` Vector of data domain names to stack.
 #'
 #' @return combined dataset with stacked AE and CM data
 #'
 #' @examples
-#' stack_events(
-#' )
+#' stack_events()
 #'
 #' @importFrom purrr map
+#' @importFrom rlang set_names
 #'
 #' @export
 
-stack_events <- function(data, settings, domains = c("aes","cm", "ex")) {
+stack_events <- function(
+    data = list(
+        aes = safetyData::sdtm_ae,
+        cm = safetyData::sdtm_cm,
+        ex = safetyData::sdtm_ex
+    ),
+    settings = list(
+        aes = rlang::set_names(
+            as.list(safetyCharts::meta_aes$standard_sdtm),
+            safetyCharts::meta_aes$col_key
+        ),
+        cm = rlang::set_names(
+            as.list(safetyCharts::meta_cm$standard_sdtm),
+            safetyCharts::meta_cm$col_key
+        ),
+        ex = rlang::set_names(
+            as.list(safetyCharts::meta_ex$standard_sdtm),
+            safetyCharts::meta_ex$col_key
+        )
+    ),
+    domains = c(
+        "aes",
+        "cm",
+        "ex"
+    )
+) {
 
   all_events <- domains %>% purrr::map(function(domain) {
     # check it exists in the data
@@ -24,7 +49,7 @@ stack_events <- function(data, settings, domains = c("aes","cm", "ex")) {
       return(NULL)
     } else {
       domain_data <- data[[domain]]
-      domain_settings<- settings[[domain]]
+      domain_settings <- settings[[domain]]
 
       return(standardize_events(domain_data, domain_settings, domain=domain))
     }
@@ -37,13 +62,15 @@ stack_events <- function(data, settings, domains = c("aes","cm", "ex")) {
 #'
 #' Create an event data set with a standard set of hard-coded column names using standard safetyGraphics settings and data. The settings for each specified domain should contain valid mappings for ID ("id_col"), event start date ("stdy_col") and event end date ("endy_col"). Missing start day and end day values are extrapolated to NA. All other columns specified in settings are collapsed into a single "details" column. The final standardized data contains the following columns: "id", "domain", "stdy", "endy", "details".
 #' 
-#' @param data safetyGraphics data object
-#' @param settings safetyGraphics settings object. 
-#' @param domains list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default. 
+#' @param data `data.frame` Data domain.
+#' @param settings `list` List of column and value mappings.
+#' @param domain `character` Name of data domain.
+#'
 #' @return combined dataset with stacked AE and CM data
 #' 
 #' @import dplyr
 #' @importFrom purrr imap
+#' @importFrom tibble as_tibble
 #' @importFrom tidyr unite
 #'
 #' @export
@@ -75,8 +102,9 @@ standardize_events <- function(data, settings, domain=""){
         dplyr::select(-settings[["id_col"]]) %>%
         dplyr::select(-settings[["stdy_col"]]) %>%
         dplyr::select(-settings[["endy_col"]]) %>%
-        purrr::imap( ~ paste(.y, .x, sep=": ")) %>%
-        tibble::as_tibble %>%
+        purrr::imap(~ paste(.y, .x, sep=": ")) %>%
+        dplyr::bind_cols() %>%
+        tibble::as_tibble() %>%
         tidyr::unite("details", sep="\n")
       
       # get id, start day and end day

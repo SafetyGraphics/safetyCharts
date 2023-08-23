@@ -1,6 +1,7 @@
 env: safetyGraphics
 label: Demographics Table
 type: module
+package: safetyCharts
 export: false
 order: 1
 domain: 
@@ -12,7 +13,6 @@ dataSpec:
     - age_col
     - sex_col
     - race_col
-package: safetyCharts
 workflow:
   server: demogRTF_server
   ui: demogRTF_ui

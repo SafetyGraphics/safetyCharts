@@ -47,10 +47,13 @@
 #' 
 #' @return returns a chart object
 #'
-#' @import ggplot2
 #' @import dplyr
-#' @importFrom utils hasName
+#' @importFrom forcats fct_drop fct_reorder
+#' @import ggplot2
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom rlang sym
 #' @importFrom stringr str_detect
+#' @importFrom utils hasName
 #' 
 #' @export
 
@@ -59,11 +62,11 @@ safety_results_over_time <- function(data, settings) {
     #########################################
     #  Set default values
     #########################################
-    if (!hasName(settings, "axis")) settings$axis <- "linear"
-    if (!hasName(settings, "violins")) settings$violins <- FALSE
-    if (!hasName(settings, "boxplots")) settings$boxplots <- TRUE
-    if (!hasName(settings, "group_col")) settings$group_col <- "Overall"
-    if (!hasName(settings, "drop_visit_string")) settings$drop_visit_string <- ""
+    if (!utils::hasName(settings, "axis")) settings$axis <- "linear"
+    if (!utils::hasName(settings, "violins")) settings$violins <- FALSE
+    if (!utils::hasName(settings, "boxplots")) settings$boxplots <- TRUE
+    if (!utils::hasName(settings, "group_col")) settings$group_col <- "Overall"
+    if (!utils::hasName(settings, "drop_visit_string")) settings$drop_visit_string <- ""
 
     #########################################
     #  Chart appearance settings
@@ -72,34 +75,37 @@ safety_results_over_time <- function(data, settings) {
         data$Overall <- "Overall"
         colors <- "gray80"
     } else {
-        colors <- c(RColorBrewer::brewer.pal(9, "Set1")[c(2, 3, 1, 4:9)], RColorBrewer::brewer.pal(8, "Set2"))
+        colors <- c(
+            RColorBrewer::brewer.pal(9, "Set1")[c(2, 3, 1, 4:9)],
+            RColorBrewer::brewer.pal(8, "Set2")
+        )
     }
 
     alpha <- ifelse(settings[["violins"]] & settings[["boxplots"]], 0.7, 1)
-    pd <- position_dodge(width = 0.75, preserve = "total")
+    pd <- ggplot2::position_dodge(width = 0.75, preserve = "total")
 
     #########################################
     #   Prep data
     #########################################
 
     # Convert settings to symbols ready for standard evaluation
-    visit_sym <- sym(settings[["visit_col"]])
-    visitn_sym <- sym(settings[["visitn_col"]])
-    value_sym <- sym(settings[["value_col"]])
-    measure_sym <- sym(settings[["measure_col"]])
+    visit_sym <- rlang::sym(settings[["visit_col"]])
+    visitn_sym <- rlang::sym(settings[["visitn_col"]])
+    value_sym <- rlang::sym(settings[["value_col"]])
+    measure_sym <- rlang::sym(settings[["measure_col"]])
 
     # Filter to selected measures if specified
-    if (hasName(settings, "measure_values")) {
-        dd <- data %>% filter(!!measure_sym %in% settings$measure_values)
+    if (utils::hasName(settings, "measure_values")) {
+        dd <- data %>% dplyr::filter(!!measure_sym %in% settings$measure_values)
     } else {
         dd <- data
     }
 
     # Drop unscheduled visits if specified
     if (nchar(settings[["drop_visit_string"]]) > 0) {
-        dd <- filter(
+        dd <- dplyr::filter(
             dd,
-            !str_detect(
+            !stringr::str_detect(
                 tolower(!!visit_sym),
                 tolower(settings[["drop_visit_string"]])
             )
@@ -107,32 +113,32 @@ safety_results_over_time <- function(data, settings) {
     }
 
     dd <- dd %>%
-        mutate(!!value_sym := as.numeric(!!value_sym)) %>% # coerce result to numeric
-        filter(!is.na(!!value_sym)) %>% # drop visits without data
-        mutate(!!visit_sym := forcats::fct_drop(as.factor(!!visit_sym))) %>% # remove unused factor levels
-        mutate(!!visit_sym := forcats::fct_reorder(!!visit_sym, !!visitn_sym)) # reorder visits by visit number
+        dplyr::mutate(!!value_sym := as.numeric(!!value_sym)) %>% # coerce result to numeric
+        dplyr::filter(!is.na(!!value_sym)) %>% # drop visits without data
+        dplyr::mutate(!!visit_sym := forcats::fct_drop(as.factor(!!visit_sym))) %>% # remove unused factor levels
+        dplyr::mutate(!!visit_sym := forcats::fct_reorder(!!visit_sym, !!visitn_sym)) # reorder visits by visit number
 
     #########################################
     #   Create figure
     #########################################
 
     # initiate plot - overall or by group
-    params <- aes_(
+    params <- ggplot2::aes_(
         x = as.name(settings$visit_col),
         y = as.name(settings$value_col),
         color = as.name(settings$group_col)
     )
 
-    p <- ggplot(data = dd, params) +
-        scale_color_manual(values = colors) +
-        facet_grid(
+    p <- ggplot2::ggplot(data = dd, params) +
+        ggplot2::scale_color_manual(values = colors) +
+        ggplot2::facet_grid(
             rows = as.name(settings$measure_col),
             scales = "free_y"
         )
 
     if (settings[["violins"]]) {
         p <- p +
-            geom_violin(
+            ggplot2::geom_violin(
                 alpha = alpha,
                 position = pd
             )
@@ -140,9 +146,9 @@ safety_results_over_time <- function(data, settings) {
 
     if (settings[["boxplots"]]) {
         p <- p +
-            geom_boxplot(
+            ggplot2::geom_boxplot(
                 alpha = alpha,
-                position = position_dodge2(width = 0.75, preserve = "single"),
+                position = ggplot2::position_dodge2(width = 0.75, preserve = "single"),
                 fatten = 1,
                 outlier.alpha = 0.8,
                 outlier.shape = 21
@@ -151,8 +157,8 @@ safety_results_over_time <- function(data, settings) {
 
     if (settings[["axis"]] == "log") {
         p <- p +
-            scale_y_log10() +
-            annotation_logticks(sides = "l")
+            ggplot2::scale_y_log10() +
+            ggplot2::annotation_logticks(sides = "l")
 
         summary_fun <- function(x) {
             log10(mean(10**x))
@@ -162,17 +168,17 @@ safety_results_over_time <- function(data, settings) {
     }
 
     p <- p +
-        coord_cartesian(clip = "off") +
-        stat_summary(
+        ggplot2::coord_cartesian(clip = "off") +
+        ggplot2::stat_summary(
             fun.y = summary_fun,
             geom = "point",
             position = pd
         )
 
     p <- p +
-        theme_bw() +
-        theme(
-            axis.text.x = element_text(
+        ggplot2::theme_bw() +
+        ggplot2::theme(
+            axis.text.x = ggplot2::element_text(
                 angle = 45,
                 hjust = 1
             ),

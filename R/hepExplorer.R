@@ -2,7 +2,7 @@
 #' 
 #' Convience mapping of render_widget for hepExplorer. 
 #' 
-#' @details The [data](https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines) and [mapping](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) should match the specs described in the [hepExplorer](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) javascript library. Items passed in ... are added to mapping, and then the list is converted to json via `jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")`.
+#' The [data](https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines) and [mapping](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) should match the specs described in the [hepExplorer](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) javascript library. Items passed in ... are added to mapping, and then the list is converted to json via `jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")`.
 #' 
 #' The default mapping shown below is designed to work with data in the CDISC ADaM format (like `safetydata::adam_adlbc`).    
 #' 
@@ -66,17 +66,20 @@
 #' )
 #' }
 #' 
-#' @param data data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc. 
-#' @param mapping named list with the current data mappings. See details for default mapping. 
+#' @param data `data.frame` Data frame containing lab data used to render `hepExplorer`. Default: `safetyData::adam_adlbc`
+#' @param mapping `list` named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
 #' 
 #' @importFrom purrr list_modify
 #' 
 #' @export
 
-hepExplorer <- function(data=safetyData::adam_adlbc, mapping=NULL, ...){
-    
-    #default mapping
+hepExplorer <- function(
+    data = safetyData::adam_adlbc,
+    mapping = NULL,
+    ...
+) {
+    # default mapping
     if(is.null(mapping)){
         mapping <- list(
             measure_col = "PARAM", 

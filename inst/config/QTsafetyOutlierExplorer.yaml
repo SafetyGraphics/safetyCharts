@@ -3,7 +3,7 @@ label: QT Outlier Explorer
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -31
+order: -7.2
 domain: 
   - dm
   - ecg

@@ -3,7 +3,7 @@ label: QT Delta-Delta
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -36
+order: -10.2
 domain: 
   - ecg
 dataSpec:

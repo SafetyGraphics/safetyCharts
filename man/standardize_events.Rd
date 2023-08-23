@@ -7,11 +7,11 @@
 standardize_events(data, settings, domain = "")
 }
 \arguments{
-\item{data}{safetyGraphics data object}
+\item{data}{\code{data.frame} Data domain.}
 
-\item{settings}{safetyGraphics settings object.}
+\item{settings}{\code{list} List of column and value mappings.}
 
-\item{domains}{list of safetyGraphics domains. Adverse events ('aes'), concominate medications ('cm') and exposure ('ex') included by default.}
+\item{domain}{\code{character} Name of data domain.}
 }
 \value{
 combined dataset with stacked AE and CM data

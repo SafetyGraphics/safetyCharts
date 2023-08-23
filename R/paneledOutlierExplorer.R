@@ -74,7 +74,11 @@
 #' @export
 #' 
 
-paneledOutlierExplorer <- function(df=safetyData::adam_adlbc, mapping=NULL, ...){
+paneledOutlierExplorer <- function(
+    df=safetyData::adam_adlbc,
+    mapping=NULL,
+    ...
+) {
     if(is.null(mapping)){
       mapping <- list(
         measure_col = 'PARAM',

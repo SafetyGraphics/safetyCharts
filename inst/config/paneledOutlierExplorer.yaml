@@ -1,6 +1,9 @@
 env: safetyGraphics
 label: Paneled Outlier Explorer
 type: htmlwidget
+package: safetyCharts
+export: true
+order: 8
 domain: 
   - labs
 dataSpec:
@@ -13,8 +16,6 @@ dataSpec:
     - value_col
     - normal_col_low
     - normal_col_high
-package: safetyCharts
-export: true
 workflow:
   init: init_paneledOutlierExplorer
   widget: paneledOutlierExplorer

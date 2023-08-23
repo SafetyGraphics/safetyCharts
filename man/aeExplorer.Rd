@@ -11,11 +11,12 @@ aeExplorer(
 )
 }
 \arguments{
-\item{mapping}{named list with the current data mappings. See details for default mapping.}
+\item{data}{\code{list} Named list of data frames that includes participant-level subject data (\code{dm})
+and event-level adverse event data (\code{aes}).}
+
+\item{mapping}{\code{list} Named list with current data mappings. See details for default mapping.}
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
-
-\item{df}{data frame containing lab data used to render for aeExplorer. Default is safetyData::adam_adlbc.}
 }
 \description{
 Convience mapping of render_widget for aeExplorer.
