@@ -42,3 +42,8 @@ usethis::use_data(meta_ex, overwrite = TRUE)
 #hepExplorer
 meta_hepExplorer<-read_csv("data-raw/meta_hepExplorer.csv")[]
 usethis::use_data(meta_hepExplorer, overwrite = TRUE)
+
+#Chart-level metadata
+#nepExplorer
+meta_nepExplorer<-read_csv("data-raw/meta_nepExplorer.csv")[]
+usethis::use_data(meta_nepExplorer, overwrite = TRUE)

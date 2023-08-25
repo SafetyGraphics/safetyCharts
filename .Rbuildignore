@@ -8,3 +8,6 @@ cran-comments.md
 ^LICENSE\.md$
 ^CRAN-RELEASE$
 ^CRAN-SUBMISSION$
+^safetyCharts\.Rcheck$
+^safetyCharts.*\.tar\.gz$
+^safetyCharts.*\.tgz$
