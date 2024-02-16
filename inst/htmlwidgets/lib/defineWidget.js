@@ -14,7 +14,7 @@ const defineWidget = function(name, fn) {
                         : `#${d3.select(el).property("id")}`;
                     const settings = inputs.settings;
                     const data = HTMLWidgets.dataframeToD3(inputs.data);
-
+console.log(inputs);
                     // instantiate widget
                     const instance = fn(
                         wrapID,
