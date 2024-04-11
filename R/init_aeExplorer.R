@@ -46,13 +46,23 @@ init_aeExplorer <- function(data, settings) {
         id = settings[["dm"]][["id_col"]]
     )
 
-    # Pass data filters through.
+    # Pass data filters through with an expected structure of:
+    #     c('column_name', 'column_name', ...)
+    # or
+    #     c('label' = 'column_name', 'label' = 'column_name', ...)
+    # or
+    #     list(
+    #         value_col = 'column_name',
+    #         label = 'column_label',
+    #         type = 'participant' or 'event'
+    #     )
     if ('filters' %in% names(settings)) {
         if (is.character(settings$filters)) {
             settings$filters <- settings$filters %>%
-                purrr::map(
+                purrr::imap(
                     ~ list(
-                        label = .x,
+                        value_col = .x,
+                        label = ifelse(is.character(.y), .y, .x),
                         type = ifelse(
                             .x %in% setdiff(
                                 names(data$ae),
@@ -60,34 +70,34 @@ init_aeExplorer <- function(data, settings) {
                             ),
                             'event',
                             'participant'
-                        ),
-                        value_col = .x
+                        )
                     )
-                )
-        } else if (!is.list(settings$details)) {
+                ) %>%
+                unname()
+        } else if (!is.list(settings$filters)) {
             cli::cli_alert_warning(
                 '[ filters ] must be a character vector or a list of column specifications with these key=value pairs:'
             )
 
             cli::cli_bullets(
+                '[ value_col=<column name> ]',
                 '[ label=<column label> ]',
-                '[ type=<"participant" or "event"> ]',
-                '[ value_col=<column name> ]'
+                '[ type=<"participant" or "event"> ]'
             )
 
-            settings$details <- list()
+            settings$filters <- list()
         } else {
-            details <- settings$details %>%
+            filters <- settings$filters %>%
                 purrr::keep(
                     ~ 'value_col' %in% names(.x)
                 )
 
-            if (length(details) < length(settings$details))
+            if (length(filters) < length(settings$filters))
                 cli::cli_alert_warning(
-                    '{length(settings$details) - length(details)} column specification(s) without a key=value pair of [ value_col=<column name> ] removed.'
+                    '{length(settings$filters) - length(filters)} column specification(s) without a key=value pair of [ value_col=<column name> ] removed.'
                 )
 
-            settings$details <- details
+            settings$filters <- filters
         }
 
         ae_settings$variables$filters <- settings$filters
@@ -96,6 +106,10 @@ init_aeExplorer <- function(data, settings) {
     }
 
     # Pass listing columns through with an expected structure of:
+    #     c('column_name', 'column_name', ...)
+    # or
+    #     c('label' = 'column_name', 'label' = 'column_name', ...)
+    # or
     #     list(
     #         value_col = 'column_name',
     #         label = 'column_label'
@@ -103,19 +117,21 @@ init_aeExplorer <- function(data, settings) {
     if ('details' %in% names(settings)) {
         if (is.character(settings$details)) {
             settings$details <- settings$details %>%
-                purrr::map(
+                purrr::imap(
                     ~ list(
-                        value_col = .x
+                        value_col = .x,
+                        label = ifelse(is.character(.y), .y, .x)
                     )
-                )
+                ) %>%
+                unname()
         } else if (!is.list(settings$details)) {
             cli::cli_alert_warning(
                 '[ details ] must be a character vector or a list of column specifications with these key=value pairs:'
             )
 
             cli::cli_bullets(
-                '[ label=<column label> ]',
-                '[ value_col=<column name> ]'
+                '[ value_col=<column name> ]',
+                '[ label=<column label> ]'
             )
 
             settings$details <- list()
@@ -132,7 +148,6 @@ init_aeExplorer <- function(data, settings) {
 
             settings$details <- details
         }
-
 
         ae_settings$variables$details <- settings$details
     } else {
