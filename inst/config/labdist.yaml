@@ -2,10 +2,14 @@ env: safetyGraphics
 label: Labs Distribution
 type: module
 package: safetyCharts
-domain: 
-  - labs
 export: false
 order: -1
+domain: 
+  - labs
+dataSpec:
+  labs:
+    - measure_col
+    - value_col
 workflow:
   ui: lab_distribution_ui
   server: lab_distribution_server

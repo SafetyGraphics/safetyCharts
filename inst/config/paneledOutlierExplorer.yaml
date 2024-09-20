@@ -1,10 +1,21 @@
 env: safetyGraphics
 label: Paneled Outlier Explorer
 type: htmlwidget
-domain: 
-  - labs
 package: safetyCharts
 export: true
+order: 8
+domain: 
+  - labs
+dataSpec:
+  labs:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   init: init_paneledOutlierExplorer
   widget: paneledOutlierExplorer

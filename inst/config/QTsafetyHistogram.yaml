@@ -2,10 +2,17 @@ env: safetyGraphics
 label: QT Histogram
 type: htmlwidget
 package: safetyCharts
+export: true
+order: -5.2
 domain: 
   - ecg
-export: true
-order: -33
+dataSpec:
+  ecg:
+    - id_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   widget: safetyHistogram
 links:

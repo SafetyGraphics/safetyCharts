@@ -2,9 +2,17 @@ env: safetyGraphics
 label: Histogram
 type: htmlwidget
 package: safetyCharts
+export: true
+order: 5
 domain: 
   - labs
-export: true
+dataSpec:
+  labs:
+    - id_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   widget: safetyHistogram
 links:

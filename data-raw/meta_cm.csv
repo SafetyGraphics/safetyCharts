@@ -1,0 +1,8 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+id_col,cm,id_col,,column,ID,Unique subject identifier,FALSE,USUBJID,USUBJID
+seq_col,cm,seq_col,,column,Sequence,Event sequence number,FALSE,CMSEQ,CMSEQ
+stdy_col,cm,stdy_col,,column,CM Start Day,Event start day,FALSE,ASTDY,CMSTDY
+endy_col,cm,endy_col,,column,CM End Day,Event end day,FALSE,AENDY,CMENDY
+code_col,cm,code_col,,column,CM Code,Dictionary-derived low-level code,FALSE,,CMDECOD
+class_col,cm,class_col,,column,CM Class System,Dictionary-derived high-level class,FALSE,CMCLAS,CMCLAS
+indication_col,cm,indication_col,,column,CM Indication,CM indication,FALSE,CMINDC,CMINDC

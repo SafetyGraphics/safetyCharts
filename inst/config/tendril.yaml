@@ -3,10 +3,19 @@ label: Tendril Plot
 type: plot
 package: safetyCharts
 export: true
-order: 4
+order: 9999
 domain: 
-  - aes
   - dm
+  - aes
+dataSpec:
+  dm:
+    - id_col
+    - treatment_col
+  aes:
+    - id_col
+    - stdy_col
+    - endy_col
+    - bodsys_col
 workflow:
   main: tendril_chart
 links: 

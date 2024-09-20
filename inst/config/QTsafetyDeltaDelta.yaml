@@ -3,9 +3,16 @@ label: QT Delta-Delta
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -36
+order: -10.2
 domain: 
-  ecg
+  - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
 workflow:
   widget: safetyDeltaDelta
 links:

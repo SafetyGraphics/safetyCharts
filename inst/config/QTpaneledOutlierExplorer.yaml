@@ -1,11 +1,21 @@
 env: safetyGraphics
 label: QT Paneled Outlier Explorer
 type: htmlwidget
-domain: 
-  - ecg
 package: safetyCharts
 export: true
-order: -32
+order: -8.2
+domain: 
+  - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   init: init_paneledOutlierExplorer
   widget: paneledOutlierExplorer

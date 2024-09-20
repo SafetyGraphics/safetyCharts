@@ -12,4 +12,11 @@ dependencies:
    version: 0.9.0
    src: htmlwidgets/lib/nep-explorer-0.9.0
    script: nepExplorer.js 
-
+ - name: addClickListener
+   script: addClickListener.js
+   src: htmlwidgets/lib/
+   version: 1.0.0
+ - name: defineWidget
+   script: defineWidget.js
+   src: htmlwidgets/lib/
+   version: 1.0.0

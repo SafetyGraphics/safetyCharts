@@ -6,6 +6,13 @@ export: true
 order: -1
 domain: 
   - labs
+dataSpec:
+  labs:
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
+    - group_col
 workflow:
   main: safety_results_over_time
 links:

@@ -3,9 +3,25 @@ label: QT Outlier Explorer
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -31
+order: -7.2
 domain: 
+  - dm
   - ecg
+dataSpec:
+  dm:
+    - id_col
+    - age_col
+    - sex_col
+    - race_col
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - studyday_col
+    - measure_col
+    - value_col
+    - normal_col_low
+    - normal_col_high
 workflow:
   init: init_safetyOutlierExplorer
   widget: safetyOutlierExplorer

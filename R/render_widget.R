@@ -4,13 +4,16 @@
 #' @param data named list of current data sets
 #' @param mapping named list with the current data mappings
 #'
-#' @import htmlwidgets
+#' @importFrom htmlwidgets createWidget sizingPolicy
 #' @importFrom jsonlite toJSON
 #'
 #' @export
-#' 
-render_widget <- function(widgetName, data, mapping){
-    params<-list(data=data, settings=mapping)
+ 
+render_widget <- function(widgetName, data, mapping) {
+    params <- list(
+        data=data,
+        settings=mapping
+    )
 
     widgetParams <- list(
         name=widgetName,
@@ -18,6 +21,7 @@ render_widget <- function(widgetName, data, mapping){
         sizingPolicy = htmlwidgets::sizingPolicy(viewer.suppress=TRUE, browser.external = TRUE),
         x=list()
     )
+
     widgetParams$x$data <- params$data
     widgetParams$x$rSettings <- params$settings
     widgetParams$x$settings <- jsonlite::toJSON(

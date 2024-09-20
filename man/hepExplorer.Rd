@@ -4,12 +4,12 @@
 \alias{hepExplorer}
 \title{Make standalone hepExplorer html widget}
 \usage{
-hepExplorer(df = safetyData::adam_adlbc, mapping = NULL, ...)
+hepExplorer(data = safetyData::adam_adlbc, mapping = NULL, ...)
 }
 \arguments{
-\item{df}{data frame containing lab data used to render for hepExplorer. Default is safetyData::adam_adlbc.}
+\item{data}{\code{data.frame} Data frame containing lab data used to render \code{hepExplorer}. Default: \code{safetyData::adam_adlbc}}
 
-\item{mapping}{named list with the current data mappings. See details for default mapping.}
+\item{mapping}{\code{list} named list with the current data mappings. See details for default mapping.}
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
 }
@@ -19,7 +19,9 @@ Convience mapping of render_widget for hepExplorer.
 \details{
 The \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Data-Guidelines}{data} and \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{mapping} should match the specs described in the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{hepExplorer} javascript library. Items passed in ... are added to mapping, and then the list is converted to json via \code{jsonlite::toJSON(mapping, auto_unbox=TRUE, null="null")}.
 
-The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).\preformatted{mapping <- list(
+The default mapping shown below is designed to work with data in the CDISC ADaM format (like \code{safetydata::adam_adlbc}).
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{mapping <- list(
            measure_col = "PARAM", 
            measure_values = list(
                ALT = "Alanine Aminotransferase (U/L)", 
@@ -35,7 +37,7 @@ The default mapping shown below is designed to work with data in the CDISC ADaM 
            visit_col = "VISIT",
            visitn_col = "VISITNUM"
        )                  
-}
+}\if{html}{\out{</div>}}
 
 Parameters that are not included in the default mapping can be accessed via ...; Key options and defaults for safetyData::adam_adlbc shown below:
 \itemize{
@@ -61,7 +63,7 @@ hepExplorer(y_options='all')
 
 # Use custom mapping for SDTM data
 hepExplorer(
-    df=safetyData::sdtm_lb,
+    data=safetyData::sdtm_lb,
     measure_col = "LBTEST", 
     measure_values = list(
         ALT = "Alanine Aminotransferase", 

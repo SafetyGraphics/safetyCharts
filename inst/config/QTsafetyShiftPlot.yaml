@@ -3,9 +3,16 @@ label: QT Shift Plot
 type: htmlwidget
 package: safetyCharts
 export: true
-order: -35
+order: -9.2
 domain: 
   - ecg
+dataSpec:
+  ecg:
+    - id_col
+    - visit_col
+    - visitn_col
+    - measure_col
+    - value_col
 workflow:
   init: init_safetyShiftPlot
   widget: safetyShiftPlot

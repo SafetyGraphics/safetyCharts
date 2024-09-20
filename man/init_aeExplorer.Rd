@@ -7,9 +7,10 @@
 init_aeExplorer(data, settings)
 }
 \arguments{
-\item{data}{labs data structured as one record per person per visit per measurement. See details for column requirements.}
+\item{data}{\code{list} Named list of data frames that includes participant-level subject data (\code{dm})
+and event-level adverse event data (\code{aes}).}
 
-\item{settings}{named list of settings}
+\item{settings}{\code{list} Named list of settings.}
 }
 \value{
 returns list with data and settings

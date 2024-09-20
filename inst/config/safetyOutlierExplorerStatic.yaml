@@ -6,6 +6,12 @@ export: true
 order: -1
 domain: 
   - labs
+dataSpec:
+  labs:
+    - id_col
+    - studyday_col
+    - measure_col
+    - value_col
 workflow:
   main: safety_outlier_explorer
 links:
