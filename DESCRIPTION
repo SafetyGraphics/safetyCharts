@@ -1,6 +1,6 @@
 Package: safetyCharts
 Title: Charts for Monitoring Clinical Trial Safety
-Version: 0.3.0
+Version: 0.4.0
 Authors@R:
     person(
         given = "Jeremy",
