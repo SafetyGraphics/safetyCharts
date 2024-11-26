@@ -1,0 +1,11 @@
+text_key,domain,col_key,field_key,type,label,description,multiple,standard_adam,standard_sdtm
+measure_values--CREAT,labs,measure_col,CREAT,field,Creatinine value,Value used for Creatinine in the specified measure column,FALSE,Creatinine (umol/L),Creatinine
+measure_values--ALB,labs,measure_col,ALB,field,Albumin value,Value used for Albumin in the specified measure column,FALSE,Albumin (g/L),Albumin
+measure_values--BUN,labs,measure_col,BUN,field,Creatinine value,Value used for Blood Urea Nitrogen in the specified measure column,FALSE,Blood Urea Nitrogen (mmol/L),Blood Urea Nitrogen
+measure_values--CA,labs,measure_col,CA,field,Calcium value,Value used for Calcium in the specified measure column,FALSE,Calcium (mmol/L),Calcium
+measure_values--CL,labs,measure_col,CL,field,Chloride value,Value used for Chloride in the specified measure column,FALSE,Chloride (mmol/L),Chloride
+measure_values--PHOS,labs,measure_col,PHOS,field,Phosphate value,Value used for Phosphate in the specified measure column,FALSE,Phosphate (mmol/L),Phosphate
+measure_values--K,labs,measure_col,K,field,Potassium value,Value used for Potassium in the specified measure column,FALSE,Potassium (mmol/L),Potassium
+measure_values--SODIUM,labs,measure_col,SODIUM,field,Sodium value,Value used for Sodium in the specified measure column,FALSE,Sodium (mmol/L),Sodium
+measure_values--DIABP,vitals,measure_col,DIABP,field,Diastolic Blood Pressure value,Value used for Diastolic Blood Pressure in the specified measure column,FALSE,Diastolic Blood Pressure (mmHg),Diastolic Blood Pressure
+measure_values--SYSBP,vitals,measure_col,SYSBP,field,Systolic Blood Pressure value,Value used for Systolic Blood Pressure in the specified measure column,FALSE,Systolic Blood Pressure (mmHg),Systolic Blood Pressure

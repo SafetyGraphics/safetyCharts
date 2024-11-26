@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 .DS_Store
 .Rproj.user
+safetyCharts.Rcheck/
+safetyCharts*.tar.gz
+safetyCharts*.tgz
