@@ -11,7 +11,6 @@
 #' @export
 
 init_aeExplorer <- function(data, settings) {
-    
     # creates flag if treatment_col is missing to trigger actions to avoid downstream JS errors and enable visualization of blinded(no treatment_col) data
     missing_trt_flag <- (
         is.null(settings[["dm"]][["treatment_col"]]) || # Check NULL first and evaluate logic left to right
@@ -44,10 +43,116 @@ init_aeExplorer <- function(data, settings) {
         major = settings[['aes']][["bodsys_col"]],
         minor = settings[['aes']][["term_col"]],
         group = settings[["dm"]][["treatment_col"]],
-        id = settings[["dm"]][["id_col"]],
-        filters = list(),
-        details = list()
+        id = settings[["dm"]][["id_col"]]
     )
+
+    # Pass data filters through with an expected structure of:
+    #     c('column_name', 'column_name', ...)
+    # or
+    #     c('label' = 'column_name', 'label' = 'column_name', ...)
+    # or
+    #     list(
+    #         value_col = 'column_name',
+    #         label = 'column_label',
+    #         type = 'participant' or 'event'
+    #     )
+    if ('filters' %in% names(settings)) {
+        if (is.character(settings$filters)) {
+            settings$filters <- settings$filters %>%
+                purrr::imap(
+                    ~ list(
+                        value_col = .x,
+                        label = ifelse(is.character(.y), .y, .x),
+                        type = ifelse(
+                            .x %in% setdiff(
+                                names(data$ae),
+                                names(data$dm)
+                            ),
+                            'event',
+                            'participant'
+                        )
+                    )
+                ) %>%
+                unname()
+        } else if (!is.list(settings$filters)) {
+            cli::cli_alert_warning(
+                '[ filters ] must be a character vector or a list of column specifications with these key=value pairs:'
+            )
+
+            cli::cli_bullets(
+                '[ value_col=<column name> ]',
+                '[ label=<column label> ]',
+                '[ type=<"participant" or "event"> ]'
+            )
+
+            settings$filters <- list()
+        } else {
+            filters <- settings$filters %>%
+                purrr::keep(
+                    ~ 'value_col' %in% names(.x)
+                )
+
+            if (length(filters) < length(settings$filters))
+                cli::cli_alert_warning(
+                    '{length(settings$filters) - length(filters)} column specification(s) without a key=value pair of [ value_col=<column name> ] removed.'
+                )
+
+            settings$filters <- filters
+        }
+
+        ae_settings$variables$filters <- settings$filters
+    } else {
+        ae_settings$variables$filters <- list()
+    }
+
+    # Pass listing columns through with an expected structure of:
+    #     c('column_name', 'column_name', ...)
+    # or
+    #     c('label' = 'column_name', 'label' = 'column_name', ...)
+    # or
+    #     list(
+    #         value_col = 'column_name',
+    #         label = 'column_label'
+    #     )
+    if ('details' %in% names(settings)) {
+        if (is.character(settings$details)) {
+            settings$details <- settings$details %>%
+                purrr::imap(
+                    ~ list(
+                        value_col = .x,
+                        label = ifelse(is.character(.y), .y, .x)
+                    )
+                ) %>%
+                unname()
+        } else if (!is.list(settings$details)) {
+            cli::cli_alert_warning(
+                '[ details ] must be a character vector or a list of column specifications with these key=value pairs:'
+            )
+
+            cli::cli_bullets(
+                '[ value_col=<column name> ]',
+                '[ label=<column label> ]'
+            )
+
+            settings$details <- list()
+        } else {
+            details <- settings$details %>%
+                purrr::keep(
+                    ~ 'value_col' %in% names(.x)
+                )
+
+            if (length(details) < length(settings$details))
+                cli::cli_alert_warning(
+                    '{length(settings$details) - length(details)} column specification(s) without a key=value pair of [ value_col=<column name> ] removed.'
+                )
+
+            settings$details <- details
+        }
+
+        ae_settings$variables$details <- settings$details
+    } else {
+        ae_settings$variables$details <- list()
+    }
 
     ae_settings$variableOptions <- list(
         group = c(
