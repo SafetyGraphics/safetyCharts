@@ -64,11 +64,18 @@ For more options see the \href{https://github.com/rhoinc/paneled-outlier-explore
 }
 \examples{
 \dontshow{if (requireNamespace("safetyData", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# A 20-subject slice of the bundled lab data. The examples below use it so
+# that each one renders in a fraction of a second; `paneledOutlierExplorer()`
+# with no arguments uses all 254 subjects of `safetyData::adam_adlbc`.
+adlbc <- safetyData::adam_adlbc
+adlbc <- adlbc[adlbc$USUBJID \%in\% unique(adlbc$USUBJID)[1:20], ]
+
 # Render widget with defaults
-paneledOutlierExplorer() 
+paneledOutlierExplorer(df = adlbc)
 
 # Add Sex and Age Filters
 paneledOutlierExplorer(
+    df = adlbc,
     filters=list(
         list(value_col="SEX"),
         list(value_col="AGEGR1",label="Age")
@@ -76,10 +83,11 @@ paneledOutlierExplorer(
 )
 
 # customize panel size (in pixels)
-paneledOutlierExplorer(multiples_sizing=list("width"= 500,"height"= 300))
+paneledOutlierExplorer(df = adlbc, multiples_sizing=list("width"= 500,"height"= 300))
 
 # customize default normal range
 paneledOutlierExplorer(
+   df = adlbc,
    normal_range_method = 'quantiles',
    normal_range_quantile_low = 0.2,
    normal_range_quantile_high = 0.8,
