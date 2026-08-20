@@ -2,31 +2,44 @@
 % Please edit documentation in R/tendril_chart.R
 \name{tendril_chart}
 \alias{tendril_chart}
-\title{Tendril plot}
+\title{Tendril plot (defunct)}
 \usage{
 tendril_chart(data, settings)
 }
 \arguments{
-\item{data}{list of data frames including dataframes named \code{aes} (adverse events) and \code{dm} (demographics)}
+\item{data}{Ignored. Formerly a list of data frames including data frames
+named \code{aes} (adverse events) and \code{dm} (demographics).}
 
-\item{settings}{named list of domain-specific settings with the parameters specified below.}
+\item{settings}{Ignored. Formerly a named list of domain-specific settings.}
 }
 \value{
-returns a chart object
+This function does not return a value. It always raises an error of
+class \code{defunctError}.
 }
 \description{
-Create a plot using the {{Tendril}} package
+\code{tendril_chart()} is defunct as of safetyCharts 0.5.0 and no longer works.
+
+It drew a tendril plot using the \pkg{Tendril} package, which was archived
+from CRAN on 2026-03-25 and has had no release since 2020. Because
+\code{safetyCharts} imported \pkg{Tendril}, \code{safetyCharts} was archived on the same
+day, and \code{safetyGraphics} followed for importing \code{safetyCharts}.
+
+The dependency has been dropped so that both packages can return to CRAN. The
+function is kept, and kept exported, so that existing code calling it fails
+with an explanation instead of an "object not found" error.
+
+The Tendril Plot has also been removed from the chart list used by the
+\code{safetyGraphics} Shiny application, so it no longer appears there.
 }
 \details{
-The settings object provides details regarding the columns in the data sets.
-
-\itemize{
-\item{"settings$dm$id_col"}{ID column}
-\item{"settings$dm$treatment_col"}{Treatment column}
-\item{"settings$dm$treatment_values--group1"}{Name of treatment 1}
-\item{"settings$dm$treatment_values--group2"}{Name of treatment 2}
-\item{"settings$aes$id_col"}{ID column)}
-\item{"settings$aes$bodsys_col"}{Body System}
-\item{"settings$aes$stdy_col"}{Study Day}
+The last working implementation is preserved in the package's version control
+history at \url{https://github.com/SafetyGraphics/safetyCharts}. Users who still
+need the chart can install the archived \pkg{Tendril} package from the CRAN
+archive at \url{https://cran.r-project.org/src/contrib/Archive/Tendril/} and call
+\code{Tendril::Tendril()} directly.
 }
+\examples{
+# tendril_chart() is defunct and always raises an error:
+try(tendril_chart(data = NULL, settings = NULL))
+
 }
