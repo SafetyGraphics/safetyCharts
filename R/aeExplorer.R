@@ -30,8 +30,7 @@
 #' For more options see the [full specs](https://github.com/RhoInc/aeexplorer/wiki/Configuration) in
 #' the JavaScript library.
 #' 
-#' @examples 
-#' \dontrun{
+#' @examplesIf requireNamespace("safetyData", quietly = TRUE)
 #' # Render widget with defaults.
 #' aeExplorer() 
 #' 
@@ -48,12 +47,14 @@
 #'         )
 #'     )
 #' )
-#' }
 #' 
 #' @param data `list` Named list of data frames that includes participant-level subject data (`dm`)
 #' and event-level adverse event data (`aes`).
 #' @param mapping `list` Named list with current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
+#' 
+#' @return An `htmlwidget` object of class `aeExplorer`, ready to print in the
+#'   RStudio viewer, embed in R Markdown, or render inside a Shiny application.
 #' 
 #' @importFrom purrr list_modify
 #' 

@@ -42,8 +42,7 @@
 #' 
 #' For more options see the [full specs](https://github.com/rhoinc/paneled-outlier-explorer/wiki/Configuration) in the javascript library.
 #' 
-#' @examples 
-#' \dontrun{
+#' @examplesIf requireNamespace("safetyData", quietly = TRUE)
 #' # Render widget with defaults
 #' paneledOutlierExplorer() 
 #' 
@@ -64,10 +63,13 @@
 #'    normal_range_quantile_low = 0.2,
 #'    normal_range_quantile_high = 0.8,
 #' )
-#' }
 #' @param df data frame containing lab data used to render for paneledOutlierExplorer. Default is safetyData::adam_adlbc. 
 #' @param mapping named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
+#' 
+#' @return An `htmlwidget` object of class `paneledOutlierExplorer`, ready to
+#'   print in the RStudio viewer, embed in R Markdown, or render inside a Shiny
+#'   application.
 #' 
 #' @importFrom purrr list_modify
 #' 

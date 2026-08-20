@@ -13,6 +13,10 @@ hepExplorer(data = safetyData::adam_adlbc, mapping = NULL, ...)
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
 }
+\value{
+An \code{htmlwidget} object of class \code{hepExplorer}, ready to print in the
+RStudio viewer, embed in R Markdown, or render inside a Shiny application.
+}
 \description{
 Convience mapping of render_widget for hepExplorer.
 }
@@ -51,7 +55,7 @@ Parameters that are not included in the default mapping can be accessed via ...;
 For more options see the \href{https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration}{full specs} in the javascript library.
 }
 \examples{
-\dontrun{
+\dontshow{if (requireNamespace("safetyData", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Render widget with defaults
 hepExplorer() 
 
@@ -79,6 +83,5 @@ hepExplorer(
     visit_col = "VISIT",
     visitn_col = "VISITNUM"
 )
-}
-
+\dontshow{\}) # examplesIf}
 }

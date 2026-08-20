@@ -35,8 +35,7 @@
 #' 
 #' For more options see the [full specs](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) in the javascript library.
 #' 
-#' @examples 
-#' \dontrun{
+#' @examplesIf requireNamespace("safetyData", quietly = TRUE)
 #' # Render widget with defaults
 #' hepExplorer() 
 #' 
@@ -64,11 +63,13 @@
 #'     visit_col = "VISIT",
 #'     visitn_col = "VISITNUM"
 #' )
-#' }
 #' 
 #' @param data `data.frame` Data frame containing lab data used to render `hepExplorer`. Default: `safetyData::adam_adlbc`
 #' @param mapping `list` named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
+#' 
+#' @return An `htmlwidget` object of class `hepExplorer`, ready to print in the
+#'   RStudio viewer, embed in R Markdown, or render inside a Shiny application.
 #' 
 #' @importFrom purrr list_modify
 #' 
