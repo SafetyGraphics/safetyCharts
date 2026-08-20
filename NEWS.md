@@ -14,6 +14,8 @@ This is the first release since v0.3.0 and is the release that returns safetyCha
 
 - `safetyGraphics` has been dropped from `Suggests`. It was never used by any code, test or vignette in this package, and because safetyGraphics imports safetyCharts the declaration was circular: with both packages archived, neither could be checked until one of them stopped requiring the other.
 - The pkgdown output directory `docs/` is now listed in `.Rbuildignore`, so it is no longer shipped inside the source tarball.
+- `aeExplorer()`, `hepExplorer()`, `paneledOutlierExplorer()` and `render_widget()` now document their return values. CRAN asks for a return value on every exported function, and these four had none.
+- The examples for `aeExplorer()`, `hepExplorer()` and `paneledOutlierExplorer()` now run. They were wrapped in `\dontrun{}`, which was not warranted — each renders in well under a second. They are guarded with `@examplesIf requireNamespace("safetyData")` instead, because `safetyData` is a Suggests.
 
 ## New since the v0.3.0 CRAN release
 
