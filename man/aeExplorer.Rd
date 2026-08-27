@@ -18,6 +18,10 @@ and event-level adverse event data (\code{aes}).}
 
 \item{...}{additional options to be added to mapping. Will overwrite mapping.}
 }
+\value{
+An \code{htmlwidget} object of class \code{aeExplorer}, ready to print in the
+RStudio viewer, embed in R Markdown, or render inside a Shiny application.
+}
 \description{
 Convience mapping of render_widget for aeExplorer.
 }
@@ -50,7 +54,7 @@ For more options see the \href{https://github.com/RhoInc/aeexplorer/wiki/Configu
 the JavaScript library.
 }
 \examples{
-\dontrun{
+\dontshow{if (requireNamespace("safetyData", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Render widget with defaults.
 aeExplorer() 
 
@@ -67,6 +71,5 @@ aeExplorer(
         )
     )
 )
-}
-
+\dontshow{\}) # examplesIf}
 }

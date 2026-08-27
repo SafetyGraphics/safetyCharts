@@ -4,6 +4,10 @@
 #' @param data named list of current data sets
 #' @param mapping named list with the current data mappings
 #'
+#' @return An `htmlwidget` object whose class is the value of `widgetName`,
+#'   ready to print in the RStudio viewer, embed in R Markdown, or render
+#'   inside a Shiny application.
+#'
 #' @importFrom htmlwidgets createWidget sizingPolicy
 #' @importFrom jsonlite toJSON
 #'

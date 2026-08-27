@@ -42,13 +42,19 @@
 #' 
 #' For more options see the [full specs](https://github.com/rhoinc/paneled-outlier-explorer/wiki/Configuration) in the javascript library.
 #' 
-#' @examples 
-#' \dontrun{
+#' @examplesIf requireNamespace("safetyData", quietly = TRUE)
+#' # A 20-subject slice of the bundled lab data. The examples below use it so
+#' # that each one renders in a fraction of a second; `paneledOutlierExplorer()`
+#' # with no arguments uses all 254 subjects of `safetyData::adam_adlbc`.
+#' adlbc <- safetyData::adam_adlbc
+#' adlbc <- adlbc[adlbc$USUBJID %in% unique(adlbc$USUBJID)[1:20], ]
+#'
 #' # Render widget with defaults
-#' paneledOutlierExplorer() 
+#' paneledOutlierExplorer(df = adlbc)
 #' 
 #' # Add Sex and Age Filters
 #' paneledOutlierExplorer(
+#'     df = adlbc,
 #'     filters=list(
 #'         list(value_col="SEX"),
 #'         list(value_col="AGEGR1",label="Age")
@@ -56,18 +62,22 @@
 #' )
 #' 
 #' # customize panel size (in pixels)
-#' paneledOutlierExplorer(multiples_sizing=list("width"= 500,"height"= 300))
+#' paneledOutlierExplorer(df = adlbc, multiples_sizing=list("width"= 500,"height"= 300))
 #' 
 #' # customize default normal range
 #' paneledOutlierExplorer(
+#'    df = adlbc,
 #'    normal_range_method = 'quantiles',
 #'    normal_range_quantile_low = 0.2,
 #'    normal_range_quantile_high = 0.8,
 #' )
-#' }
 #' @param df data frame containing lab data used to render for paneledOutlierExplorer. Default is safetyData::adam_adlbc. 
 #' @param mapping named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
+#' 
+#' @return An `htmlwidget` object of class `paneledOutlierExplorer`, ready to
+#'   print in the RStudio viewer, embed in R Markdown, or render inside a Shiny
+#'   application.
 #' 
 #' @importFrom purrr list_modify
 #' 

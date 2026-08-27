@@ -35,20 +35,27 @@
 #' 
 #' For more options see the [full specs](https://github.com/SafetyGraphics/hep-explorer/wiki/Configuration) in the javascript library.
 #' 
-#' @examples 
-#' \dontrun{
+#' @examplesIf requireNamespace("safetyData", quietly = TRUE)
+#' # A 20-subject slice of the bundled lab data. The examples below use it so
+#' # that each one renders in a fraction of a second; `hepExplorer()` with no
+#' # arguments uses all 254 subjects of `safetyData::adam_adlbc`.
+#' adlbc <- safetyData::adam_adlbc
+#' adlbc <- adlbc[adlbc$USUBJID %in% unique(adlbc$USUBJID)[1:20], ]
+#'
 #' # Render widget with defaults
-#' hepExplorer() 
+#' hepExplorer(data = adlbc)
 #' 
 #' # Add age group to default
-#' hepExplorer(group_cols=c("SEX","AGEGR1")) 
+#' hepExplorer(data = adlbc, group_cols=c("SEX","AGEGR1")) 
 #' 
 #' # Enable interactive y-axis
-#' hepExplorer(y_options='all') 
+#' hepExplorer(data = adlbc, y_options='all') 
 #' 
 #' # Use custom mapping for SDTM data
+#' lb <- safetyData::sdtm_lb
+#' lb <- lb[lb$USUBJID %in% unique(lb$USUBJID)[1:20], ]
 #' hepExplorer(
-#'     data=safetyData::sdtm_lb,
+#'     data=lb,
 #'     measure_col = "LBTEST", 
 #'     measure_values = list(
 #'         ALT = "Alanine Aminotransferase", 
@@ -64,11 +71,13 @@
 #'     visit_col = "VISIT",
 #'     visitn_col = "VISITNUM"
 #' )
-#' }
 #' 
 #' @param data `data.frame` Data frame containing lab data used to render `hepExplorer`. Default: `safetyData::adam_adlbc`
 #' @param mapping `list` named list with the current data mappings. See details for default mapping. 
 #' @param ... additional options to be added to mapping. Will overwrite mapping. 
+#' 
+#' @return An `htmlwidget` object of class `hepExplorer`, ready to print in the
+#'   RStudio viewer, embed in R Markdown, or render inside a Shiny application.
 #' 
 #' @importFrom purrr list_modify
 #' 

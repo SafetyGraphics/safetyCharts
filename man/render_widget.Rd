@@ -13,6 +13,11 @@ render_widget(widgetName, data, mapping)
 
 \item{mapping}{named list with the current data mappings}
 }
+\value{
+An \code{htmlwidget} object whose class is the value of \code{widgetName},
+ready to print in the RStudio viewer, embed in R Markdown, or render
+inside a Shiny application.
+}
 \description{
 Render an htmlwidget using standard safetyGraphics workflow
 }
